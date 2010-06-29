@@ -7,13 +7,14 @@
  * @category   Nette
  * @package    Nette\Application
  * @subpackage UnitTests
+ * @keepTrailingSpaces
  */
 
 use Nette\Mail\Mail;
 
 
 
-require __DIR__ . '/../NetteTest/initialize.php';
+require __DIR__ . '/../initialize.php';
 
 require __DIR__ . '/Mail.inc';
 

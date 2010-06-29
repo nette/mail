@@ -7,6 +7,7 @@
  * @category   Nette
  * @package    Nette\Application
  * @subpackage UnitTests
+ * @keepTrailingSpaces
  */
 
 use Nette\Mail\Mail,
@@ -16,7 +17,7 @@ use Nette\Mail\Mail,
 
 
 
-require __DIR__ . '/../NetteTest/initialize.php';
+require __DIR__ . '/../initialize.php';
 
 require __DIR__ . '/Mail.inc';
 
@@ -24,7 +25,7 @@ require __DIR__ . '/Mail.inc';
 
 // temporary directory
 define('TEMP_DIR', __DIR__ . '/tmp');
-NetteTestHelpers::purge(TEMP_DIR);
+T::purge(TEMP_DIR);
 Environment::setVariable('tempDir', TEMP_DIR);
 
 
