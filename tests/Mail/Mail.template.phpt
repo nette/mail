@@ -10,7 +10,7 @@
 
 use Nette\Mail\Mail,
 	Nette\Environment,
-	Nette\Templates\Template,
+	Nette\Templates\FileTemplate,
 	Nette\Templates\LatteFilter;
 
 
@@ -24,15 +24,13 @@ require __DIR__ . '/Mail.inc';
 // temporary directory
 define('TEMP_DIR', __DIR__ . '/tmp');
 TestHelpers::purge(TEMP_DIR);
-mkdir(TEMP_DIR . '/cache');
-Environment::setVariable('tempDir', TEMP_DIR);
 
 
 
 $mail = new Mail();
 $mail->addTo('Lady Jane <jane@example.com>');
 
-$mail->htmlBody = new Template;
+$mail->htmlBody = new FileTemplate;
 $mail->htmlBody->setFile('files/template.phtml');
 $mail->htmlBody->registerFilter(new LatteFilter);
 
