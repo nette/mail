@@ -131,7 +131,7 @@ class MailMimePart extends Nette\Object
 	 */
 	public function getEncodedHeader($name)
 	{
-		$offset = strlen($name) + 2; // color + space
+		$offset = strlen($name) + 2; // colon + space
 
 		if (!isset($this->headers[$name])) {
 			return NULL;
@@ -329,7 +329,8 @@ class MailMimePart extends Nette\Object
 		}
 
 		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}=? _\r\n\t") === strlen($s)
-			&& ($offset + strlen($s) <= self::LINE_LENGTH)) {
+			&& ($offset + strlen($s) <= self::LINE_LENGTH)
+		) {
 			$offset += strlen($s);
 			return $o . $s;
 		}
