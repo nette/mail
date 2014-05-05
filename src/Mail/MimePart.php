@@ -213,7 +213,7 @@ class MimePart extends Nette\Object
 	 */
 	public function setBody($body)
 	{
-		if ($body instanceof Nette\Templating\ITemplate) {
+		if ($body instanceof Nette\Templating\ITemplate || $body instanceof Nette\Application\UI\ITemplate) {
 			$body->mail = $this;
 			$body = $body->__toString(TRUE);
 		}

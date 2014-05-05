@@ -219,9 +219,9 @@ class Message extends MimePart
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
 	{
-		if ($html instanceof Nette\Templating\ITemplate) {
+		if ($html instanceof Nette\Templating\ITemplate || $html instanceof Nette\Application\UI\ITemplate) {
 			$html->mail = $this;
-			if ($basePath === NULL && $html instanceof Nette\Templating\IFileTemplate) {
+			if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
 				$basePath = dirname($html->getFile());
 			}
 			$html = $html->__toString(TRUE);
