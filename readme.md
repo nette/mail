@@ -1,6 +1,9 @@
 Nette Mail: Sending E-mails
 ===========================
 
+[![Downloads this Month](https://img.shields.io/packagist/dm/nette/mail.svg)](https://packagist.org/packages/nette/mail)
+[![Build Status](https://travis-ci.org/nette/mail.svg?branch=master)](https://travis-ci.org/nette/mail)
+
 Almost every web application needs to send e-mails, whether newsletters or order confirmations. That's why Nette Framework provides necessary tools.
 
 Example of creating an e-mail using `Nette\Mail\Message` class:
@@ -73,7 +76,3 @@ $mailer->send($mail);
 ```
 
 You can also create your own mailer - it's a class implementing Nette\Mail\IMailer interface.
-
------
-
-[![Build Status](https://secure.travis-ci.org/nette/mail.png?branch=master)](http://travis-ci.org/nette/mail)
