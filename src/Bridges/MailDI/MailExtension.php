@@ -11,7 +11,7 @@ use Nette;
 
 
 /**
- * Nette Framework Mail services.
+ * Mail extension for Nette DI.
  *
  * @author     David Grudl
  * @author     Petr Morávek
@@ -35,16 +35,17 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$container = $this->getContainerBuilder();
 
 		$config = $this->compiler->getConfig();
-		if (isset($config['nette']['mailer'])) { // back compatibility
+		$prefix = isset($config[$this->name]) ? $this->name : 'nette';
+		if ($oldSection = !isset($config[$this->name]) && isset($config['nette']['mailer'])) {
 			$config = Nette\DI\Config\Helpers::merge($config['nette']['mailer'], $this->defaults);
-			trigger_error("nette.mailer configuration section is deprecated, use {$this->name} section instead.", E_USER_DEPRECATED);
+			trigger_error("Configuration section 'nette.mailer' is deprecated, use section '$this->name' and service '$this->name.mailer' instead.", E_USER_DEPRECATED);
 		} else {
 			$config = $this->getConfig($this->defaults);
 		}
 
-		$this->validate($config, $this->defaults, $this->name);
+		$this->validate($config, $this->defaults, $oldSection ? 'nette.mailer' : $this->name);
 
-		$mailer = $container->addDefinition('nette.mailer')
+		$mailer = $container->addDefinition($prefix . '.mailer')
 			->setClass('Nette\Mail\IMailer');
 
 		if (empty($config['smtp'])) {
