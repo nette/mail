@@ -38,7 +38,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$prefix = isset($config[$this->name]) ? $this->name : 'nette';
 		if ($oldSection = !isset($config[$this->name]) && isset($config['nette']['mailer'])) {
 			$config = Nette\DI\Config\Helpers::merge($config['nette']['mailer'], $this->defaults);
-			trigger_error("Configuration section 'nette.mailer' is deprecated, use section '$this->name' and service '$this->name.mailer' instead.", E_USER_DEPRECATED);
+			//trigger_error("Configuration section 'nette.mailer' is deprecated, use section '$this->name' and service '$this->name.mailer' instead.", E_USER_DEPRECATED);
 		} else {
 			$config = $this->getConfig($this->defaults);
 		}

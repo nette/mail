@@ -28,13 +28,9 @@ test:
 ');
 Assert::type( 'Nette\Mail\SendmailMailer', $container1->getService('test.mailer') );
 
-
-Assert::error(function() use ($compiler, & $container2) {
-	$container2 = createContainer($compiler, '
-		nette:
-			mailer:
-				smtp: true
-	');
-}, 'E_USER_DEPRECATED', "Configuration section 'nette.mailer' is deprecated, use section 'test' and service 'test.mailer' instead.");
-
+$container2 = createContainer($compiler, '
+	nette:
+		mailer:
+			smtp: true
+');
 Assert::type( 'Nette\Mail\SmtpMailer', $container2->getService('nette.mailer') );
