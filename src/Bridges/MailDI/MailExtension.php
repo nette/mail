@@ -43,7 +43,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$config = $this->getConfig($this->defaults);
 		}
 
-		$this->validate($config, $this->defaults, $oldSection ? 'nette.mailer' : $this->name);
+		$this->validateConfig($this->defaults, $config, $oldSection ? 'nette.mailer' : $this->name);
 
 		$mailer = $container->addDefinition($prefix . '.mailer')
 			->setClass('Nette\Mail\IMailer');
@@ -52,15 +52,6 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->setFactory('Nette\Mail\SendmailMailer');
 		} else {
 			$mailer->setFactory('Nette\Mail\SmtpMailer', array($config));
-		}
-	}
-
-
-	private function validate(array $config, array $expected, $name)
-	{
-		if ($extra = array_diff_key($config, $expected)) {
-			$extra = implode(", $name.", array_keys($extra));
-			throw new Nette\InvalidStateException("Unknown option $name.$extra.");
 		}
 	}
 
