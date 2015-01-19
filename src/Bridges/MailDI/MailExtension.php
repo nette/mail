@@ -33,25 +33,19 @@ class MailExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
+		$config = $this->validateConfig($this->defaults);
 
-		$config = $this->compiler->getConfig();
-		$prefix = isset($config[$this->name]) ? $this->name : 'nette';
-		if ($oldSection = !isset($config[$this->name]) && isset($config['nette']['mailer'])) {
-			$config = Nette\DI\Config\Helpers::merge($config['nette']['mailer'], $this->defaults);
-			//trigger_error("Configuration section 'nette.mailer' is deprecated, use section '$this->name' and service '$this->name.mailer' instead.", E_USER_DEPRECATED);
-		} else {
-			$config = $this->getConfig($this->defaults);
-		}
-
-		$this->validateConfig($this->defaults, $config, $oldSection ? 'nette.mailer' : $this->name);
-
-		$mailer = $container->addDefinition($prefix . '.mailer')
+		$mailer = $container->addDefinition($this->prefix('mailer'))
 			->setClass('Nette\Mail\IMailer');
 
 		if (empty($config['smtp'])) {
 			$mailer->setFactory('Nette\Mail\SendmailMailer');
 		} else {
 			$mailer->setFactory('Nette\Mail\SmtpMailer', array($config));
+		}
+
+		if ($this->name === 'mail') {
+			$container->addAlias('nette.mailer', $this->prefix('mailer'));
 		}
 	}
 
