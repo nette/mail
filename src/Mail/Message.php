@@ -213,15 +213,16 @@ class Message extends MimePart
 
 	/**
 	 * Sets HTML body.
-	 * @param  string|Nette\Templating\ITemplate
+	 * @param  string
 	 * @param  mixed base-path or FALSE to disable parsing
 	 * @return self
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
 	{
-		if ($html instanceof Nette\Templating\ITemplate) {
+		if ($html instanceof Nette\Templating\ITemplate || $html instanceof Nette\Application\UI\ITemplate) {
+			trigger_error('Support for Nette\Templating is deprecated.', E_USER_DEPRECATED);
 			$html->mail = $this;
-			if ($basePath === NULL && $html instanceof Nette\Templating\IFileTemplate) {
+			if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
 				$basePath = dirname($html->getFile());
 			}
 			$html = $html->__toString(TRUE);
