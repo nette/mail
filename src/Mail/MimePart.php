@@ -207,12 +207,7 @@ class MimePart extends Nette\Object
 	 */
 	public function setBody($body)
 	{
-		if ($body instanceof Nette\Templating\ITemplate || $body instanceof Nette\Application\UI\ITemplate) {
-			trigger_error('Support for Nette\Templating is deprecated.', E_USER_DEPRECATED);
-			$body->mail = $this;
-			$body = $body->__toString(TRUE);
-		}
-		$this->body = $body;
+		$this->body = (string) $body;
 		return $this;
 	}
 

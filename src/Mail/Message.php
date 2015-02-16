@@ -214,27 +214,27 @@ class Message extends MimePart
 	/**
 	 * Sets HTML body.
 	 * @param  string
-	 * @param  mixed base-path or FALSE to disable parsing
+	 * @param  mixed base-path
 	 * @return self
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
 	{
-		if ($html instanceof Nette\Templating\ITemplate || $html instanceof Nette\Application\UI\ITemplate) {
-			trigger_error('Support for Nette\Templating is deprecated.', E_USER_DEPRECATED);
-			$html->mail = $this;
-			if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
-				$basePath = dirname($html->getFile());
-			}
-			$html = $html->__toString(TRUE);
+		if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
+			$basePath = dirname($html->getFile());
+			$bc = TRUE;
 		}
+		$html = (string) $html;
 
-		if ($basePath !== FALSE) {
+		if ($basePath) {
 			$cids = array();
 			$matches = Strings::matchAll(
 				$html,
 				'#(src\s*=\s*|background\s*=\s*|url\()(["\']?)(?![a-z]+:|[/\\#])([^"\')\s]+)#i',
 				PREG_OFFSET_CAPTURE
 			);
+			if ($matches && isset($bc)) {
+				trigger_error(__METHOD__ . '() missing second argument with image base path.', E_USER_WARNING);
+			}
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . urldecode($m[3][0]);
 				if (!isset($cids[$file])) {
