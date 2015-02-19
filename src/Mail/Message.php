@@ -246,15 +246,20 @@ class Message extends MimePart
 				);
 			}
 		}
-		$this->html = $html;
 
-		if ($this->getSubject() == NULL && $matches = Strings::match($html, '#<title>(.+?)</title>#is')) { // intentionally ==
-			$this->setSubject(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8'));
+		if ($this->getSubject() == NULL) { // intentionally ==
+			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function($m) use (& $title) {
+				$title = $m[1];
+			});
+			$this->setSubject(html_entity_decode($title, ENT_QUOTES, 'UTF-8'));
 		}
+
+		$this->html = ltrim(str_replace("\r", '', $html), "\n");
 
 		if ($this->getBody() == NULL && $html != NULL) { // intentionally ==
 			$this->setBody($this->buildText($html));
 		}
+
 		return $this;
 	}
 
