@@ -126,6 +126,12 @@ class SmtpMailer extends Nette\Object implements IMailer
 		if (!$this->connection) {
 			throw new SmtpException($error, $errno);
 		}
+
+        // set context options
+        if ($this->context !== array()) {
+            stream_context_set_option($this->connection, $this->context);
+        }
+
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
