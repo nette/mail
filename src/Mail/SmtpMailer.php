@@ -61,7 +61,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 		if (!$this->port) {
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
-        $this->timeout = isset($options['context']) ? $options['context'] : array();
+        $this->context = isset($options['context']) ? $options['context'] : array();
 		$this->persistent = !empty($options['persistent']);
 	}
 
