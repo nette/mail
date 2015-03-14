@@ -42,7 +42,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 	private $persistent;
 
 	/** @var array */
-	private $context;
+	private $streamContext;
 
 
 	public function __construct(array $options = array())
@@ -61,7 +61,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 		if (!$this->port) {
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
-		$this->context = isset($options['context']) ? $options['context'] : array();
+		$this->streamContext = isset($options['streamContext']) ? $options['streamContext'] : NULL;
 		$this->persistent = !empty($options['persistent']);
 	}
 
@@ -127,9 +127,8 @@ class SmtpMailer extends Nette\Object implements IMailer
 			throw new SmtpException($error, $errno);
 		}
 
-		// set context options
-		if ($this->context !== array()) {
-				stream_context_set_option($this->connection, $this->context);
+		if ($this->streamContext) {
+			stream_context_set_option($this->connection, $this->context);
 		}
 
 		stream_set_timeout($this->connection, $this->timeout, 0);
