@@ -302,6 +302,16 @@ class Message extends MimePart
 
 
 	/**
+	 * Gets all email attachments.
+	 * @return MimePart[]
+	 */
+	public function getAttachments()
+	{
+		return $this->attachments;
+	}
+
+
+	/**
 	 * Creates file MIME part.
 	 * @return MimePart
 	 */
