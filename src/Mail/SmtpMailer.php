@@ -42,7 +42,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 	private $persistent;
 
 
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		if (isset($options['host'])) {
 			$this->host = $options['host'];
@@ -86,7 +86,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 				(array) $mail->getHeader('Cc'),
 				(array) $mail->getHeader('Bcc')
 			) as $email => $name) {
-				$this->write("RCPT TO:<$email>", array(250, 251));
+				$this->write("RCPT TO:<$email>", [250, 251]);
 			}
 
 			$mail->setHeader('Bcc', NULL);

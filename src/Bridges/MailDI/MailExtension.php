@@ -19,7 +19,7 @@ use Nette;
 class MailExtension extends Nette\DI\CompilerExtension
 {
 
-	public $defaults = array(
+	public $defaults = [
 		'smtp' => FALSE,
 		'host' => NULL,
 		'port' => NULL,
@@ -27,7 +27,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'password' => NULL,
 		'secure' => NULL,
 		'timeout' => NULL,
-	);
+	];
 
 
 	public function loadConfiguration()
@@ -41,7 +41,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		if (empty($config['smtp'])) {
 			$mailer->setFactory('Nette\Mail\SendmailMailer');
 		} else {
-			$mailer->setFactory('Nette\Mail\SmtpMailer', array($config));
+			$mailer->setFactory('Nette\Mail\SmtpMailer', [$config]);
 		}
 
 		if ($this->name === 'mail') {

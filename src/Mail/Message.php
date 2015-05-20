@@ -30,16 +30,16 @@ class Message extends MimePart
 		LOW = 5;
 
 	/** @var array */
-	public static $defaultHeaders = array(
+	public static $defaultHeaders = [
 		'MIME-Version' => '1.0',
 		'X-Mailer' => 'Nette Framework',
-	);
+	];
 
 	/** @var array */
-	private $attachments = array();
+	private $attachments = [];
 
 	/** @var array */
-	private $inlines = array();
+	private $inlines = [];
 
 	/** @var mixed */
 	private $html;
@@ -160,9 +160,9 @@ class Message extends MimePart
 	private function formatEmail($email, $name)
 	{
 		if (!$name && preg_match('#^(.+) +<(.*)>\z#', $email, $matches)) {
-			return array($matches[2] => $matches[1]);
+			return [$matches[2] => $matches[1]];
 		} else {
-			return array($email => $name);
+			return [$email => $name];
 		}
 	}
 
@@ -226,7 +226,7 @@ class Message extends MimePart
 		$html = (string) $html;
 
 		if ($basePath) {
-			$cids = array();
+			$cids = [];
 			$matches = Strings::matchAll(
 				$html,
 				'#(src\s*=\s*|background\s*=\s*|url\()(["\']?)(?![a-z]+:|[/\\#])([^"\')\s]+)#i',
@@ -391,12 +391,12 @@ class Message extends MimePart
 	 */
 	protected function buildText($html)
 	{
-		$text = Strings::replace($html, array(
+		$text = Strings::replace($html, [
 			'#<(style|script|head).*</\\1>#Uis' => '',
 			'#<t[dh][ >]#i' => " $0",
 			'#[\r\n]+#' => ' ',
 			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
-		));
+		]);
 		$text = html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8');
 		$text = Strings::replace($text, '#[ \t]+#', ' ');
 		return trim($text);
