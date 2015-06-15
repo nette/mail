@@ -339,7 +339,7 @@ class Message extends MimePart
 
 	/**
 	 * Builds email. Does not modify itself, but returns a new object.
-	 * @return Message
+	 * @return self
 	 */
 	protected function build()
 	{
