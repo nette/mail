@@ -7,8 +7,8 @@
 
 namespace Nette\Mail;
 
-use Nette,
-	Nette\Utils\Strings;
+use Nette;
+use Nette\Utils\Strings;
 
 
 /**
@@ -248,7 +248,7 @@ class Message extends MimePart
 		}
 
 		if ($this->getSubject() == NULL) { // intentionally ==
-			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function($m) use (& $title) {
+			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function ($m) use (& $title) {
 				$title = $m[1];
 			});
 			$this->setSubject(html_entity_decode($title, ENT_QUOTES, 'UTF-8'));
@@ -403,7 +403,7 @@ class Message extends MimePart
 	{
 		$text = Strings::replace($html, [
 			'#<(style|script|head).*</\\1>#Uis' => '',
-			'#<t[dh][ >]#i' => " $0",
+			'#<t[dh][ >]#i' => ' $0',
 			'#[\r\n]+#' => ' ',
 			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
 		]);
