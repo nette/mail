@@ -53,7 +53,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 		}
 		$this->username = isset($options['username']) ? $options['username'] : '';
 		$this->password = isset($options['password']) ? $options['password'] : '';
-		$this->secure = isset($options['secure']) ? $options['secure'] : '';
+		$this->secure = isset($options['secure']) ? strtolower($options['secure']) : '';
 		$this->timeout = isset($options['timeout']) ? (int) $options['timeout'] : 20;
 		if (!$this->port) {
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
