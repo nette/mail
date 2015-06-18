@@ -4,9 +4,9 @@
  * Test: MailExtension.
  */
 
-use Nette\DI,
-	Nette\Bridges\MailDI\MailExtension,
-	Tester\Assert;
+use Nette\DI;
+use Nette\Bridges\MailDI\MailExtension;
+use Tester\Assert;
 
 
 require __DIR__ . '/../bootstrap.php';
@@ -20,8 +20,8 @@ $container1 = createContainer($compiler, '
 test:
 	smtp: false
 ');
-Assert::type( 'Nette\Mail\SendmailMailer', $container1->getService('test.mailer') );
-Assert::false( $container1->hasService('nette.mailer') );
+Assert::type('Nette\Mail\SendmailMailer', $container1->getService('test.mailer'));
+Assert::false($container1->hasService('nette.mailer'));
 
 
 $compiler = new DI\Compiler;
@@ -30,5 +30,5 @@ $container2 = createContainer($compiler, '
 mail:
 	smtp: true
 ');
-Assert::type( 'Nette\Mail\SmtpMailer', $container2->getService('mail.mailer') );
-Assert::type( $container2->getService('mail.mailer'), $container2->getService('nette.mailer') );
+Assert::type('Nette\Mail\SmtpMailer', $container2->getService('mail.mailer'));
+Assert::type($container2->getService('mail.mailer'), $container2->getService('nette.mailer'));
