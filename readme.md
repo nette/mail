@@ -3,6 +3,8 @@ Nette Mail: Sending E-mails
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/mail.svg)](https://packagist.org/packages/nette/mail)
 [![Build Status](https://travis-ci.org/nette/mail.svg?branch=master)](https://travis-ci.org/nette/mail)
+[![Latest Stable Version](https://poser.pugx.org/nette/mail/v/stable)](https://github.com/nette/mail/releases)
+[![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/mail/blob/master/license.md)
 
 Almost every web application needs to send e-mails, whether newsletters or order confirmations. That's why Nette Framework provides necessary tools.
 
