@@ -46,7 +46,7 @@ class SendmailMailer extends Nette\Object implements IMailer
 			$info = ": $message";
 		});
 		if ($res === FALSE) {
-			throw new Nette\InvalidStateException("Unable to send email$info.");
+			throw new SendmailException("Unable to send email$info.");
 		}
 	}
 
