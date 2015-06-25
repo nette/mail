@@ -11,11 +11,21 @@ use Nette;
 
 
 /**
- * Send failed exception.
+ * Send failed exception
  *
  * @author Jan Dvořák
  */
-class SendFailedException extends Nette\InvalidStateException
+interface SendFailedException
+{
+}
+
+
+/**
+ * Sendmail exception.
+ *
+ * @author Jan Dvořák
+ */
+class SendmailException extends Nette\InvalidStateException implements SendFailedException
 {
 }
 
@@ -25,6 +35,6 @@ class SendFailedException extends Nette\InvalidStateException
  *
  * @author     David Grudl
  */
-class SmtpException extends SendFailedException
+class SmtpException extends \Exception implements SendFailedException
 {
 }
