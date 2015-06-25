@@ -21,6 +21,8 @@ interface IMailer
 	/**
 	 * Sends email.
 	 * @return void
+	 *
+	 * @throws Nette\Mail\SendFailedException
 	 */
 	function send(Message $mail);
 
