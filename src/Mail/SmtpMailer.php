@@ -201,6 +201,6 @@ class SmtpMailer extends Nette\Object implements IMailer
  *
  * @author     David Grudl
  */
-class SmtpException extends \Exception
+class SmtpException extends SendFailedException
 {
 }
