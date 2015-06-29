@@ -14,8 +14,6 @@ use Nette\Utils\Strings;
 /**
  * MIME message part.
  *
- * @author     David Grudl
- *
  * @property-read array $headers
  * @property-write $contentType
  * @property   string $encoding

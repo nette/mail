@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Sends emails via the PHP internal mail() function.
- *
- * @author     David Grudl
  */
 class SendmailMailer extends Nette\Object implements IMailer
 {

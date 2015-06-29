@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Mailer interface.
- *
- * @author     David Grudl
  */
 interface IMailer
 {
