@@ -7,10 +7,20 @@
 
 namespace Nette\Mail;
 
+use Nette;
+
+
+/**
+ * Exception thrown when a mail sending error is encountered.
+ */
+class SendException extends Nette\InvalidStateException
+{
+}
+
 
 /**
  * SMTP mailer exception.
  */
-class SmtpException extends \Exception
+class SmtpException extends SendException
 {
 }
