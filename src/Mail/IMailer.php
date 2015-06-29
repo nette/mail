@@ -7,8 +7,6 @@
 
 namespace Nette\Mail;
 
-use Nette;
-
 
 /**
  * Mailer interface.
