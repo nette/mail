@@ -63,6 +63,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 	/**
 	 * Sends email.
 	 * @return void
+	 * @throws SmtpException
 	 */
 	public function send(Message $mail)
 	{

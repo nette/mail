@@ -17,6 +17,7 @@ interface IMailer
 	/**
 	 * Sends email.
 	 * @return void
+	 * @throws SendException
 	 */
 	function send(Message $mail);
 
