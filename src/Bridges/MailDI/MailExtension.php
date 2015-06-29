@@ -12,9 +12,6 @@ use Nette;
 
 /**
  * Mail extension for Nette DI.
- *
- * @author     David Grudl
- * @author     Petr Morávek
  */
 class MailExtension extends Nette\DI\CompilerExtension
 {
