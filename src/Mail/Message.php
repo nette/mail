@@ -317,7 +317,7 @@ class Message extends MimePart
 	{
 		$part = new MimePart;
 		if ($content === NULL) {
-			$content = @file_get_contents($file); // intentionally @
+			$content = @file_get_contents($file); // @ is escalated to exception
 			if ($content === FALSE) {
 				throw new Nette\FileNotFoundException("Unable to read file '$file'.");
 			}

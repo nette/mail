@@ -114,7 +114,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 	 */
 	protected function connect()
 	{
-		$this->connection = @fsockopen( // intentionally @
+		$this->connection = @fsockopen( // @ is escalated to exception
 			($this->secure === 'ssl' ? 'ssl://' : '') . $this->host,
 			$this->port, $errno, $error, $this->timeout
 		);
