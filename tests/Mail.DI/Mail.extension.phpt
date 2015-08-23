@@ -20,7 +20,7 @@ $container1 = createContainer($compiler, '
 test:
 	smtp: false
 ');
-Assert::type('Nette\Mail\SendmailMailer', $container1->getService('test.mailer'));
+Assert::type(Nette\Mail\SendmailMailer::class, $container1->getService('test.mailer'));
 Assert::false($container1->hasService('nette.mailer'));
 
 
@@ -30,5 +30,5 @@ $container2 = createContainer($compiler, '
 mail:
 	smtp: true
 ');
-Assert::type('Nette\Mail\SmtpMailer', $container2->getService('mail.mailer'));
+Assert::type(Nette\Mail\SmtpMailer::class, $container2->getService('mail.mailer'));
 Assert::type($container2->getService('mail.mailer'), $container2->getService('nette.mailer'));
