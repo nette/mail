@@ -33,12 +33,12 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$config = $this->validateConfig($this->defaults);
 
 		$mailer = $container->addDefinition($this->prefix('mailer'))
-			->setClass('Nette\Mail\IMailer');
+			->setClass(Nette\Mail\IMailer::class);
 
 		if (empty($config['smtp'])) {
-			$mailer->setFactory('Nette\Mail\SendmailMailer');
+			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
 		} else {
-			$mailer->setFactory('Nette\Mail\SmtpMailer', [$config]);
+			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$config]);
 		}
 
 		if ($this->name === 'mail') {
