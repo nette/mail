@@ -16,10 +16,7 @@ use Nette\Utils\Strings;
  *
  * @author     David Grudl
  *
- * @property   array $from
  * @property   string $subject
- * @property   string $returnPath
- * @property   int $priority
  * @property   mixed $htmlBody
  */
 class Message extends MimePart

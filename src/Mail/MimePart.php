@@ -16,9 +16,6 @@ use Nette\Utils\Strings;
  *
  * @author     David Grudl
  *
- * @property-read array $headers
- * @property-write $contentType
- * @property   string $encoding
  * @property   mixed $body
  */
 class MimePart extends Nette\Object
