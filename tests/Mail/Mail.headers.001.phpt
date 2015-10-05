@@ -17,12 +17,12 @@ $mail = new Message();
 
 Assert::exception(function () use ($mail) {
 	$mail->setHeader('', 'value');
-}, 'InvalidArgumentException', "Header name must be non-empty alphanumeric string, '' given.");
+}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, '' given.");
 
 Assert::exception(function () use ($mail) {
 	$mail->setHeader(' name', 'value');
-}, 'InvalidArgumentException', "Header name must be non-empty alphanumeric string, ' name' given.");
+}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, ' name' given.");
 
 Assert::exception(function () use ($mail) {
 	$mail->setHeader('n*ame', 'value');
-}, 'InvalidArgumentException', "Header name must be non-empty alphanumeric string, 'n*ame' given.");
+}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, 'n*ame' given.");
