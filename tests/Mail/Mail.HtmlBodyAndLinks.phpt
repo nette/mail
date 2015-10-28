@@ -19,7 +19,7 @@ $mail->setFrom('John Doe <doe@example.com>');
 $mail->addTo('Lady Jane <jane@example.com>');
 $mail->setSubject('Hello Jane!');
 
-$mail->setHTMLBody('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a>' .
+$mail->setHTMLBody('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> "' .
 		' <br><a href=\'http://horse.example.com\'>kůň</a></b>');
 
 $mailer = new TestMailer();
@@ -40,13 +40,13 @@ Content-Type: multipart/alternative;
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Příliš žluťoučký <http://green.example.com>
+Příliš žluťoučký <http://green.example.com> "
 kůň <http://horse.example.com>
 ----------%S%
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> <br><a href='http://horse.example.com'>kůň</a></b>
+<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> " <br><a href='http://horse.example.com'>kůň</a></b>
 ----------%S%--
 EOD
 , TestMailer::$output);
