@@ -39,6 +39,8 @@ class SmtpMailer extends Nette\Object implements IMailer
 	/** @var bool */
 	private $persistent;
 
+  /** @var dsn */
+	private $dsn;
 
 	public function __construct(array $options = [])
 	{
@@ -57,6 +59,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
 		$this->persistent = !empty($options['persistent']);
+    $this->dsn = isset($options['dsn']) ? $options['dsn'] : false;
 	}
 
 
@@ -85,7 +88,12 @@ class SmtpMailer extends Nette\Object implements IMailer
 				(array) $mail->getHeader('Cc'),
 				(array) $mail->getHeader('Bcc')
 			) as $email => $name) {
-				$this->write("RCPT TO:<$email>", [250, 251]);
+				if($this->dsn) {
+					$param = ' NOTIFY=success,delay,failure ORCPT=rfc822;'.$email;
+				} else {
+					$param = '';
+				}
+				$this->write("RCPT TO:<$email>$param", array(250, 251));
 			}
 
 			$mail->setHeader('Bcc', NULL);
