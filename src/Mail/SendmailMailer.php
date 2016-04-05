@@ -13,8 +13,10 @@ use Nette;
 /**
  * Sends emails via the PHP internal mail() function.
  */
-class SendmailMailer extends Nette\Object implements IMailer
+class SendmailMailer implements IMailer
 {
+	use Nette\SmartObject;
+
 	/** @var string */
 	public $commandArgs;
 

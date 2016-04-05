@@ -16,8 +16,10 @@ use Nette\Utils\Strings;
  *
  * @property   mixed $body
  */
-class MimePart extends Nette\Object
+class MimePart
 {
+	use Nette\SmartObject;
+
 	/** encoding */
 	const ENCODING_BASE64 = 'base64',
 		ENCODING_7BIT = '7bit',

@@ -13,8 +13,10 @@ use Nette;
 /**
  * Sends emails via the SMTP server.
  */
-class SmtpMailer extends Nette\Object implements IMailer
+class SmtpMailer implements IMailer
 {
+	use Nette\SmartObject;
+
 	/** @var resource */
 	private $connection;
 
