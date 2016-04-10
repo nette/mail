@@ -21,7 +21,11 @@ Content-Type: multipart/related;
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-<b>Sample text</b> <img src="cid:%S%">
+	<BODY id=1 background=cid:%S%>
+	<img src="cid:%S%">
+	<div title=a style="background:url(cid:%S%)">
+	<style type=text/css>body { background: url('cid:%S%') } </style>
+
 ----------%S%
 Content-Type: image/png
 Content-Transfer-Encoding: base64
