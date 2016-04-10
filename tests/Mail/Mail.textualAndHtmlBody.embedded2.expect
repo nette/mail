@@ -1,0 +1,22 @@
+MIME-Version: 1.0
+X-Mailer: Nette Framework
+Date: %a%
+Message-ID: <%S%@%S%>
+Content-Type: multipart/alternative;
+	boundary="--------%S%"
+
+----------%S%
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+some link <test.php?src=SOME> background: url(\'background.png\');
+----------%S%
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+	<a href='test.php?src=SOME'>some link</a>
+	<script src=script.js></script>
+	<div title="background:url(background.png)">
+	<style></style> background: url(\'background.png\');
+
+----------%S%--

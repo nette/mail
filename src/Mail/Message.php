@@ -224,7 +224,13 @@ class Message extends MimePart
 			$cids = array();
 			$matches = Strings::matchAll(
 				$html,
-				'#(src\s*=\s*|background\s*=\s*|url\()(["\']?)(?![a-z]+:|[/\\#])([^"\')\s]+)#i',
+				'#
+					(<img[^<>]*\s src\s*=\s*
+					|<body[^<>]*\s background\s*=\s*
+					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
+					|<style[^>]*>[^<]+ [:\s] url\()
+					(["\']?)(?![a-z]+:|[/\\#])([^"\'>)\s]+)
+				#ix',
 				PREG_OFFSET_CAPTURE
 			);
 			if ($matches && isset($bc)) {
