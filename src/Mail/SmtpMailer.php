@@ -15,29 +15,29 @@ use Nette;
  */
 class SmtpMailer extends Nette\Object implements IMailer
 {
-	/** @var resource */
-	private $connection;
-
 	/** @var string */
-	private $host;
+	public $host;
 
 	/** @var int */
-	private $port;
+	public $port;
 
 	/** @var string */
-	private $username;
+	public $username;
 
 	/** @var string */
-	private $password;
+	public $password;
 
-	/** @var string ssl | tls | (empty) */
-	private $secure;
+	/** @var string|NULL ssl | tls */
+	public $encryption;
 
 	/** @var int */
-	private $timeout;
+	public $timeout = 20;
 
 	/** @var bool */
-	private $persistent;
+	public $persistent = FALSE;
+
+	/** @var resource */
+	private $connection;
 
 
 	public function __construct(array $options = [])
@@ -51,10 +51,10 @@ class SmtpMailer extends Nette\Object implements IMailer
 		}
 		$this->username = isset($options['username']) ? $options['username'] : '';
 		$this->password = isset($options['password']) ? $options['password'] : '';
-		$this->secure = isset($options['secure']) ? $options['secure'] : '';
+		$this->encryption = isset($options['secure']) ? $options['secure'] : '';
 		$this->timeout = isset($options['timeout']) ? (int) $options['timeout'] : 20;
 		if (!$this->port) {
-			$this->port = $this->secure === 'ssl' ? 465 : 25;
+			$this->port = $this->encryption === 'ssl' ? 465 : 25;
 		}
 		$this->persistent = !empty($options['persistent']);
 	}
@@ -115,7 +115,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 	protected function connect()
 	{
 		$this->connection = @stream_socket_client( // @ is escalated to exception
-			($this->secure === 'ssl' ? 'ssl://' : '') . $this->host . ':' . $this->port,
+			($this->encryption === 'ssl' ? 'ssl://' : '') . $this->host . ':' . $this->port,
 			$errno, $error, $this->timeout
 		);
 		if (!$this->connection) {
@@ -130,7 +130,7 @@ class SmtpMailer extends Nette\Object implements IMailer
 			$this->write("HELO $self", 250);
 		}
 
-		if ($this->secure === 'tls') {
+		if ($this->encryption === 'tls') {
 			$this->write('STARTTLS', 220);
 			if (!stream_socket_enable_crypto($this->connection, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
 				throw new SmtpException('Unable to connect via TLS.');

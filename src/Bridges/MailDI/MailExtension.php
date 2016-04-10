@@ -38,7 +38,21 @@ class MailExtension extends Nette\DI\CompilerExtension
 		if (empty($config['smtp'])) {
 			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
 		} else {
-			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$config]);
+			$mailer->setFactory(Nette\Mail\SmtpMailer::class);
+			$config['encryption'] = & $config['secure'];
+			if (!isset($config['host'])) {
+				$config['host'] = ini_get('SMTP');
+				$config['port'] = (int) ini_get('smtp_port');
+			}
+			$config['port'] = empty($config['port'])
+				? (isset($config['secure']) && $config['secure'] === 'ssl' ? 465 : 25)
+				: (int) $config['port'];
+
+			foreach (['host', 'port', 'username', 'password', 'encryption', 'timeout', 'persistent'] as $item) {
+				if (isset($config[$item])) {
+					$mailer->addSetup('$' . $item, [$config[$item]]);
+				}
+			}
 		}
 
 		if ($this->name === 'mail') {
