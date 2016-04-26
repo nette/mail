@@ -417,7 +417,7 @@ class Message extends MimePart
 		$text = Strings::replace($html, [
 			'#<(style|script|head).*</\\1>#Uis' => '',
 			'#<t[dh][ >]#i' => ' $0',
-			'#<a [^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#i' =>  '$2 &lt;$1&gt;',
+			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' =>  '$2 &lt;$1&gt;',
 			'#[\r\n]+#' => ' ',
 			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
 		]);
