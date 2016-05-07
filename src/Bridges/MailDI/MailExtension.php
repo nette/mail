@@ -29,10 +29,10 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$container = $this->getContainerBuilder();
+		$builder = $this->getContainerBuilder();
 		$config = $this->validateConfig($this->defaults);
 
-		$mailer = $container->addDefinition($this->prefix('mailer'))
+		$mailer = $builder->addDefinition($this->prefix('mailer'))
 			->setClass(Nette\Mail\IMailer::class);
 
 		if (empty($config['smtp'])) {
@@ -42,7 +42,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($this->name === 'mail') {
-			$container->addAlias('nette.mailer', $this->prefix('mailer'));
+			$builder->addAlias('nette.mailer', $this->prefix('mailer'));
 		}
 	}
 
