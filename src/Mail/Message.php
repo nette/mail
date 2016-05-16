@@ -290,6 +290,18 @@ class Message extends MimePart
 
 
 	/**
+	 * Adds inlined Mime Part.
+	 * @param  MimePart
+	 * @return self
+	 */
+	public function addInlinePart(MimePart $part)
+	{
+		$this->inlines[] = $part;
+		return $this;
+	}
+
+
+	/**
 	 * Adds attachment.
 	 * @param  string
 	 * @param  string
