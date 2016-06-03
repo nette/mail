@@ -22,7 +22,9 @@ Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 	<BODY id=1 background=cid:%S%>
+	<td background=cid:%S%>
 	<img src="cid:%S%">
+	<v:fill src="cid:%S%">
 	<div title=a style="background:url(cid:%S%)">
 	<style type=text/css>body { background: url('cid:%S%') } </style>
 
