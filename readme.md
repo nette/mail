@@ -69,12 +69,17 @@ Custom mailer
 Default mailer uses PHP function `mail`. If you need to send mail through a SMTP server, you can use `SmtpMailer`.
 
 ```php
-$mailer = new Nette\Mail\SmtpMailer(array(
+$mailer = new Nette\Mail\SmtpMailer([
         'host' => 'smtp.gmail.com',
         'username' => 'john@gmail.com',
         'password' => '*****',
         'secure' => 'ssl',
-));
+        'context' =>  [
+            'ssl' => [
+                'capath' => '/path/to/my/trusted/ca/folder',
+             ],
+        ],
+]);
 $mailer->send($mail);
 ```
 
