@@ -214,10 +214,6 @@ class Message extends MimePart
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
 	{
-		if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
-			$basePath = dirname($html->getFile());
-			$bc = TRUE;
-		}
 		$html = (string) $html;
 
 		if ($basePath) {
@@ -233,9 +229,6 @@ class Message extends MimePart
 				#ix',
 				PREG_OFFSET_CAPTURE
 			);
-			if ($matches && isset($bc)) {
-				trigger_error(__METHOD__ . '() missing second argument with image base path.', E_USER_WARNING);
-			}
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . urldecode($m[3][0]);
 				if (!isset($cids[$file])) {
