@@ -9,7 +9,7 @@ Content-Type: multipart/alternative;
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-some link <test.php?src=SOME> background: url(\'background.png\');
+some link <test.php?src=SOME> background: url(\'background.png\'); [[backgroun%64.png]]
 ----------%S%
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
@@ -18,5 +18,6 @@ Content-Transfer-Encoding: 7bit
 	<script src=script.js></script>
 	<div title="background:url(background.png)">
 	<style></style> background: url(\'background.png\');
+	[[backgroun%64.png]]
 
 ----------%S%--

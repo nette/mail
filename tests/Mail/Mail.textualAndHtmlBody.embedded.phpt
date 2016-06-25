@@ -26,6 +26,7 @@ $mail->setHTMLBody('
 	<img src="backgroun%64.png">
 	<div title=a style="background:url(background.png)">
 	<style type=text/css>body { background: url(\'background.png\') } </style>
+	[[background.png]]
 ', __DIR__ . '/files');
 // append automatically $mail->addEmbeddedFile('files/background.png');
 
@@ -42,6 +43,7 @@ $mail->setHTMLBody("
 	<script src=script.js></script>
 	<div title=\"background:url(background.png)\">
 	<style></style> background: url(\'background.png\');
+	[[backgroun%64.png]]
 ", __DIR__ . '/files');
 
 $mailer = new TestMailer;

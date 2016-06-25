@@ -226,11 +226,12 @@ class Message extends MimePart
 					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
 					|<style[^>]*>[^<]+ [:\s] url\()
 					(["\']?)(?![a-z]+:|[/\\#])([^"\'>)\s]+)
+					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix',
 				PREG_OFFSET_CAPTURE
 			);
 			foreach (array_reverse($matches) as $m) {
-				$file = rtrim($basePath, '/\\') . '/' . urldecode($m[3][0]);
+				$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
 				if (!isset($cids[$file])) {
 					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
 				}

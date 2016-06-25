@@ -25,6 +25,7 @@ Content-Transfer-Encoding: 7bit
 	<img src="cid:%S%">
 	<div title=a style="background:url(cid:%S%)">
 	<style type=text/css>body { background: url('cid:%S%') } </style>
+	cid:%S%
 
 ----------%S%
 Content-Type: image/png
