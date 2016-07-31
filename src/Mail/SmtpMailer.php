@@ -132,7 +132,8 @@ class SmtpMailer implements IMailer
 
 		$self = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+\z#', $_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->write("EHLO $self");
-		if ((int) $this->read() !== 250) {
+		$ehloResponse = $this->read();
+		if ((int) $ehloResponse !== 250) {
 			$this->write("HELO $self", 250);
 		}
 
@@ -145,9 +146,19 @@ class SmtpMailer implements IMailer
 		}
 
 		if ($this->username != NULL && $this->password != NULL) {
-			$this->write('AUTH LOGIN', 334);
-			$this->write(base64_encode($this->username), 334, 'username');
-			$this->write(base64_encode($this->password), 235, 'password');
+			$authMechanisms = [];
+			if (preg_match('~^250[ -]AUTH (.*)$~im', $ehloResponse, $matches)) {
+				$authMechanisms = explode(' ', trim($matches[1]));
+			}
+
+			if (in_array('PLAIN', $authMechanisms, TRUE)) {
+				$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
+				$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
+			} else {
+				$this->write('AUTH LOGIN', 334);
+				$this->write(base64_encode($this->username), 334, 'username');
+				$this->write(base64_encode($this->password), 235, 'password');
+			}
 		}
 	}
 
