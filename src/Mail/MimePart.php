@@ -45,7 +45,7 @@ class MimePart
 	 * @param  string
 	 * @param  string|array  value or pair email => name
 	 * @param  bool
-	 * @return self
+	 * @return static
 	 */
 	public function setHeader($name, $value, $append = FALSE)
 	{
@@ -100,7 +100,7 @@ class MimePart
 	/**
 	 * Removes a header.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function clearHeader($name)
 	{
@@ -157,7 +157,7 @@ class MimePart
 	 * Sets Content-Type header.
 	 * @param  string
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function setContentType($contentType, $charset = NULL)
 	{
@@ -169,7 +169,7 @@ class MimePart
 	/**
 	 * Sets Content-Transfer-Encoding header.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function setEncoding($encoding)
 	{
@@ -190,7 +190,7 @@ class MimePart
 
 	/**
 	 * Adds or creates new multipart.
-	 * @return MimePart
+	 * @return self
 	 */
 	public function addPart(MimePart $part = NULL)
 	{
@@ -200,7 +200,7 @@ class MimePart
 
 	/**
 	 * Sets textual body.
-	 * @return self
+	 * @return static
 	 */
 	public function setBody($body)
 	{
