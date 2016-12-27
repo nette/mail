@@ -56,7 +56,7 @@ class SmtpMailer implements IMailer
 		}
 		$this->username = isset($options['username']) ? $options['username'] : '';
 		$this->password = isset($options['password']) ? $options['password'] : '';
-		$this->secure = isset($options['secure']) ? $options['secure'] : '';
+		$this->secure = isset($options['secure']) ? strtolower($options['secure']) : '';
 		$this->timeout = isset($options['timeout']) ? (int) $options['timeout'] : 20;
 		$this->context = isset($options['context']) ? stream_context_create($options['context']) : stream_context_get_default();
 		if (!$this->port) {
