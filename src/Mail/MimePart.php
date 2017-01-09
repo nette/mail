@@ -59,7 +59,7 @@ class MimePart
 			}
 
 		} elseif (is_array($value)) { // email
-			$tmp = & $this->headers[$name];
+			$tmp = &$this->headers[$name];
 			if (!$append || !is_array($tmp)) {
 				$tmp = [];
 			}
@@ -290,7 +290,7 @@ class MimePart
 	 * @param  bool
 	 * @return string
 	 */
-	private static function encodeHeader($s, & $offset = 0, $quotes = FALSE)
+	private static function encodeHeader($s, &$offset = 0, $quotes = FALSE)
 	{
 		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)) {
 			if ($quotes && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
@@ -317,7 +317,7 @@ class MimePart
 	}
 
 
-	private static function append($s, & $offset = 0)
+	private static function append($s, &$offset = 0)
 	{
 		if ($offset + strlen($s) > self::LINE_LENGTH) {
 			$offset = 1;

@@ -43,7 +43,7 @@ class SendmailMailer implements IMailer
 		if ($this->commandArgs) {
 			$args[] = (string) $this->commandArgs;
 		}
-		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function ($message) use (& $info) {
+		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function ($message) use (&$info) {
 			$info = ": $message";
 		});
 		if ($res === FALSE) {

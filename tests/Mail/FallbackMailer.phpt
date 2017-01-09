@@ -43,7 +43,7 @@ test(function () {
 	$subMailerB = new FailingMailer(3);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (& $onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 
@@ -61,7 +61,7 @@ test(function () {
 	$subMailerB = new FailingMailer(2);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (& $onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 
@@ -75,7 +75,7 @@ test(function () {
 	$subMailerB = new FailingMailer(2);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (& $onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 
