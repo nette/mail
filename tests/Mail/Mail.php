@@ -4,6 +4,8 @@
  * Common code for Mail test cases.
  */
 
+declare(strict_types=1);
+
 use Nette\Mail\Message;
 use Nette\Mail\IMailer;
 

@@ -4,6 +4,8 @@
  * Test: Nette\Mail\Message invalid email addresses.
  */
 
+declare(strict_types=1);
+
 use Nette\Mail\Message;
 use Tester\Assert;
 

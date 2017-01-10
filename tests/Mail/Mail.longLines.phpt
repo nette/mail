@@ -4,6 +4,8 @@
  * Test: Nette\Mail\Message - textual body and line longer than 990 characters.
  */
 
+declare(strict_types=1);
+
 use Nette\Mail\Message;
 use Tester\Assert;
 

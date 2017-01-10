@@ -4,6 +4,8 @@
  * Test: Nette\Mail\Message - textual and HTML body with embedded image and attachment.
  */
 
+declare(strict_types=1);
+
 use Nette\Mail\Message;
 use Tester\Assert;
 

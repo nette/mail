@@ -4,6 +4,8 @@
  * Test: Nette\Mail\FallbackMailer
  */
 
+declare(strict_types=1);
+
 use Nette\Mail\FallbackMailer;
 use Nette\Mail\FallbackMailerException;
 use Nette\Mail\IMailer;
