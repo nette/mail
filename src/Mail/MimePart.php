@@ -96,7 +96,7 @@ class MimePart
 	 */
 	public function getHeader($name)
 	{
-		return isset($this->headers[$name]) ? $this->headers[$name] : NULL;
+		return $this->headers[$name] ?? NULL;
 	}
 
 
