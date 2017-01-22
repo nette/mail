@@ -200,7 +200,7 @@ class SmtpMailer implements IMailer
 	protected function read()
 	{
 		$s = '';
-		while (($line = fgets($this->connection, 1e3)) != NULL) { // intentionally ==
+		while (($line = fgets($this->connection, 1000)) != NULL) { // intentionally ==
 			$s .= $line;
 			if (substr($line, 3, 1) === ' ') {
 				break;

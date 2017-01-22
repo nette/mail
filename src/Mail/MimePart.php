@@ -65,10 +65,11 @@ class MimePart
 			}
 
 			foreach ($value as $email => $recipient) {
-				if ($recipient !== NULL && !Strings::checkEncoding($recipient)) {
+				if ($recipient === NULL) {
+					// continue
+				} elseif (!Strings::checkEncoding($recipient)) {
 					Nette\Utils\Validators::assert($recipient, 'unicode', "header '$name'");
-				}
-				if (preg_match('#[\r\n]#', $recipient)) {
+				} elseif (preg_match('#[\r\n]#', $recipient)) {
 					throw new Nette\InvalidArgumentException('Name must not contain line separator.');
 				}
 				Nette\Utils\Validators::assert($email, 'email', "header '$name'");

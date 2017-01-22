@@ -243,10 +243,9 @@ class Message extends MimePart
 		}
 
 		if ($this->getSubject() == NULL) { // intentionally ==
-			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function ($m) use (&$title) {
-				$title = $m[1];
+			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function ($m) {
+				$this->setSubject(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
 			});
-			$this->setSubject(html_entity_decode($title, ENT_QUOTES, 'UTF-8'));
 		}
 
 		$this->html = ltrim(str_replace("\r", '', $html), "\n");
@@ -335,7 +334,7 @@ class Message extends MimePart
 		}
 		$part->setBody($content);
 		$part->setContentType($contentType ? $contentType : finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content));
-		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
+		$part->setEncoding($contentType && preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
 		$part->setHeader('Content-Disposition', $disposition . '; filename="' . Strings::fixEncoding(basename($file)) . '"');
 		return $part;
 	}
