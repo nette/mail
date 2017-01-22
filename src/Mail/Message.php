@@ -15,7 +15,7 @@ use Nette\Utils\Strings;
  * Mail provides functionality to compose and send both text and MIME-compliant multipart email messages.
  *
  * @property   string $subject
- * @property   mixed $htmlBody
+ * @property   string $htmlBody
  */
 class Message extends MimePart
 {
@@ -36,8 +36,8 @@ class Message extends MimePart
 	/** @var array */
 	private $inlines = [];
 
-	/** @var mixed */
-	private $html;
+	/** @var string */
+	private $html = '';
 
 
 	public function __construct()
@@ -250,7 +250,7 @@ class Message extends MimePart
 
 		$this->html = ltrim(str_replace("\r", '', $html), "\n");
 
-		if ($this->getBody() == NULL && $html != NULL) { // intentionally ==
+		if ($this->getBody() === '' && $html !== '') {
 			$this->setBody($this->buildText($html));
 		}
 
@@ -260,7 +260,7 @@ class Message extends MimePart
 
 	/**
 	 * Gets HTML body.
-	 * @return mixed
+	 * @return string
 	 */
 	public function getHtmlBody()
 	{
@@ -375,7 +375,7 @@ class Message extends MimePart
 			}
 		}
 
-		if ($mail->html != NULL) { // intentionally ==
+		if ($mail->html !== '') {
 			$tmp = $cursor->setContentType('multipart/alternative');
 			$cursor = $cursor->addPart();
 			$alt = $tmp->addPart();
@@ -394,7 +394,7 @@ class Message extends MimePart
 		}
 
 		$text = $mail->getBody();
-		$mail->setBody(NULL);
+		$mail->setBody('');
 		$cursor->setContentType('text/plain', 'UTF-8')
 			->setEncoding(preg_match('#[^\n]{990}#', $text)
 				? self::ENCODING_QUOTED_PRINTABLE
@@ -407,6 +407,7 @@ class Message extends MimePart
 
 	/**
 	 * Builds text content.
+	 * @param  string
 	 * @return string
 	 */
 	protected function buildText($html)

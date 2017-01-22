@@ -14,7 +14,7 @@ use Nette\Utils\Strings;
 /**
  * MIME message part.
  *
- * @property   mixed $body
+ * @property   string $body
  */
 class MimePart
 {
@@ -37,7 +37,7 @@ class MimePart
 	private $parts = [];
 
 	/** @var string */
-	private $body;
+	private $body = '';
 
 
 	/**
@@ -200,6 +200,7 @@ class MimePart
 
 	/**
 	 * Sets textual body.
+	 * @param  string
 	 * @return static
 	 */
 	public function setBody($body)
@@ -211,7 +212,7 @@ class MimePart
 
 	/**
 	 * Gets textual body.
-	 * @return mixed
+	 * @return string
 	 */
 	public function getBody()
 	{
@@ -240,7 +241,7 @@ class MimePart
 		}
 		$output .= self::EOL;
 
-		$body = (string) $this->body;
+		$body = $this->body;
 		if ($body !== '') {
 			switch ($this->getEncoding()) {
 				case self::ENCODING_QUOTED_PRINTABLE:
