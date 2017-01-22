@@ -194,7 +194,7 @@ class MimePart
 	 */
 	public function setBody(string $body)
 	{
-		$this->body = (string) $body;
+		$this->body = $body;
 		return $this;
 	}
 

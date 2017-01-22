@@ -42,7 +42,7 @@ class SendmailMailer implements IMailer
 			str_replace(Message::EOL, PHP_EOL, $parts[0]),
 		];
 		if ($this->commandArgs) {
-			$args[] = (string) $this->commandArgs;
+			$args[] = $this->commandArgs;
 		}
 		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function ($message) use (&$info) {
 			$info = ": $message";

@@ -174,7 +174,7 @@ class Message extends MimePart
 	 */
 	public function setPriority(int $priority)
 	{
-		$this->setHeader('X-Priority', (int) $priority);
+		$this->setHeader('X-Priority', $priority);
 		return $this;
 	}
 
@@ -194,8 +194,6 @@ class Message extends MimePart
 	 */
 	public function setHtmlBody(string $html, string $basePath = NULL)
 	{
-		$html = (string) $html;
-
 		if ($basePath) {
 			$cids = [];
 			$matches = Strings::matchAll(
@@ -298,8 +296,6 @@ class Message extends MimePart
 			if ($content === FALSE) {
 				throw new Nette\FileNotFoundException("Unable to read file '$file'.");
 			}
-		} else {
-			$content = (string) $content;
 		}
 		$part->setBody($content);
 		$part->setContentType($contentType ? $contentType : finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content));
