@@ -17,7 +17,7 @@ class SendmailMailer implements IMailer
 {
 	use Nette\SmartObject;
 
-	/** @var string */
+	/** @var string|NULL */
 	public $commandArgs;
 
 

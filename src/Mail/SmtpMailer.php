@@ -177,7 +177,7 @@ class SmtpMailer implements IMailer
 	/**
 	 * Writes data to server and checks response against expected code if some provided.
 	 * @param  string
-	 * @param  int   response code
+	 * @param  int|int[] response code
 	 * @param  string  error message
 	 * @return void
 	 */

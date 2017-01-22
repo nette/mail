@@ -99,7 +99,7 @@ class Message extends MimePart
 
 	/**
 	 * Returns the subject of the message.
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function getSubject()
 	{
@@ -149,7 +149,7 @@ class Message extends MimePart
 	/**
 	 * Formats recipient email.
 	 * @param  string
-	 * @param  string
+	 * @param  string|NULL
 	 * @return array
 	 */
 	private function formatEmail($email, $name)
@@ -209,7 +209,7 @@ class Message extends MimePart
 	/**
 	 * Sets HTML body.
 	 * @param  string
-	 * @param  mixed base-path
+	 * @param  string
 	 * @return static
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
@@ -319,6 +319,10 @@ class Message extends MimePart
 
 	/**
 	 * Creates file MIME part.
+	 * @param  string
+	 * @param  string|NULL
+	 * @param  string|NULL
+	 * @param  string
 	 * @return MimePart
 	 */
 	private function createAttachment($file, $content, $contentType, $disposition)

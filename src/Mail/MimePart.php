@@ -113,8 +113,7 @@ class MimePart
 	/**
 	 * Returns an encoded header.
 	 * @param  string
-	 * @param  string
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function getEncodedHeader($name)
 	{
