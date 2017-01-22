@@ -70,10 +70,9 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Sends email.
-	 * @return void
 	 * @throws SmtpException
 	 */
-	public function send(Message $mail)
+	public function send(Message $mail): void
 	{
 		$mail = clone $mail;
 
@@ -118,9 +117,8 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Connects and authenticates to SMTP server.
-	 * @return void
 	 */
-	protected function connect()
+	protected function connect(): void
 	{
 		$this->connection = @stream_socket_client( // @ is escalated to exception
 			($this->secure === 'ssl' ? 'ssl://' : '') . $this->host . ':' . $this->port,
@@ -167,9 +165,8 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Disconnects from SMTP server.
-	 * @return void
 	 */
-	protected function disconnect()
+	protected function disconnect(): void
 	{
 		fclose($this->connection);
 		$this->connection = NULL;
@@ -178,12 +175,9 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Writes data to server and checks response against expected code if some provided.
-	 * @param  string
-	 * @param  int|int[] response code
-	 * @param  string  error message
-	 * @return void
+	 * @param  int|int[] $expectedCode
 	 */
-	protected function write($line, $expectedCode = NULL, $message = NULL)
+	protected function write(string $line, $expectedCode = NULL, string $message = NULL): void
 	{
 		fwrite($this->connection, $line . Message::EOL);
 		if ($expectedCode) {
@@ -197,9 +191,8 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Reads response from server.
-	 * @return string
 	 */
-	protected function read()
+	protected function read(): string
 	{
 		$s = '';
 		while (($line = fgets($this->connection, 1000)) != NULL) { // intentionally ==

@@ -25,10 +25,9 @@ class SendmailMailer implements IMailer
 
 	/**
 	 * Sends email.
-	 * @return void
 	 * @throws SendException
 	 */
-	public function send(Message $mail)
+	public function send(Message $mail): void
 	{
 		$tmp = clone $mail;
 		$tmp->setHeader('Subject', NULL);

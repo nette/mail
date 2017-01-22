@@ -30,7 +30,7 @@ class FailingMailer implements IMailer
 	}
 
 
-	public function send(Message $mail)
+	public function send(Message $mail): void
 	{
 		static $count = 0;
 		if ($this->failedTimes--) {
