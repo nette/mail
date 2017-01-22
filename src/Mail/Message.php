@@ -37,7 +37,7 @@ class Message extends MimePart
 	private $inlines = [];
 
 	/** @var string */
-	private $html = '';
+	private $htmlBody = '';
 
 
 	public function __construct()
@@ -248,7 +248,7 @@ class Message extends MimePart
 			});
 		}
 
-		$this->html = ltrim(str_replace("\r", '', $html), "\n");
+		$this->htmlBody = ltrim(str_replace("\r", '', $html), "\n");
 
 		if ($this->getBody() === '' && $html !== '') {
 			$this->setBody($this->buildText($html));
@@ -264,7 +264,7 @@ class Message extends MimePart
 	 */
 	public function getHtmlBody()
 	{
-		return $this->html;
+		return $this->htmlBody;
 	}
 
 
@@ -375,7 +375,7 @@ class Message extends MimePart
 			}
 		}
 
-		if ($mail->html !== '') {
+		if ($mail->htmlBody !== '') {
 			$tmp = $cursor->setContentType('multipart/alternative');
 			$cursor = $cursor->addPart();
 			$alt = $tmp->addPart();
@@ -387,10 +387,10 @@ class Message extends MimePart
 				}
 			}
 			$alt->setContentType('text/html', 'UTF-8')
-				->setEncoding(preg_match('#[^\n]{990}#', $mail->html)
+				->setEncoding(preg_match('#[^\n]{990}#', $mail->htmlBody)
 					? self::ENCODING_QUOTED_PRINTABLE
-					: (preg_match('#[\x80-\xFF]#', $mail->html) ? self::ENCODING_8BIT : self::ENCODING_7BIT))
-				->setBody($mail->html);
+					: (preg_match('#[\x80-\xFF]#', $mail->htmlBody) ? self::ENCODING_8BIT : self::ENCODING_7BIT))
+				->setBody($mail->htmlBody);
 		}
 
 		$text = $mail->getBody();
