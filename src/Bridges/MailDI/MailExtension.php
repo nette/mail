@@ -26,6 +26,10 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'password' => NULL,
 		'secure' => NULL,
 		'timeout' => NULL,
+		'message' => [
+			'mime-version' => NULL,
+			'x-mailer' => NULL,
+		],
 	];
 
 
@@ -41,6 +45,22 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
 		} else {
 			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$config]);
+		}
+
+		if ($config['message']['mime-version'] === FALSE) {
+			unset(Nette\Mail\Message::$defaultHeaders['MIME-Version']);
+		} else {
+			if ($config['message']['mime-version'] !== NULL) {
+				Nette\Mail\Message::$defaultHeaders['MIME-Version'] = $config['message']['mime-version'];
+			}
+		}
+
+		if ($config['message']['x-mailer'] === FALSE) {
+			unset(Nette\Mail\Message::$defaultHeaders['X-Mailer']);
+		} else {
+			if ($config['message']['x-mailer'] !== NULL) {
+				Nette\Mail\Message::$defaultHeaders['X-Mailer'] = $config['message']['x-mailer'];
+			}
 		}
 
 		if ($this->name === 'mail') {
