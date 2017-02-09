@@ -5,8 +5,6 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
-declare(strict_types=1);
-
 namespace Nette\Bridges\MailDI;
 
 use Nette;
@@ -27,8 +25,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'secure' => NULL,
 		'timeout' => NULL,
 		'message' => [
-			'mime-version' => NULL,
-			'x-mailer' => NULL,
+			"headers" => [],
 		],
 	];
 
@@ -47,25 +44,22 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$config]);
 		}
 
-		if ($config['message']['mime-version'] === FALSE) {
-			unset(Nette\Mail\Message::$defaultHeaders['MIME-Version']);
-		} else {
-			if ($config['message']['mime-version'] !== NULL) {
-				Nette\Mail\Message::$defaultHeaders['MIME-Version'] = $config['message']['mime-version'];
-			}
-		}
-
-		if ($config['message']['x-mailer'] === FALSE) {
-			unset(Nette\Mail\Message::$defaultHeaders['X-Mailer']);
-		} else {
-			if ($config['message']['x-mailer'] !== NULL) {
-				Nette\Mail\Message::$defaultHeaders['X-Mailer'] = $config['message']['x-mailer'];
-			}
-		}
-
 		if ($this->name === 'mail') {
 			$builder->addAlias('nette.mailer', $this->prefix('mailer'));
 		}
 	}
 
+	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+	{
+		$initialize = $class->getMethod('initialize');
+		$config = $this->validateConfig($this->defaults);
+
+		foreach ($config["message"]["headers"] as $name => $value) {
+			if ($value === FALSE) {
+				$initialize->addBody('unset(Nette\Mail\Message::$defaultHeaders[?]);', [$name]);
+			} else {
+				$initialize->addBody('Nette\Mail\Message::$defaultHeaders[?] = ?;', [$name, $value]);
+			}
+		}
+	}
 }
