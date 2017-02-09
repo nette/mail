@@ -27,7 +27,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'secure' => NULL,
 		'timeout' => NULL,
 		'message' => [
-			"defaultHeaders" => [],
+			'defaultHeaders' => [],
 		],
 	];
 
@@ -57,7 +57,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$initialize = $class->getMethod('initialize');
 		$config = $this->validateConfig($this->defaults);
 
-		foreach ((array) $config["message"]["defaultHeaders"] as $name => $value) {
+		foreach ((array) $config['message']['defaultHeaders'] as $name => $value) {
 			if ($value === FALSE) {
 				if (isset(Nette\Mail\Message::$defaultHeaders[$name])) {
 					$initialize->addBody('unset(Nette\Mail\Message::$defaultHeaders[?]);', [$name]);
