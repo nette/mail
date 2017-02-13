@@ -17,6 +17,7 @@ matrix:
 script:
     - vendor/bin/tester tests -s $coverageArgs
     - php temp/code-checker/src/code-checker.php --short-arrays --strict-types
+    - vendor/bin/phpstan analyse -c .phpstan.neon --level 0 src
 
 after_failure:
     # Print *.actual content
