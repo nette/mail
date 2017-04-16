@@ -46,6 +46,9 @@ class SmtpMailer implements IMailer
 	/** @var bool */
 	private $persistent;
 
+	/** @var array */
+	private $streamContext;
+
 
 	public function __construct(array $options = [])
 	{
@@ -64,6 +67,7 @@ class SmtpMailer implements IMailer
 		if (!$this->port) {
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
+		$this->streamContext = isset($options['streamContext']) ? $options['streamContext'] : NULL;
 		$this->persistent = !empty($options['persistent']);
 	}
 
@@ -127,6 +131,11 @@ class SmtpMailer implements IMailer
 		if (!$this->connection) {
 			throw new SmtpException($error, $errno);
 		}
+
+		if ($this->streamContext) {
+			stream_context_set_option($this->connection, $this->context);
+		}
+
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
