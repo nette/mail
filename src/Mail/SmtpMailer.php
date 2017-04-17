@@ -46,6 +46,9 @@ class SmtpMailer implements IMailer
 	/** @var bool */
 	private $persistent;
 
+	/** @var string */
+	private $defaultSender;
+
 
 	public function __construct(array $options = [])
 	{
@@ -65,6 +68,7 @@ class SmtpMailer implements IMailer
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
 		$this->persistent = !empty($options['persistent']);
+		$this->defaultSender = isset($options['defaultSender']) ? $options['defaultSender'] : NULL;
 	}
 
 
@@ -81,8 +85,12 @@ class SmtpMailer implements IMailer
 				$this->connect();
 			}
 
+			if (!$mail->getHeader('From') && $this->defaultSender) {
+				$mail->setFrom($this->defaultSender);
+			}
+
 			if (($from = $mail->getHeader('Return-Path'))
-				|| ($from = key($mail->getHeader('From')))
+				|| (($fromHeader = $mail->getHeader('From')) && $from = key($fromHeader))
 			) {
 				$this->write("MAIL FROM:<$from>", 250);
 			}
