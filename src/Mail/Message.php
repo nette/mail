@@ -199,8 +199,8 @@ class Message extends MimePart
 			$matches = Strings::matchAll(
 				$html,
 				'#
-					(<img[^<>]*\s src\s*=\s*
-					|<body[^<>]*\s background\s*=\s*
+					(<(?:img|v:fill)[^<>]*\s src\s*=\s*
+					|<(?:body|table|td|th)[^<>]*\s background\s*=\s*
 					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
 					|<style[^>]*>[^<]+ [:\s] url\()
 					(["\']?)(?![a-z]+:|[/\\#])([^"\'>)\s]+)

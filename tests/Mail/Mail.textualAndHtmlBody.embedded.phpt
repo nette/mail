@@ -25,7 +25,9 @@ $mail->setBody('Sample text');
 
 $mail->setHTMLBody('
 	<BODY id=1 background=background.png>
+	<td background=background.png>
 	<img src="backgroun%64.png">
+	<v:fill src="background.png">
 	<div title=a style="background:url(background.png)">
 	<style type=text/css>body { background: url(\'background.png\') } </style>
 	[[background.png]]
