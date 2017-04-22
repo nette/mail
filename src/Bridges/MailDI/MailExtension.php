@@ -26,6 +26,9 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'password' => NULL,
 		'secure' => NULL,
 		'timeout' => NULL,
+		'message' => [
+			'defaultHeaders' => [],
+		],
 	];
 
 
@@ -48,4 +51,22 @@ class MailExtension extends Nette\DI\CompilerExtension
 		}
 	}
 
+
+	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+	{
+		$initialize = $class->getMethod('initialize');
+		$config = $this->validateConfig($this->defaults);
+
+		foreach ((array) $config['message']['defaultHeaders'] as $name => $value) {
+			if ($value === FALSE) {
+				if (isset(Nette\Mail\Message::$defaultHeaders[$name])) {
+					$initialize->addBody('unset(Nette\Mail\Message::$defaultHeaders[?]);', [$name]);
+				} else {
+					throw new Nette\InvalidArgumentException('Default mail message header "' . $name . '" does not exist.');
+				}
+			} else {
+				$initialize->addBody('Nette\Mail\Message::$defaultHeaders[?] = ?;', [$name, $value]);
+			}
+		}
+	}
 }
