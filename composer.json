@@ -22,7 +22,8 @@
 	"require-dev": {
 		"nette/di": "^2.4 || ~3.0.0",
 		"nette/tester": "^2.0",
-		"tracy/tracy": "^2.4"
+		"tracy/tracy": "^2.4",
+		"phpstan/phpstan": "^0.6.3"
 	},
 	"conflict": {
 		"nette/nette": "<2.2"

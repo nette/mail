@@ -1,0 +1,4 @@
+parameters:
+	ignoreErrors:
+		- '#Function finfo_[a-zA-Z0-9_]+ not found#'
+		- '#Call to an undefined method Nette\\Mail\\FallbackMailer::onFailure\(\)#'
