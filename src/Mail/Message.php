@@ -227,7 +227,7 @@ class Message extends MimePart
 					(["\']?)([a-z]+:|[/\\#])([^"\'>)\s]+)
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix';
-            }else{
+			}else{
 				$match = '#
 					(<img[^<>]*\s src\s*=\s*
 					|<body[^<>]*\s background\s*=\s*
