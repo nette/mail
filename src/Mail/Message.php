@@ -219,7 +219,7 @@ class Message extends MimePart
 		if ($basePath) {
 			$cids = [];
 			if($basePath === true){
-                $match = '#
+				$match = '#
 					(<img[^<>]*\s src\s*=\s*
 					|<body[^<>]*\s background\s*=\s*
 					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
@@ -228,7 +228,7 @@ class Message extends MimePart
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix';
             }else{
-                $match = '#
+				$match = '#
 					(<img[^<>]*\s src\s*=\s*
 					|<body[^<>]*\s background\s*=\s*
 					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
@@ -236,14 +236,14 @@ class Message extends MimePart
 					(["\']?)(?![a-z]+:|[/\\#])([^"\'>)\s]+)
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix';
-            }
+			}
 			$matches = Strings::matchAll($html, $match, PREG_OFFSET_CAPTURE);
 			foreach (array_reverse($matches) as $m) {
 				if($basePath === true){
-                    $file = isset($m[4]) ? $m[3][0] . $m[4][0] : urldecode($m[3][0]);
-                }else{
-                    $file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
-                }
+					$file = isset($m[4]) ? $m[3][0] . $m[4][0] : urldecode($m[3][0]);
+				}else{
+					$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
+				}
 				if (!isset($cids[$file])) {
 					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
 				}
