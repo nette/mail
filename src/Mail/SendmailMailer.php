@@ -50,5 +50,4 @@ class SendmailMailer implements IMailer
 			throw new SendException("Unable to send email$info.");
 		}
 	}
-
 }

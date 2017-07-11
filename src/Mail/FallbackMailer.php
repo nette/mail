@@ -82,5 +82,4 @@ class FallbackMailer implements IMailer
 		$this->mailers[] = $mailer;
 		return $this;
 	}
-
 }

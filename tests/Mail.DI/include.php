@@ -2,7 +2,8 @@
 
 
 class FooExtension extends Nette\DI\CompilerExtension
-{}
+{
+}
 
 
 function createContainer($source, $config = NULL)

@@ -327,5 +327,4 @@ class MimePart
 		$offset += strlen($s);
 		return $s;
 	}
-
 }

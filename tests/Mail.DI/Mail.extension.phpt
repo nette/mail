@@ -4,8 +4,8 @@
  * Test: MailExtension.
  */
 
-use Nette\DI;
 use Nette\Bridges\MailDI\MailExtension;
+use Nette\DI;
 use Tester\Assert;
 
 

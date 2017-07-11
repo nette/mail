@@ -20,5 +20,4 @@ interface IMailer
 	 * @throws SendException
 	 */
 	function send(Message $mail);
-
 }
