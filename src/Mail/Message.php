@@ -389,5 +389,4 @@ class Message extends MimePart
 			. preg_replace('#[^\w.-]+#', '', $_SERVER['HTTP_HOST'] ?? php_uname('n'))
 			. '>';
 	}
-
 }

@@ -1,10 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
 
 class FooExtension extends Nette\DI\CompilerExtension
-{}
+{
+}
 
 
 function createContainer($source, $config = NULL)

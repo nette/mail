@@ -6,17 +6,17 @@
 
 declare(strict_types=1);
 
-use Nette\Mail\Message;
 use Nette\Mail\IMailer;
+use Nette\Mail\Message;
 
 
 class TestMailer implements IMailer
 {
 	public static $output;
 
+
 	function send(Message $mail): void
 	{
 		self::$output = $mail->generateMessage();
 	}
-
 }

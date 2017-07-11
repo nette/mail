@@ -203,5 +203,4 @@ class SmtpMailer implements IMailer
 		}
 		return $s;
 	}
-
 }
