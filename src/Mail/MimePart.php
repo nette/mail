@@ -254,7 +254,7 @@ class MimePart
 
 				case self::ENCODING_7BIT:
 					$body = preg_replace('#[\x80-\xFF]+#', '', $body);
-					// break intentionally omitted
+					// break omitted
 
 				case self::ENCODING_8BIT:
 					$body = str_replace(["\x00", "\r"], '', $body);
@@ -274,7 +274,7 @@ class MimePart
 			foreach ($this->parts as $part) {
 				$output .= '--' . $boundary . self::EOL . $part->getEncodedMessage() . self::EOL;
 			}
-			$output .= '--' . $boundary.'--';
+			$output .= '--' . $boundary . '--';
 		}
 
 		return $output;
