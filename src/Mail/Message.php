@@ -55,7 +55,7 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function setFrom($email, $name = NULL)
+	public function setFrom($email, $name = null)
 	{
 		$this->setHeader('From', $this->formatEmail($email, $name));
 		return $this;
@@ -78,9 +78,9 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function addReplyTo($email, $name = NULL)
+	public function addReplyTo($email, $name = null)
 	{
-		$this->setHeader('Reply-To', $this->formatEmail($email, $name), TRUE);
+		$this->setHeader('Reply-To', $this->formatEmail($email, $name), true);
 		return $this;
 	}
 
@@ -99,7 +99,7 @@ class Message extends MimePart
 
 	/**
 	 * Returns the subject of the message.
-	 * @return string|NULL
+	 * @return string|null
 	 */
 	public function getSubject()
 	{
@@ -113,9 +113,9 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function addTo($email, $name = NULL) // addRecipient()
+	public function addTo($email, $name = null) // addRecipient()
 	{
-		$this->setHeader('To', $this->formatEmail($email, $name), TRUE);
+		$this->setHeader('To', $this->formatEmail($email, $name), true);
 		return $this;
 	}
 
@@ -126,9 +126,9 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function addCc($email, $name = NULL)
+	public function addCc($email, $name = null)
 	{
-		$this->setHeader('Cc', $this->formatEmail($email, $name), TRUE);
+		$this->setHeader('Cc', $this->formatEmail($email, $name), true);
 		return $this;
 	}
 
@@ -139,9 +139,9 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function addBcc($email, $name = NULL)
+	public function addBcc($email, $name = null)
 	{
-		$this->setHeader('Bcc', $this->formatEmail($email, $name), TRUE);
+		$this->setHeader('Bcc', $this->formatEmail($email, $name), true);
 		return $this;
 	}
 
@@ -149,7 +149,7 @@ class Message extends MimePart
 	/**
 	 * Formats recipient email.
 	 * @param  string
-	 * @param  string|NULL
+	 * @param  string|null
 	 * @return array
 	 */
 	private function formatEmail($email, $name)
@@ -212,7 +212,7 @@ class Message extends MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function setHtmlBody($html, $basePath = NULL)
+	public function setHtmlBody($html, $basePath = null)
 	{
 		$html = (string) $html;
 
@@ -242,7 +242,7 @@ class Message extends MimePart
 			}
 		}
 
-		if ($this->getSubject() == NULL) { // intentionally ==
+		if ($this->getSubject() == null) { // intentionally ==
 			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function ($m) {
 				$this->setSubject(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
 			});
@@ -275,7 +275,7 @@ class Message extends MimePart
 	 * @param  string
 	 * @return MimePart
 	 */
-	public function addEmbeddedFile($file, $content = NULL, $contentType = NULL)
+	public function addEmbeddedFile($file, $content = null, $contentType = null)
 	{
 		return $this->inlines[$file] = $this->createAttachment($file, $content, $contentType, 'inline')
 			->setHeader('Content-ID', $this->getRandomId());
@@ -301,7 +301,7 @@ class Message extends MimePart
 	 * @param  string
 	 * @return MimePart
 	 */
-	public function addAttachment($file, $content = NULL, $contentType = NULL)
+	public function addAttachment($file, $content = null, $contentType = null)
 	{
 		return $this->attachments[] = $this->createAttachment($file, $content, $contentType, 'attachment');
 	}
@@ -320,17 +320,17 @@ class Message extends MimePart
 	/**
 	 * Creates file MIME part.
 	 * @param  string
-	 * @param  string|NULL
-	 * @param  string|NULL
+	 * @param  string|null
+	 * @param  string|null
 	 * @param  string
 	 * @return MimePart
 	 */
 	private function createAttachment($file, $content, $contentType, $disposition)
 	{
 		$part = new MimePart;
-		if ($content === NULL) {
+		if ($content === null) {
 			$content = @file_get_contents($file); // @ is escalated to exception
-			if ($content === FALSE) {
+			if ($content === false) {
 				throw new Nette\FileNotFoundException("Unable to read file '$file'.");
 			}
 		} else {

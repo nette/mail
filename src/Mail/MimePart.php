@@ -47,13 +47,13 @@ class MimePart
 	 * @param  bool
 	 * @return static
 	 */
-	public function setHeader($name, $value, $append = FALSE)
+	public function setHeader($name, $value, $append = false)
 	{
 		if (!$name || preg_match('#[^a-z0-9-]#i', $name)) {
 			throw new Nette\InvalidArgumentException("Header name must be non-empty alphanumeric string, '$name' given.");
 		}
 
-		if ($value == NULL) { // intentionally ==
+		if ($value == null) { // intentionally ==
 			if (!$append) {
 				unset($this->headers[$name]);
 			}
@@ -65,7 +65,7 @@ class MimePart
 			}
 
 			foreach ($value as $email => $recipient) {
-				if ($recipient === NULL) {
+				if ($recipient === null) {
 					// continue
 				} elseif (!Strings::checkEncoding($recipient)) {
 					Nette\Utils\Validators::assert($recipient, 'unicode', "header '$name'");
@@ -94,7 +94,7 @@ class MimePart
 	 */
 	public function getHeader($name)
 	{
-		return isset($this->headers[$name]) ? $this->headers[$name] : NULL;
+		return isset($this->headers[$name]) ? $this->headers[$name] : null;
 	}
 
 
@@ -113,20 +113,20 @@ class MimePart
 	/**
 	 * Returns an encoded header.
 	 * @param  string
-	 * @return string|NULL
+	 * @return string|null
 	 */
 	public function getEncodedHeader($name)
 	{
 		$offset = strlen($name) + 2; // colon + space
 
 		if (!isset($this->headers[$name])) {
-			return NULL;
+			return null;
 
 		} elseif (is_array($this->headers[$name])) {
 			$s = '';
 			foreach ($this->headers[$name] as $email => $name) {
-				if ($name != NULL) { // intentionally ==
-					$s .= self::encodeHeader($name, $offset, TRUE);
+				if ($name != null) { // intentionally ==
+					$s .= self::encodeHeader($name, $offset, true);
 					$email = " <$email>";
 				}
 				$s .= self::append($email . ',', $offset);
@@ -159,7 +159,7 @@ class MimePart
 	 * @param  string
 	 * @return static
 	 */
-	public function setContentType($contentType, $charset = NULL)
+	public function setContentType($contentType, $charset = null)
 	{
 		$this->setHeader('Content-Type', $contentType . ($charset ? "; charset=$charset" : ''));
 		return $this;
@@ -192,9 +192,9 @@ class MimePart
 	 * Adds or creates new multipart.
 	 * @return self
 	 */
-	public function addPart(MimePart $part = NULL)
+	public function addPart(MimePart $part = null)
 	{
-		return $this->parts[] = $part === NULL ? new self : $part;
+		return $this->parts[] = $part === null ? new self : $part;
 	}
 
 
@@ -291,7 +291,7 @@ class MimePart
 	 * @param  bool
 	 * @return string
 	 */
-	private static function encodeHeader($s, &$offset = 0, $quotes = FALSE)
+	private static function encodeHeader($s, &$offset = 0, $quotes = false)
 	{
 		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)) {
 			if ($quotes && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =

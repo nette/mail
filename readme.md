@@ -50,7 +50,7 @@ $mail->setHTMLBody('<b>Sample HTML</b> <img src="background.gif">');
 
 Embedded images can be inserted using `$mail->addEmbeddedFile('background.gif')`, but it is not necessary.
 Why? Because Nette Framework finds and inserts all files referenced in the HTML code automatically.
-This behavior can be supressed by adding `FALSE` as a second parameter of the `setHtmlBody()` method.
+This behavior can be supressed by adding `false` as a second parameter of the `setHtmlBody()` method.
 
 If a HTML e-mail has no plain-text alternative, it will be automatically generated. And if it has no subject set, it will be taken from the `<title>` element.
 
