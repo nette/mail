@@ -27,7 +27,7 @@ $mail->setHTMLBody('<b><span>Příliš </span> <a href="http://green.example.com
 $mailer = new TestMailer();
 $mailer->send($mail);
 
-Assert::match(<<<EOD
+Assert::match(<<<'EOD'
 MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%

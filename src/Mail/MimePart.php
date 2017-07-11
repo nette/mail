@@ -23,14 +23,15 @@ class MimePart
 	use Nette\SmartObject;
 
 	/** encoding */
-	const ENCODING_BASE64 = 'base64',
+	public const
+		ENCODING_BASE64 = 'base64',
 		ENCODING_7BIT = '7bit',
 		ENCODING_8BIT = '8bit',
 		ENCODING_QUOTED_PRINTABLE = 'quoted-printable';
 
 	/** @internal */
-	const EOL = "\r\n";
-	const LINE_LENGTH = 76;
+	public const EOL = "\r\n";
+	public const LINE_LENGTH = 76;
 
 	/** @var array */
 	private $headers = [];
@@ -241,7 +242,7 @@ class MimePart
 
 				case self::ENCODING_7BIT:
 					$body = preg_replace('#[\x80-\xFF]+#', '', $body);
-					// break intentionally omitted
+					// break omitted
 
 				case self::ENCODING_8BIT:
 					$body = str_replace(["\x00", "\r"], '', $body);
@@ -261,7 +262,7 @@ class MimePart
 			foreach ($this->parts as $part) {
 				$output .= '--' . $boundary . self::EOL . $part->getEncodedMessage() . self::EOL;
 			}
-			$output .= '--' . $boundary.'--';
+			$output .= '--' . $boundary . '--';
 		}
 
 		return $output;

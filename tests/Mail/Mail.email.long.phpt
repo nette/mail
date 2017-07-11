@@ -26,7 +26,7 @@ $mail->addBcc('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryv
 $mailer = new TestMailer();
 $mailer->send($mail);
 
-Assert::match(<<<EOD
+Assert::match(<<<'EOD'
 MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%

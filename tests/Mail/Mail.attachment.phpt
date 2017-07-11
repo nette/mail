@@ -21,7 +21,7 @@ $mail = new Message();
 $mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip');
 $mailer->send($mail);
 
-Assert::match(<<<EOD
+Assert::match(<<<'EOD'
 MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
@@ -53,7 +53,7 @@ $mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip')
 	->setEncoding(Message::ENCODING_QUOTED_PRINTABLE);
 $mailer->send($mail);
 
-Assert::match(<<<EOD
+Assert::match(<<<'EOD'
 MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
@@ -82,7 +82,7 @@ $name = iconv('UTF-8', 'WINDOWS-1250', 'žluťoučký.zip');
 $mail->addAttachment($name, file_get_contents(__DIR__ . '/files/example.zip'), 'application/zip');
 $mailer->send($mail);
 
-Assert::match(<<<EOD
+Assert::match(<<<'EOD'
 MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%

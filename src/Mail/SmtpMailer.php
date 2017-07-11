@@ -120,7 +120,7 @@ class SmtpMailer implements IMailer
 	 */
 	protected function connect(): void
 	{
-		$this->connection = @stream_socket_client( // @ is escalated to exception
+		$this->connection = @stream_socket_client(// @ is escalated to exception
 			($this->secure === 'ssl' ? 'ssl://' : '') . $this->host . ':' . $this->port,
 			$errno, $error, $this->timeout, STREAM_CLIENT_CONNECT, $this->context
 		);

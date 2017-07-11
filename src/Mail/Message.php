@@ -22,7 +22,8 @@ use Nette\Utils\Strings;
 class Message extends MimePart
 {
 	/** Priority */
-	const HIGH = 1,
+	public const
+		HIGH = 1,
 		NORMAL = 3,
 		LOW = 5;
 
@@ -373,7 +374,7 @@ class Message extends MimePart
 		$text = Strings::replace($html, [
 			'#<(style|script|head).*</\\1>#Uis' => '',
 			'#<t[dh][ >]#i' => ' $0',
-			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' =>  '$2 &lt;$1&gt;',
+			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' => '$2 &lt;$1&gt;',
 			'#[\r\n]+#' => ' ',
 			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
 		]);
