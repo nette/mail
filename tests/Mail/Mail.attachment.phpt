@@ -18,7 +18,7 @@ require __DIR__ . '/Mail.php';
 $mailer = new TestMailer();
 
 $mail = new Message();
-$mail->addAttachment(__DIR__ . '/files/example.zip', NULL, 'application/zip');
+$mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip');
 $mailer->send($mail);
 
 Assert::match(<<<EOD
@@ -49,7 +49,7 @@ EOD
 
 
 $mail = new Message();
-$mail->addAttachment(__DIR__ . '/files/example.zip', NULL, 'application/zip')
+$mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip')
 	->setEncoding(Message::ENCODING_QUOTED_PRINTABLE);
 $mailer->send($mail);
 

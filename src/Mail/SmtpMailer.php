@@ -51,7 +51,7 @@ class SmtpMailer implements IMailer
 	{
 		if (isset($options['host'])) {
 			$this->host = $options['host'];
-			$this->port = isset($options['port']) ? (int) $options['port'] : NULL;
+			$this->port = isset($options['port']) ? (int) $options['port'] : null;
 		} else {
 			$this->host = ini_get('SMTP');
 			$this->port = (int) ini_get('smtp_port');
@@ -95,7 +95,7 @@ class SmtpMailer implements IMailer
 				$this->write("RCPT TO:<$email>", [250, 251]);
 			}
 
-			$mail->setHeader('Bcc', NULL);
+			$mail->setHeader('Bcc', null);
 			$data = $mail->generateMessage();
 			$this->write('DATA', 354);
 			$data = preg_replace('#^\.#m', '..', $data);
@@ -139,19 +139,19 @@ class SmtpMailer implements IMailer
 
 		if ($this->secure === 'tls') {
 			$this->write('STARTTLS', 220);
-			if (!stream_socket_enable_crypto($this->connection, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+			if (!stream_socket_enable_crypto($this->connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
 				throw new SmtpException('Unable to connect via TLS.');
 			}
 			$this->write("EHLO $self", 250);
 		}
 
-		if ($this->username != NULL && $this->password != NULL) {
+		if ($this->username != null && $this->password != null) {
 			$authMechanisms = [];
 			if (preg_match('~^250[ -]AUTH (.*)$~im', $ehloResponse, $matches)) {
 				$authMechanisms = explode(' ', trim($matches[1]));
 			}
 
-			if (in_array('PLAIN', $authMechanisms, TRUE)) {
+			if (in_array('PLAIN', $authMechanisms, true)) {
 				$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
 				$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
 			} else {
@@ -169,7 +169,7 @@ class SmtpMailer implements IMailer
 	protected function disconnect(): void
 	{
 		fclose($this->connection);
-		$this->connection = NULL;
+		$this->connection = null;
 	}
 
 
@@ -177,12 +177,12 @@ class SmtpMailer implements IMailer
 	 * Writes data to server and checks response against expected code if some provided.
 	 * @param  int|int[] $expectedCode
 	 */
-	protected function write(string $line, $expectedCode = NULL, string $message = NULL): void
+	protected function write(string $line, $expectedCode = null, string $message = null): void
 	{
 		fwrite($this->connection, $line . Message::EOL);
 		if ($expectedCode) {
 			$response = $this->read();
-			if (!in_array((int) $response, (array) $expectedCode, TRUE)) {
+			if (!in_array((int) $response, (array) $expectedCode, true)) {
 				throw new SmtpException('SMTP server did not accept ' . ($message ? $message : $line) . ' with error: ' . trim($response));
 			}
 		}
@@ -195,7 +195,7 @@ class SmtpMailer implements IMailer
 	protected function read(): string
 	{
 		$s = '';
-		while (($line = fgets($this->connection, 1000)) != NULL) { // intentionally ==
+		while (($line = fgets($this->connection, 1000)) != null) { // intentionally ==
 			$s .= $line;
 			if (substr($line, 3, 1) === ' ') {
 				break;

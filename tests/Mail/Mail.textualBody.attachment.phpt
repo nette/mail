@@ -23,7 +23,7 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->addAttachment(__DIR__ . '/files/example.zip', NULL, 'application/zip');
+$mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip');
 
 $mailer = new TestMailer();
 $mailer->send($mail);
