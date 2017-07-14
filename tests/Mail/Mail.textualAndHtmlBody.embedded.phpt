@@ -2,6 +2,7 @@
 
 /**
  * Test: Nette\Mail\Message - textual and HTML body with embedded image.
+ * @phpExtension fileinfo
  */
 
 declare(strict_types=1);
