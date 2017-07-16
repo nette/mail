@@ -1,6 +1,7 @@
 {
 	"name": "nette/mail",
-	"description": "Nette Mail: Sending E-mails",
+	"description": "📧 Nette Mail: handy email creation and transfer library for PHP with both text and MIME-compliant support.",
+	"keywords": ["nette", "mail", "mailer", "smtp", "mime"],
 	"homepage": "https://nette.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
