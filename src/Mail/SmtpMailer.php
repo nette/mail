@@ -74,7 +74,9 @@ class SmtpMailer implements IMailer
 	 */
 	public function send(Message $mail): void
 	{
-		$mail = clone $mail;
+		$tmp = clone $mail;
+		$tmp->setHeader('Bcc', null);
+		$data = $tmp->generateMessage();
 
 		try {
 			if (!$this->connection) {
@@ -95,8 +97,6 @@ class SmtpMailer implements IMailer
 				$this->write("RCPT TO:<$email>", [250, 251]);
 			}
 
-			$mail->setHeader('Bcc', null);
-			$data = $mail->generateMessage();
 			$this->write('DATA', 354);
 			$data = preg_replace('#^\.#m', '..', $data);
 			$this->write($data);
