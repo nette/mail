@@ -49,12 +49,27 @@ class Message extends MimePart
 			$this->setHeader($name, $value);
 		}
 		$this->setHeader('Date', date('r'));
+		$this->hostname = $hostname;
+	}
 
-		if ($hostname !== NULL) {
-			$this->hostname = $hostname;
-		} else {
-			$this->hostname = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : php_uname('n');
-		}
+
+	/**
+	 * @param string $hostname
+	 * @return static
+	 */
+	public function setHostname($hostname)
+	{
+		$this->hostname = $hostname;
+		return $this;
+	}
+
+
+	/**
+	 * @return string|NULL
+	 */
+	public function getHostname()
+	{
+		return $this->hostname;
 	}
 
 
@@ -438,8 +453,25 @@ class Message extends MimePart
 	private function getRandomId()
 	{
 		return '<' . Nette\Utils\Random::generate() . '@'
-			. preg_replace('#[^\w.-]+#', '', $this->hostname)
+			. preg_replace('#[^\w.-]+#', '', $this->detectHostname())
 			. '>';
+	}
+
+
+	/**
+	 * @return string
+	 */
+	private function detectHostname()
+	{
+		if ($this->hostname) {
+			return $this->hostname;
+		}
+
+		if ($from = $this->getFrom()) {
+			return explode('@', key($from))[1];
+		}
+
+		return isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : php_uname('n');
 	}
 
 }

@@ -52,3 +52,31 @@ Message-ID: <%S%@http.host>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 ', TestMailer::$output);
+
+$mail = new Message();
+$mail->setFrom('pepa@seznam.cz');
+$mailer->send($mail);
+
+Assert::match('MIME-Version: 1.0
+X-Mailer: Nette Framework
+Date: %a%
+From: pepa@seznam.cz
+Message-ID: <%S%@seznam.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+', TestMailer::$output);
+
+
+$mail = new Message;
+$mail->setHostname('nette.org');
+$mail->setFrom('pepa@seznam.cz');
+$mailer->send($mail);
+
+Assert::match('MIME-Version: 1.0
+X-Mailer: Nette Framework
+Date: %a%
+From: pepa@seznam.cz
+Message-ID: <%S%@nette.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+', TestMailer::$output);
