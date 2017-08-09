@@ -13,7 +13,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 $mail->addTo('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com');
 
@@ -21,7 +21,7 @@ $mail->addCc('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryve
 
 $mail->addBcc('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylong name <veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com>');
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'

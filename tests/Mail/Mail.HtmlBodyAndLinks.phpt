@@ -13,7 +13,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 $mail->setFrom('John Doe <doe@example.com>');
 $mail->addTo('Lady Jane <jane@example.com>');
@@ -22,7 +22,7 @@ $mail->setSubject('Hello Jane!');
 $mail->setHTMLBody('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> "' .
 		' <br><a href=\'http://horse.example.com\'>kůň</a></b>');
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
