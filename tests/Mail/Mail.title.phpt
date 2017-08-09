@@ -13,7 +13,7 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 $mail->setHTMLBody('
 <title>Hello

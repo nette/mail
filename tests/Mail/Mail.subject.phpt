@@ -15,9 +15,9 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 
-$mail = new Message();
+$mail = new Message;
 $mail->setSubject('Testovací ! <email> od žluťoučkého koně ...');
 $mailer->send($mail);
 
@@ -31,7 +31,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 ', TestMailer::$output);
 
-$mail = new Message();
+$mail = new Message;
 $mail->setSubject('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail');
 $mailer->send($mail);
 
@@ -44,7 +44,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 ', TestMailer::$output);
 
-$mail = new Message();
+$mail = new Message;
 $mail->setSubject('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemailšššššššššššššššš');
 $mailer->send($mail);
 
@@ -60,7 +60,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 ', TestMailer::$output);
 
-$mail = new Message();
+$mail = new Message;
 $mail->setSubject('==========================================================================================ššššššššššššššššš');
 $mailer->send($mail);
 

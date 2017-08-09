@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 $mail->setFrom('John Doe <doe@example.com>');
 $mail->addTo('Lady Jane <jane@example.com>');
@@ -27,7 +27,7 @@ $mail->setHTMLBody('<b>Sample text</b>');
 
 $mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip');
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 $mailer->send($mail);
 
 Assert::matchFile(__DIR__ . '/Mail.textualAndHtmlBody.attachment.expect', TestMailer::$output);

@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 Assert::exception(function () use ($mail) {
 	$mail->setHeader('', 'value');

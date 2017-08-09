@@ -15,9 +15,9 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 
-$mail = new Message();
+$mail = new Message;
 $mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip');
 $mailer->send($mail);
 
@@ -48,7 +48,7 @@ EOD
 , TestMailer::$output);
 
 
-$mail = new Message();
+$mail = new Message;
 $mail->addAttachment(__DIR__ . '/files/example.zip', null, 'application/zip')
 	->setEncoding(Message::ENCODING_QUOTED_PRINTABLE);
 $mailer->send($mail);
@@ -77,7 +77,7 @@ EOD
 , TestMailer::$output);
 
 
-$mail = new Message();
+$mail = new Message;
 $name = iconv('UTF-8', 'WINDOWS-1250', 'žluťoučký.zip');
 $mail->addAttachment($name, file_get_contents(__DIR__ . '/files/example.zip'), 'application/zip');
 $mailer->send($mail);

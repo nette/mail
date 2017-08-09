@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-$mail = new Message();
+$mail = new Message;
 
 $mail->setFrom('Žluťoučký kůň <kun1@example.com>');
 
@@ -34,7 +34,7 @@ $mail->addBcc('doe5@example.com');
 
 $mail->setReturnPath('doe@example.com');
 
-$mailer = new TestMailer();
+$mailer = new TestMailer;
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
