@@ -46,6 +46,9 @@ class SmtpMailer implements IMailer
 	/** @var bool */
 	private $persistent;
 
+	/** @var string */
+	private $clientHost;
+
 
 	public function __construct(array $options = [])
 	{
@@ -65,6 +68,13 @@ class SmtpMailer implements IMailer
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
 		$this->persistent = !empty($options['persistent']);
+		if (isset($options['clientHost'])) {
+			$this->clientHost = $options['clientHost'];
+		} else {
+			$this->clientHost = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+\z#', $_SERVER['HTTP_HOST'])
+				? $_SERVER['HTTP_HOST']
+				: 'localhost';
+		}
 	}
 
 
@@ -130,11 +140,10 @@ class SmtpMailer implements IMailer
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
-		$self = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+\z#', $_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-		$this->write("EHLO $self");
+		$this->write("EHLO $this->clientHost");
 		$ehloResponse = $this->read();
 		if ((int) $ehloResponse !== 250) {
-			$this->write("HELO $self", 250);
+			$this->write("HELO $this->clientHost", 250);
 		}
 
 		if ($this->secure === 'tls') {
@@ -142,7 +151,7 @@ class SmtpMailer implements IMailer
 			if (!stream_socket_enable_crypto($this->connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
 				throw new SmtpException('Unable to connect via TLS.');
 			}
-			$this->write("EHLO $self", 250);
+			$this->write("EHLO $this->clientHost", 250);
 		}
 
 		if ($this->username != null && $this->password != null) {
