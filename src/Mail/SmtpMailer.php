@@ -18,6 +18,9 @@ use Nette;
 class SmtpMailer implements IMailer
 {
 	use Nette\SmartObject;
+	
+	/** @var string */
+	private $clientHostname;
 
 	/** @var resource */
 	private $connection;
@@ -56,6 +59,7 @@ class SmtpMailer implements IMailer
 			$this->host = ini_get('SMTP');
 			$this->port = (int) ini_get('smtp_port');
 		}
+		$this->clientHostname = isset($options['clientHostname']) ? $options['clientHostname'] : null;
 		$this->username = $options['username'] ?? '';
 		$this->password = $options['password'] ?? '';
 		$this->secure = $options['secure'] ?? '';
@@ -130,7 +134,13 @@ class SmtpMailer implements IMailer
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
-		$self = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+\z#', $_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+		$self = $this->clientHostname;
+		if ($self === null) {
+			$self = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+\z#', $_SERVER['HTTP_HOST'])
+				? $_SERVER['HTTP_HOST']
+				: 'localhost';
+		}
+		
 		$this->write("EHLO $self");
 		$ehloResponse = $this->read();
 		if ((int) $ehloResponse !== 250) {

@@ -19,6 +19,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 {
 	public $defaults = [
 		'smtp' => false,
+		'clientHostname' => null,
 		'host' => null,
 		'port' => null,
 		'username' => null,
