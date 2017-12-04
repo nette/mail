@@ -1,0 +1,39 @@
+Return-Path: <example@acm.org>
+To: Example <example@linux.local>
+Subject: Testing
+From: example <example@acm.org>
+Reply-To: example <example@acm.org>
+Sender: example@acm.org
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="652b8c4dcb00cdcdda1e16af36781caf"
+Message-ID: <20050430192829.0489.example@acm.org>
+Date: Sat, 30 Apr 2005 19:28:29 -0300
+
+
+--652b8c4dcb00cdcdda1e16af36781caf
+Content-Type: multipart/related; boundary="6a82fb459dcaacd40ab3404529e808dc"
+
+
+--6a82fb459dcaacd40ab3404529e808dc
+Content-Type: multipart/alternative; boundary="69c1683a3ee16ef7cf16edd700694a2f"
+
+
+--69c1683a3ee16ef7cf16edd700694a2f
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+This is an HTML message. Please use an HTML capable mail program to read
+this message.
+
+--69c1683a3ee16ef7cf16edd700694a2f
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<P>Hello</p>
+</body>
+</html>
+--69c1683a3ee16ef7cf16edd700694a2f--
+
+--652b8c4dcb00cdcdda1e16af36781caf--

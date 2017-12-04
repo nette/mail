@@ -336,9 +336,16 @@ class Message extends MimePart
 		} else {
 			$content = (string) $content;
 		}
+		if (!$contentType) {
+			$contentType = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
+		}
+		if (!strcasecmp($contentType, 'message/rfc822')) { // not allowed for attached files
+			$contentType = 'application/octet-stream';
+		}
+
 		$part->setBody($content);
-		$part->setContentType($contentType ? $contentType : finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content));
-		$part->setEncoding($contentType && preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
+		$part->setContentType($contentType);
+		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
 		$part->setHeader('Content-Disposition', $disposition . '; filename="' . Strings::fixEncoding(basename($file)) . '"');
 		return $part;
 	}
