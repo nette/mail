@@ -18,7 +18,7 @@ require __DIR__ . '/Mail.php';
 $mailer = new TestMailer;
 
 $mail = new Message;
-$mail->addAttachment(__DIR__ . '/files/example.eml', null, 'MESSAGE/RFC822');
+$mail->addAttachment(__DIR__ . '/fixtures/example.eml', null, 'MESSAGE/RFC822');
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'

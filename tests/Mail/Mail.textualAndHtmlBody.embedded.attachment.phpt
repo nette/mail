@@ -24,10 +24,10 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->setHTMLBody('<b>Sample text</b> <img src="background.png">', __DIR__ . '/files');
+$mail->setHTMLBody('<b>Sample text</b> <img src="background.png">', __DIR__ . '/fixtures');
 // append automatically $mail->addEmbeddedFile('files/background.png');
 
-$mail->addAttachment('files/example.zip');
+$mail->addAttachment('fixtures/example.zip');
 
 $mailer = new TestMailer;
 $mailer->send($mail);
