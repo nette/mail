@@ -31,10 +31,16 @@ class FallbackMailer implements IMailer
 
 	/**
 	 * @param IMailer[]
-	 * @param int $retryWaitTime in miliseconds
+	 * @param int
+	 * @param int   $retryWaitTime      in miliseconds
+	 * @param float $shuffleProbability probability that mailers will be shuffled
 	 */
-	public function __construct(array $mailers, int $retryCount = 3, int $retryWaitTime = 1000)
+	public function __construct(array $mailers, int $retryCount = 3, int $retryWaitTime = 1000, float $shuffleProbability = 0.0)
 	{
+		if ($shuffleProbability > 0.0 && mt_rand() / mt_getrandmax() < $shuffleProbability) {
+			shuffle($mailers);
+		}
+
 		$this->mailers = $mailers;
 		$this->retryCount = $retryCount;
 		$this->retryWaitTime = $retryWaitTime;

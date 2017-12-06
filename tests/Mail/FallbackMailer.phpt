@@ -84,3 +84,18 @@ test(function () {
 	$mailer->send(new Message);
 	Assert::null($onFailureCalls);
 });
+
+
+test(function () {
+	$subMailerA = new FailingMailer(0);
+	$subMailerB = new FailingMailer(1);
+
+	mt_srand(5);
+	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10, 0.5);
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
+		$onFailureCalls[] = $mailer;
+	};
+
+	$mailer->send(new Message);
+	Assert::same([$subMailerB], $onFailureCalls);
+});
