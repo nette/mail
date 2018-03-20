@@ -30,8 +30,8 @@ class FallbackMailer implements IMailer
 
 
 	/**
-	 * @param IMailer[]
-	 * @param int $retryWaitTime in miliseconds
+	 * @param IMailer[]  $mailers
+	 * @param int  $retryWaitTime in miliseconds
 	 */
 	public function __construct(array $mailers, int $retryCount = 3, int $retryWaitTime = 1000)
 	{

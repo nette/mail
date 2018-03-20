@@ -184,7 +184,7 @@ class SmtpMailer implements IMailer
 
 	/**
 	 * Writes data to server and checks response against expected code if some provided.
-	 * @param  int|int[] $expectedCode
+	 * @param  int|int[]  $expectedCode
 	 */
 	protected function write(string $line, $expectedCode = null, string $message = null): void
 	{
