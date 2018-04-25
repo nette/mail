@@ -93,8 +93,9 @@ class SmtpMailer implements IMailer
 				$this->connect();
 			}
 
-			if (($from = $mail->getHeader('Return-Path'))
-				|| ($from = key($mail->getHeader('From')))
+			if (
+				($from = $mail->getHeader('Return-Path'))
+				|| ($from = array_keys((array) $mail->getHeader('From'))[0])
 			) {
 				$this->write("MAIL FROM:<$from>", 250);
 			}
