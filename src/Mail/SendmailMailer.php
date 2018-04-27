@@ -22,6 +22,20 @@ class SendmailMailer implements IMailer
 	/** @var string|null */
 	public $commandArgs;
 
+	/** @var ISigner|null */
+	public $signer;
+
+
+	/**
+	 * @param ISigner $signer
+	 * @return self
+	 */
+	public function setSigner(ISigner $signer): self
+	{
+		$this->signer = $signer;
+		return $this;
+	}
+
 
 	/**
 	 * Sends email.
@@ -33,7 +47,13 @@ class SendmailMailer implements IMailer
 		$tmp->setHeader('Subject', null);
 		$tmp->setHeader('To', null);
 
-		$parts = explode(Message::EOL . Message::EOL, $tmp->generateMessage(), 2);
+		if ($this->signer instanceof ISigner) {
+			$data = $this->signer->generateSignedMessage($tmp);
+		} else {
+			$data = $tmp->generateMessage();
+		}
+
+		$parts = explode(Message::EOL . Message::EOL, $data, 2);
 
 		$args = [
 			str_replace(Message::EOL, PHP_EOL, $mail->getEncodedHeader('To')),
