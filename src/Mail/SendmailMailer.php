@@ -46,8 +46,8 @@ class SendmailMailer implements IMailer
 		}
 		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function ($message) use (&$info) {
 			$info = ": $message";
+			throw new SendException("Unable to send email$info.");
 
-			return false;
 		});
 		if ($res === false) {
 			throw new SendException("Unable to send email$info.");
