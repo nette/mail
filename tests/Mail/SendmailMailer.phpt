@@ -20,5 +20,3 @@ Assert::exception(function () {
 	$message = new Message();
 	$sendmailMailer->send($message);
 }, \Nette\Mail\SendException::class, 'Unable to send email: mail() has been disabled for security reasons.');
-
-Assert::true(true);
