@@ -29,6 +29,9 @@ class SendmailMailer implements IMailer
 	 */
 	public function send(Message $mail): void
 	{
+		if (function_exists('mail') === false) {
+			throw new SendException('Unable to send email: mail() has been disabled for security reasons.');
+		}
 		$tmp = clone $mail;
 		$tmp->setHeader('Subject', null);
 		$tmp->setHeader('To', null);

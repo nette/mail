@@ -12,6 +12,7 @@ install:
 
 script:
     - vendor/bin/tester tests -s
+    - php -c tests/disable-mail.ini tests/Mail/SendmailMailer.phpt
 
 after_failure:
     # Print *.actual content
