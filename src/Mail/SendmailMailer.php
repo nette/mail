@@ -29,6 +29,9 @@ class SendmailMailer implements IMailer
 	 */
 	public function send(Message $mail): void
 	{
+		if (function_exists('mail') === false) {
+			throw new SendException('Unable to send email: mail() has been disabled for security reasons.');
+		}
 		$tmp = clone $mail;
 		$tmp->setHeader('Subject', null);
 		$tmp->setHeader('To', null);
@@ -46,8 +49,6 @@ class SendmailMailer implements IMailer
 		}
 		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function ($message) use (&$info) {
 			$info = ": $message";
-			throw new SendException("Unable to send email$info.");
-
 		});
 		if ($res === false) {
 			throw new SendException("Unable to send email$info.");
