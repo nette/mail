@@ -304,7 +304,10 @@ class Message extends MimePart
 		if (!strcasecmp($contentType, 'message/rfc822')) { // not allowed for attached files
 			$contentType = 'application/octet-stream';
 		}
-
+		if (!strcasecmp($contentType, 'image/svg')) { // Troublesome for some mailers...
+			$contentType = 'image/svg+xml';
+		}
+		
 		$part->setBody($content);
 		$part->setContentType($contentType);
 		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
