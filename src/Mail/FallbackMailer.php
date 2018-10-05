@@ -16,7 +16,7 @@ class FallbackMailer implements IMailer
 {
 	use Nette\SmartObject;
 
-	/** @var callable[]  function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) */
+	/** @var callable[]  function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail): void */
 	public $onFailure;
 
 	/** @var IMailer[] */

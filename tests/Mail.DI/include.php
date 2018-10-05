@@ -8,7 +8,7 @@ class FooExtension extends Nette\DI\CompilerExtension
 }
 
 
-function createContainer($source, $config = null)
+function createContainer($source, $config = null): Nette\DI\Container
 {
 	$loader = new Nette\DI\Config\Loader;
 	$config = $loader->load(Tester\FileMock::create($config, 'neon'));

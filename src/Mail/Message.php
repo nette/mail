@@ -222,7 +222,7 @@ class Message extends MimePart
 		}
 
 		if ($this->getSubject() == null) { // intentionally ==
-			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function ($m) {
+			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function (array $m): void {
 				$this->setSubject(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
 			});
 		}
