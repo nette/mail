@@ -24,6 +24,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		'secure' => null,
 		'timeout' => null,
 		'clientHost' => null,
+		'persistent' => false,
 	];
 
 
