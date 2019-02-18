@@ -150,9 +150,9 @@ class SmtpMailer implements IMailer
 		if ($this->secure === 'tls') {
 			$this->write('STARTTLS', 220);
 
-            $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-            $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
-            $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+			$cryptoMethod = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+			$cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+			$cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
 
 			if (!stream_socket_enable_crypto($this->connection, true, $cryptoMethod)) {
 				throw new SmtpException('Unable to connect via TLS.');
