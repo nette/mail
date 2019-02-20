@@ -17,10 +17,10 @@
 	"require": {
 		"php": ">=7.1",
 		"ext-iconv": "*",
-		"nette/utils": "^2.4 || ~3.0.0"
+		"nette/utils": "^2.4 || ^3.0"
 	},
 	"require-dev": {
-		"nette/di": "^3.0.0-beta1",
+		"nette/di": "^3.0.0",
 		"nette/tester": "^2.0",
 		"tracy/tracy": "^2.4"
 	},
