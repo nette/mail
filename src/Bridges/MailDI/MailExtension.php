@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Bridges\MailDI;
 
 use Nette;
+use Nette\Schema\Expect;
 
 
 /**
@@ -17,32 +18,34 @@ use Nette;
  */
 class MailExtension extends Nette\DI\CompilerExtension
 {
-	public $defaults = [
-		'smtp' => false,
-		'host' => null,
-		'port' => null,
-		'username' => null,
-		'password' => null,
-		'secure' => null,
-		'timeout' => null,
-		'context' => null,
-		'clientHost' => null,
-		'persistent' => false,
-	];
+	public function getConfigSchema(): Nette\Schema\Schema
+	{
+		return Expect::structure([
+			'smtp' => Expect::bool(false),
+			'host' => Expect::string()->dynamic(),
+			'port' => Expect::int()->dynamic(),
+			'username' => Expect::string()->dynamic(),
+			'password' => Expect::string()->dynamic(),
+			'secure' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(),
+			'timeout' => Expect::int()->dynamic(),
+			'context' => Expect::arrayOf('array')->dynamic(),
+			'clientHost' => Expect::string()->dynamic(),
+			'persistent' => Expect::bool(false)->dynamic(),
+		])->castTo('array');
+	}
 
 
 	public function loadConfiguration()
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->validateConfig($this->defaults);
 
 		$mailer = $builder->addDefinition($this->prefix('mailer'))
 			->setType(Nette\Mail\IMailer::class);
 
-		if (empty($config['smtp'])) {
-			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
+		if ($this->config['smtp']) {
+			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$this->config]);
 		} else {
-			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$config]);
+			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
 		}
 
 		if ($this->name === 'mail') {
