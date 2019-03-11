@@ -24,9 +24,6 @@
 		"nette/tester": "^2.0",
 		"tracy/tracy": "^2.4"
 	},
-	"conflict": {
-		"nette/nette": "<2.2"
-	},
 	"suggest": {
 		"ext-fileinfo": "to detect type of attached files"
 	},
