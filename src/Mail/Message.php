@@ -163,7 +163,7 @@ class Message extends MimePart
 	/**
 	 * Returns the Return-Path header.
 	 */
-	public function getReturnPath(): string
+	public function getReturnPath(): ?string
 	{
 		return $this->getHeader('Return-Path');
 	}
@@ -183,7 +183,7 @@ class Message extends MimePart
 	/**
 	 * Returns email priority.
 	 */
-	public function getPriority(): int
+	public function getPriority(): ?int
 	{
 		return $this->getHeader('X-Priority');
 	}
