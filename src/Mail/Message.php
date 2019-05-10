@@ -66,9 +66,15 @@ class Message extends MimePart
 	/**
 	 * Returns the sender of the message.
 	 */
-	public function getFrom(): array
+	public function getFrom(): ?array
 	{
-		return $this->getHeader('From');
+		$from = $this->getHeader('From');
+
+		if ($from === null) {
+			trigger_error('Possible problem: Sender (header from) is empty.', E_USER_WARNING);
+		}
+
+		return $from;
 	}
 
 
