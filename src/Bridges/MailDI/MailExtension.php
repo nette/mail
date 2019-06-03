@@ -31,6 +31,16 @@ class MailExtension extends Nette\DI\CompilerExtension
 			'context' => Expect::arrayOf('array')->dynamic(),
 			'clientHost' => Expect::string()->dynamic(),
 			'persistent' => Expect::bool(false)->dynamic(),
+			'dkim' => Expect::anyOf(
+				Expect::null(),
+				Expect::structure([
+					'domain' => Expect::string()->dynamic(),
+					'selector' => Expect::string()->dynamic(),
+					'privateKey' => Expect::string()->dynamic()->required(),
+					'passPhrase' => Expect::string()->dynamic(),
+					'testMode' => Expect::bool(false)->dynamic(),
+				])->castTo('array')
+			),
 		])->castTo('array');
 	}
 
@@ -41,6 +51,18 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 		$mailer = $builder->addDefinition($this->prefix('mailer'))
 			->setType(Nette\Mail\Mailer::class);
+
+		if ($this->config['dkim']) {
+			$dkim = $this->config['dkim'];
+			$dkim['privateKey'] = file_get_contents($dkim['privateKey']);
+			unset($this->config['dkim']);
+
+			$signer = $builder->addDefinition($this->prefix('signer'))
+				->setType(Nette\Mail\Signer::class)
+				->setFactory(Nette\Mail\DkimSigner::class, [$dkim]);
+
+			$mailer->addSetup('setSigner', [$signer]);
+		}
 
 		if ($this->config['smtp']) {
 			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$this->config]);
