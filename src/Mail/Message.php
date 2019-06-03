@@ -334,7 +334,7 @@ class Message extends MimePart
 	 * Builds email. Does not modify itself, but returns a new object.
 	 * @return static
 	 */
-	protected function build()
+	public function build()
 	{
 		$mail = clone $this;
 		$mail->setHeader('Message-ID', $this->getRandomId());
