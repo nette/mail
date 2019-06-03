@@ -142,10 +142,13 @@ class Message extends MimePart
 	private function formatEmail(string $email, string $name = null): array
 	{
 		if (!$name && preg_match('#^(.+) +<(.*)>\z#', $email, $matches)) {
-			return [$matches[2] => $matches[1]];
-		} else {
-			return [$email => $name];
+			[, $name, $email] = $matches;
+			$tmp = substr($name, 1, -1);
+			if ($name === '"' . $tmp . '"') {
+				$name = stripslashes($tmp);
+			}
 		}
+		return [$email => $name];
 	}
 
 
