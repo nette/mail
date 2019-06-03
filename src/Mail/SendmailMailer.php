@@ -22,6 +22,19 @@ class SendmailMailer implements Mailer
 	/** @var string|null */
 	public $commandArgs;
 
+	/** @var Signer|null */
+	private $signer;
+
+
+	/**
+	 * @return static
+	 */
+	public function setSigner(Signer $signer): self
+	{
+		$this->signer = $signer;
+		return $this;
+	}
+
 
 	/**
 	 * Sends email.
@@ -36,7 +49,10 @@ class SendmailMailer implements Mailer
 		$tmp->setHeader('Subject', null);
 		$tmp->setHeader('To', null);
 
-		$parts = explode(Message::EOL . Message::EOL, $tmp->generateMessage(), 2);
+		$data = $this->signer
+			? $this->signer->generateSignedMessage($tmp)
+			: $tmp->generateMessage();
+		$parts = explode(Message::EOL . Message::EOL, $data, 2);
 
 		$args = [
 			str_replace(Message::EOL, PHP_EOL, $mail->getEncodedHeader('To')),

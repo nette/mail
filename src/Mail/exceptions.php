@@ -33,3 +33,8 @@ class FallbackMailerException extends SendException
 	/** @var SendException[] */
 	public $failures;
 }
+
+
+class SignException extends SendException
+{
+}
