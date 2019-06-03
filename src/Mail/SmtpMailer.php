@@ -15,7 +15,7 @@ use Nette;
 /**
  * Sends emails via the SMTP server.
  */
-class SmtpMailer implements IMailer
+class SmtpMailer implements Mailer
 {
 	use Nette\SmartObject;
 

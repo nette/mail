@@ -107,4 +107,4 @@ $mailer = new Nette\Mail\SmtpMailer([
 $mailer->send($mail);
 ```
 
-You can also create your own mailer - it's a class implementing Nette\Mail\IMailer interface.
+You can also create your own mailer - it's a class implementing Nette\Mail\Mailer interface.

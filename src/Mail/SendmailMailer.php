@@ -15,7 +15,7 @@ use Nette;
 /**
  * Sends emails via the PHP internal mail() function.
  */
-class SendmailMailer implements IMailer
+class SendmailMailer implements Mailer
 {
 	use Nette\SmartObject;
 

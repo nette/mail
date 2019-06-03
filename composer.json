@@ -31,7 +31,8 @@
 		"ext-fileinfo": "to detect type of attached files"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": ["src/"],
+		"files": ["src/compatibility.php"]
 	},
 	"minimum-stability": "dev",
 	"extra": {

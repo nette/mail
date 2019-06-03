@@ -13,7 +13,7 @@ namespace Nette\Mail;
 /**
  * Mailer interface.
  */
-interface IMailer
+interface Mailer
 {
 
 	/**

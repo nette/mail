@@ -12,14 +12,14 @@ namespace Nette\Mail;
 use Nette;
 
 
-class FallbackMailer implements IMailer
+class FallbackMailer implements Mailer
 {
 	use Nette\SmartObject;
 
-	/** @var callable[]  function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail): void */
+	/** @var callable[]  function (FallbackMailer $sender, SendException $e, Mailer $mailer, Message $mail): void */
 	public $onFailure;
 
-	/** @var IMailer[] */
+	/** @var Mailer[] */
 	private $mailers;
 
 	/** @var int */
@@ -30,7 +30,7 @@ class FallbackMailer implements IMailer
 
 
 	/**
-	 * @param IMailer[]  $mailers
+	 * @param Mailer[]  $mailers
 	 * @param int  $retryWaitTime in miliseconds
 	 */
 	public function __construct(array $mailers, int $retryCount = 3, int $retryWaitTime = 1000)
@@ -77,7 +77,7 @@ class FallbackMailer implements IMailer
 	/**
 	 * @return static
 	 */
-	public function addMailer(IMailer $mailer)
+	public function addMailer(Mailer $mailer)
 	{
 		$this->mailers[] = $mailer;
 		return $this;
