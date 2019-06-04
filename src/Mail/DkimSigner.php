@@ -69,7 +69,9 @@ class DkimSigner implements Signer
 	 */
 	public function generateSignedMessage(Message $message): string
 	{
-		if (preg_match("~(.*?\r\n\r\n)(.*)~s", $message->generateMessage(), $parts)) {
+		$message = $message->build();
+
+		if (preg_match("~(.*?\r\n\r\n)(.*)~s", $message->getEncodedMessage(), $parts)) {
 			[, $header, $body] = $parts;
 
 			return rtrim($header, "\r\n") . "\r\n" . $this->getSignature($message, $header, $this->normalizeNewLines($body)) . "\r\n\r\n" . $body;
