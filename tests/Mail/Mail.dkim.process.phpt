@@ -29,7 +29,7 @@ $signer = new class ([], [
 		$headers = parent::computeSignature($rawHeader, $signature);
 
 		Assert::match(
-			'DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=',
+			'DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer:Content-Type; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=',
 			$headers
 		);
 
@@ -45,7 +45,7 @@ to:Lady Jane <jane@example.com>
 subject:Hello Jane!
 x-mailer:Nette Framework
 content-type:text/plain; charset=UTF-8
-dkim-signature:v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=
+dkim-signature:v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer:Content-Type; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=
 EOT;
 
 		Assert::match($headers, $value);
