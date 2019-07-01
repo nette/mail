@@ -143,9 +143,10 @@ class Message extends MimePart
 	{
 		if (!$name && preg_match('#^(.+) +<(.*)>\z#', $email, $matches)) {
 			[, $name, $email] = $matches;
+			$name = stripslashes($name);
 			$tmp = substr($name, 1, -1);
 			if ($name === '"' . $tmp . '"') {
-				$name = stripslashes($tmp);
+				$name = $tmp;
 			}
 		}
 		return [$email => $name];

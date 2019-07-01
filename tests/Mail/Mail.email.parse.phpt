@@ -34,7 +34,7 @@ $mail->setFrom('"Žluťouč\"k\ý kůň" <kun1@example.com>');
 Assert::same(['kun1@example.com' => 'Žluťouč"ký kůň'], $mail->getFrom());
 
 $mail->setFrom('The\Mail <kun1@example.com>');
-Assert::same(['kun1@example.com' => 'The\Mail'], $mail->getFrom());
+Assert::same(['kun1@example.com' => 'TheMail'], $mail->getFrom());
 
 $mail->setFrom('The.Mail <kun1@example.com>');
 Assert::same(['kun1@example.com' => 'The.Mail'], $mail->getFrom());

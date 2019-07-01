@@ -46,7 +46,7 @@ Reply-To: =?UTF-8?B?xb1sdcWlb3XEjWvDvSBrxa/FiA==?= <kun2@example.com>,
 	John Doe <doe2@example.com>
 To: =?UTF-8?B?xb1sdcWlb3XEjWvDvSAia8WvxYgi?= <kun3@example.com>,
 	John 'jd' Doe <doe3@example.com>
-Cc: "The\\Mail" <nette@example.com>,John Doe <doe4@example.com>,"The.Mail"
+Cc: TheMail <nette@example.com>,John Doe <doe4@example.com>,"The.Mail"
 	 <nette2@example.com>
 Bcc: =?UTF-8?B?xb1sdcWlb3XEjWvDvSBrxa/FiA==?= <kun5@example.com>,
 	doe5@example.com
