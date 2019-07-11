@@ -141,7 +141,7 @@ class Message extends MimePart
 	 */
 	private function formatEmail(string $email, string $name = null): array
 	{
-		if (!$name && preg_match('#^(.+) +<(.*)>\z#', $email, $matches)) {
+		if (!$name && preg_match('#^(.+) +<(.*)>$#D', $email, $matches)) {
 			[, $name, $email] = $matches;
 			$name = stripslashes($name);
 			$tmp = substr($name, 1, -1);
@@ -208,7 +208,7 @@ class Message extends MimePart
 					|<body[^<>]*\s background\s*=\s*
 					|<[^<>]+\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
 					|<style[^>]*>[^<]+ [:\s] url\()
-					(["\']?)(?![a-z]+:|[/\\#])([^"\'>)\s]+)
+					(["\']?)(?![a-z]+:|[/\#])([^"\'>)\s]+)
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix',
 				PREG_OFFSET_CAPTURE
@@ -385,7 +385,7 @@ class Message extends MimePart
 	protected function buildText(string $html): string
 	{
 		$text = Strings::replace($html, [
-			'#<(style|script|head).*</\\1>#Uis' => '',
+			'#<(style|script|head).*</\1>#Uis' => '',
 			'#<t[dh][ >]#i' => ' $0',
 			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' => '$2 &lt;$1&gt;',
 			'#[\r\n]+#' => ' ',
