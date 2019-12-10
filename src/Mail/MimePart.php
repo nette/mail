@@ -46,7 +46,7 @@ class MimePart
 
 	/**
 	 * Sets a header.
-	 * @param  string|array  $value  value or pair email => name
+	 * @param  string|array|null  $value  value or pair email => name
 	 * @return static
 	 */
 	public function setHeader(string $name, $value, bool $append = false)

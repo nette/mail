@@ -179,7 +179,7 @@ class Message extends MimePart
 	 */
 	public function setPriority(int $priority)
 	{
-		$this->setHeader('X-Priority', $priority);
+		$this->setHeader('X-Priority', (string) $priority);
 		return $this;
 	}
 

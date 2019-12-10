@@ -145,6 +145,7 @@ class DkimSigner implements Signer
 			return base64_encode($signature);
 		}
 		openssl_pkey_free($privateKey);
+		return '';
 	}
 
 

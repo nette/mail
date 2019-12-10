@@ -22,7 +22,7 @@ class SmtpMailer implements Mailer
 	/** @var Signer|null */
 	private $signer;
 
-	/** @var resource */
+	/** @var resource|null */
 	private $connection;
 
 	/** @var string */
