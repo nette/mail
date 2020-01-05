@@ -26,9 +26,7 @@ class SendmailMailer implements Mailer
 	private $signer;
 
 
-	/**
-	 * @return static
-	 */
+	/** @return static */
 	public function setSigner(Signer $signer): self
 	{
 		$this->signer = $signer;

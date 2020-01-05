@@ -81,9 +81,7 @@ class SmtpMailer implements Mailer
 	}
 
 
-	/**
-	 * @return static
-	 */
+	/** @return static */
 	public function setSigner(Signer $signer): self
 	{
 		$this->signer = $signer;

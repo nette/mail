@@ -15,7 +15,6 @@ namespace Nette\Mail;
  */
 interface Mailer
 {
-
 	/**
 	 * Sends email.
 	 * @throws SendException

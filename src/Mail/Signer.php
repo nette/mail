@@ -15,8 +15,6 @@ namespace Nette\Mail;
  */
 interface Signer
 {
-	/**
-	 * @throws SignException
-	 */
+	/** @throws SignException */
 	public function generateSignedMessage(Message $message): string;
 }
