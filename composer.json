@@ -33,8 +33,7 @@
 		"ext-openssl": "to use Nette\\Mail\\DkimSigner"
 	},
 	"autoload": {
-		"classmap": ["src/"],
-		"files": ["src/compatibility.php"]
+		"classmap": ["src/"]
 	},
 	"minimum-stability": "dev",
 	"scripts": {
