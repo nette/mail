@@ -227,7 +227,7 @@ class Message extends MimePart
 
 		if ($this->getSubject() == null) { // intentionally ==
 			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function (array $m): void {
-				$this->setSubject(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'));
+				$this->setSubject(Nette\Utils\Html::htmlToText($m[1]));
 			});
 		}
 
@@ -384,14 +384,14 @@ class Message extends MimePart
 	 */
 	protected function buildText(string $html): string
 	{
-		$text = Strings::replace($html, [
+		$html = Strings::replace($html, [
 			'#<(style|script|head).*</\1>#Uis' => '',
 			'#<t[dh][ >]#i' => ' $0',
 			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' => '$2 &lt;$1&gt;',
 			'#[\r\n]+#' => ' ',
 			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
 		]);
-		$text = html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8');
+		$text = Nette\Utils\Html::htmlToText($html);
 		$text = Strings::replace($text, '#[ \t]+#', ' ');
 		return trim($text);
 	}
