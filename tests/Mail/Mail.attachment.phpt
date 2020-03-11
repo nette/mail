@@ -39,10 +39,7 @@ Content-Type: application/zip
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="example.zip"
 
-UEsDBBQAAAAIACeIMjsmkSpnQAAAAEEAAAALAAAAdmVyc2lvbi50eHTzSy0pSVVwK0rMTS3PL8pW
-MNCz1DNU0ChKLcsszszPU0hJNjMwTzNQKErNSU0sTk1RAIoZGRhY6gKRoYUmLxcAUEsBAhQAFAAA
-AAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAAB
-AAEAOQAAAGkAAAAAAA==
+UEsDBBQAAAAIACeIMjsmkSpnQAAAAEEAAAALAAAAdmVyc2lvbi50eHTzSy0pSVVwK0rMTS3PL8pWMNCz1DNU0ChKLcsszszPU0hJNjMwTzNQKErNSU0sTk1RAIoZGRhY6gKRoYUmLxcAUEsBAhQAFAAAAAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAABAAEAOQAAAGkAAAAAAA==
 ----------%S%--
 EOD
 , TestMailer::$output);
@@ -100,17 +97,14 @@ Content-Type: application/zip
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="%S?%"
 
-UEsDBBQAAAAIACeIMjsmkSpnQAAAAEEAAAALAAAAdmVyc2lvbi50eHTzSy0pSVVwK0rMTS3PL8pW
-MNCz1DNU0ChKLcsszszPU0hJNjMwTzNQKErNSU0sTk1RAIoZGRhY6gKRoYUmLxcAUEsBAhQAFAAA
-AAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAAB
-AAEAOQAAAGkAAAAAAA==
+UEsDBBQAAAAIACeIMjsmkSpnQAAAAEEAAAALAAAAdmVyc2lvbi50eHTzSy0pSVVwK0rMTS3PL8pWMNCz1DNU0ChKLcsszszPU0hJNjMwTzNQKErNSU0sTk1RAIoZGRhY6gKRoYUmLxcAUEsBAhQAFAAAAAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAABAAEAOQAAAGkAAAAAAA==
 ----------%S%--
 EOD
 , TestMailer::$output);
 
 
 $mail = new Message;
-$mail->addAttachment('lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip', file_get_contents(__DIR__ . '/fixtures/example.zip'), 'application/zip');
+$mail->addAttachment(str_repeat('veryvery', 70) . 'longnazvu-dokumentu.zip', file_get_contents(__DIR__ . '/fixtures/example.zip'), 'application/zip');
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
@@ -130,7 +124,7 @@ Content-Transfer-Encoding: 7bit
 Content-Type: application/zip
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename=
-	"lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip"
+	"veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongnazvu-dokumentu.zip"
 
 %A%
 ----------%S%--

@@ -32,7 +32,7 @@ class MimePart
 	/** @internal */
 	public const EOL = "\r\n";
 
-	public const LINE_LENGTH = 76;
+	public const LINE_LENGTH = 500;
 
 	/** @var array */
 	private $headers = [];
