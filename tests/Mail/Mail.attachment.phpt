@@ -107,3 +107,32 @@ AAEAOQAAAGkAAAAAAA==
 ----------%S%--
 EOD
 , TestMailer::$output);
+
+
+$mail = new Message;
+$mail->addAttachment('lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip', file_get_contents(__DIR__ . '/fixtures/example.zip'), 'application/zip');
+$mailer->send($mail);
+
+Assert::match(<<<'EOD'
+MIME-Version: 1.0
+X-Mailer: Nette Framework
+Date: %a%
+Message-ID: <%S%@%S%>
+Content-Type: multipart/mixed;
+	boundary="--------%S%"
+
+----------%S%
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+
+----------%S%
+Content-Type: application/zip
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=
+	"lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip"
+
+%A%
+----------%S%--
+EOD
+, TestMailer::$output);

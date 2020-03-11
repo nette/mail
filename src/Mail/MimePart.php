@@ -131,9 +131,9 @@ class MimePart
 			}
 			return ltrim(substr($s, 0, -1)); // last comma
 
-		} elseif (preg_match('#^(\S+; (?:file)?name=)"(.*)"$#D', $this->headers[$name], $m)) { // Content-Disposition
+		} elseif (preg_match('#^(\S+; (?:file)?name=)(".*")$#D', $this->headers[$name], $m)) { // Content-Disposition
 			$offset += strlen($m[1]);
-			return $m[1] . '"' . self::encodeHeader($m[2], $offset) . '"';
+			return $m[1] . self::append($m[2], $offset);
 
 		} else {
 			return ltrim(self::encodeHeader($this->headers[$name], $offset));
