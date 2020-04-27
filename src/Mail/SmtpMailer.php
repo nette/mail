@@ -154,7 +154,7 @@ class SmtpMailer implements Mailer
 		}
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
-		
+
 		if ($this->secure === 'tls') {
 			$this->write('STARTTLS', 220);
 			if (!stream_socket_enable_crypto(
