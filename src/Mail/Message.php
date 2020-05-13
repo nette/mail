@@ -293,7 +293,7 @@ class Message extends MimePart
 	/**
 	 * Creates file MIME part.
 	 */
-	private function createAttachment(string $file, string $content = null, string $contentType = null, string $disposition): MimePart
+	private function createAttachment(string $file, ?string $content, ?string $contentType, string $disposition): MimePart
 	{
 		$part = new MimePart;
 		if ($content === null) {
