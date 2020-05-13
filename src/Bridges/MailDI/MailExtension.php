@@ -54,7 +54,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 		if ($this->config['dkim']) {
 			$dkim = $this->config['dkim'];
-			$dkim['privateKey'] = file_get_contents($dkim['privateKey']);
+			$dkim['privateKey'] = Nette\Utils\FileSystem::read($dkim['privateKey']);
 			unset($this->config['dkim']);
 
 			$signer = $builder->addDefinition($this->prefix('signer'))
