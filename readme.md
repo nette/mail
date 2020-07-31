@@ -11,34 +11,23 @@ Nette Mail: Sending E-mails
 Introduction
 ------------
 
-Almost every web application needs to send e-mails, whether newsletters or order confirmations. This library provides necessary tools.
+Are you going to send emails such as newsletters or order confirmations? Nette Framework provides the necessary tools with a very nice API.
 
-Documentation can be found on the [website](https://doc.nette.org/mailing).
+Documentation can be found on the [website](https://doc.nette.org/mailing). If you like it, **[please make a donation now](https://github.com/sponsors/dg)**. Thank you!
 
-If you like Nette, **[please make a donation now](https://nette.org/donate)**. Thank you!
+Installation:
 
-
-Installation
-------------
-
-The recommended way to install is via Composer:
-
-```
+```shell
 composer require nette/mail
 ```
 
-It requires PHP version 7.1 and supports PHP up to 7.4.
+Creating Emails
+===============
 
-
-Usage
------
-
-Example of creating an e-mail using `Nette\Mail\Message` class:
+Email is a [Nette\Mail\Message](https://api.nette.org/3.0/Nette/Mail/Message.html) object:
 
 ```php
-use Nette\Mail\Message;
-
-$mail = new Message;
+$mail = new Nette\Mail\Message;
 $mail->setFrom('John <john@example.com>')
 	->addTo('peter@example.com')
 	->addTo('jack@example.com')
@@ -48,17 +37,7 @@ $mail->setFrom('John <john@example.com>')
 
 All parameters must be encoded in UTF-8.
 
-And sending:
-
-```php
-use Nette\Mail\SendmailMailer;
-
-$mailer = new SendmailMailer;
-$mailer->send($mail);
-```
-
-In addition to specifying recipient with `addTo()`, it's possible to specify recipient of copy with `addCc()` and recipient of blind copy: `addBcc()`.
-In all these methods, including `setFrom()`, we can specifiy addressee in three ways:
+In addition to specifying recipients with the `addTo()` method, you can also specify the recipient of copy with `addCc()`, or the recipient of blind copy with `addBcc()`. All these methods, including `setFrom()`, accepts addressee in three ways:
 
 ```php
 $mail->setFrom('john.doe@example.com');
@@ -66,45 +45,170 @@ $mail->setFrom('john.doe@example.com', 'John Doe');
 $mail->setFrom('John Doe <john.doe@example.com>');
 ```
 
-HTML content can be defined using `setHtmlBody()` method:
+The body of an email written in HTML is passed using the `setHtmlBody()` method:
 
 ```php
-$mail->setHTMLBody('<b>Sample HTML</b> <img src="background.gif">');
+$mail->setHtmlBody('<p>Hello,</p><p>Your order has been accepted.</p>');
 ```
 
-Embedded images can be inserted using `$mail->addEmbeddedFile('background.gif')`, but it is not necessary.
-Why? Because Nette Framework finds and inserts all files referenced in the HTML code automatically.
-This behavior can be supressed by adding `false` as a second parameter of the `setHtmlBody()` method.
+You don't have to create a text alternative, Nette will generate it automatically for you. And if the email does not have a subject set, it will be taken from the `<title>` element.
 
-If a HTML e-mail has no plain-text alternative, it will be automatically generated. And if it has no subject set, it will be taken from the `<title>` element.
-
-Of course, it's possible to add attachments to the e-mail:
+Images can also be extremely easily inserted into the HTML body of an email. Just pass the path where the images are physically located as the second parameter, and Nette will automatically include them in the email:
 
 ```php
-$mail->addAttachment('example.zip');
+// automatically adds /path/to/images/background.gif to the email
+$mail->setHtmlBody(
+	'<b>Hello</b> <img src="background.gif">',
+	'/path/to/images'
+);
 ```
 
-Can e-mail sending be even easier?
+The image embedding algorithm supports the following patterns: `<img src=...>`, `<body background=...>`, `url(...)` inside the HTML attribute `style` and special syntax `[[...]]`.
+
+Can sending emails be even easier?
+
+Emails are like postcards. Never send passwords or other credentials via email.
 
 
-Custom mailer
--------------
 
-Default mailer uses PHP function `mail`. If you need to send mail through a SMTP server, you can use `SmtpMailer`.
+Attachments
+-----------
+
+You can, of course, attach attachments to email. Use the `addAttachment(string $file, string $content = null, string $contentType = null)`.
+
+```php
+// inserts the file /path/to/example.zip into the email under the name example.zip
+$mail->addAttachment('/path/to/example.zip');
+
+// inserts the file /path/to/example.zip into the email under the name info.zip
+$mail->addAttachment('info.zip', file_get_contents('/path/to/example.zip'));
+
+// attaches new example.txt file contents "Hello John!"
+$mail->addAttachment('example.txt', 'Hello John!');
+```
+
+
+Templates
+---------
+
+If you send HTML emails, it's a great idea to write them in the [Latte](https://latte.nette.org) template system. How to do it?
+
+```php
+$latte = new Latte\Engine;
+$params = [
+	'orderId' => 123,
+];
+
+$mail = new Nette\Mail\Message;
+$mail->setFrom('John <john@example.com>')
+	->addTo('jack@example.com')
+	->setHtmlBody(
+		$latte->renderToString('email.latte', $params),
+		'/path/to/images'
+	);
+```
+
+File `email.latte`:
+
+```html
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Order Confirmation</title>
+	<style>
+	body {
+		background: url("background.png")
+	}
+	</style>
+</head>
+<body>
+	<p>Hello,</p>
+
+	<p>Your order number {$orderId} has been accepted.</p>
+</body>
+</html>
+```
+
+Nette automatically inserts all images, sets the subject according to the `<title>` element, and generates text alternative for HTML body.
+
+
+
+Sending Emails
+==============
+
+Mailer is class responsible for sending emails. It implements the [Nette\Mail\Mailer](https://api.nette.org/3.0/Nette/Mail/Mailer.html) interface and several ready-made mailers are available which we will introduce.
+
+
+
+SendmailMailer
+--------------
+
+The default mailer is SendmailMailer which uses PHP function `mail()`. Example of use:
+
+```php
+$mailer = new Nette\Mail\SendmailMailer;
+$mailer->send($mail);
+```
+
+If you want to set `returnPath` and the server still overwrites it, use `$mailer->commandArgs = '-fmy@email.com'`.
+
+
+SmtpMailer
+----------
+
+To send mail via the SMTP server, use `SmtpMailer`.
 
 ```php
 $mailer = new Nette\Mail\SmtpMailer([
-        'host' => 'smtp.gmail.com',
-        'username' => 'john@gmail.com',
-        'password' => '*****',
-        'secure' => 'ssl',
-        'context' =>  [
-            'ssl' => [
-                'capath' => '/path/to/my/trusted/ca/folder',
-             ],
-        ],
+	'host' => 'smtp.gmail.com',
+	'username' => 'franta@gmail.com',
+	'password' => '*****',
+	'secure' => 'ssl',
 ]);
 $mailer->send($mail);
 ```
 
-You can also create your own mailer - it's a class implementing Nette\Mail\Mailer interface.
+If you do not specify `host`, the value from php.ini will be used. The following additional keys can be used in the options:
+
+* `port` - if not set, the default 25 or 465 for `ssl` will be used
+* `context` - allows you to set [SSL context options](https://www.php.net/manual/en/context.ssl.php) for connection
+* `timeout` - timeout for SMTP connection
+* `persistent` - use persistent connection
+* `clientHost` - client designation
+
+
+FallbackMailer
+--------------
+
+It does not send email but sends them through a set of mailers. If one mailer fails, it repeats the attempt at the next one. If the last one fails, it starts again from the first one.
+
+```php
+$mailer = new Nette\Mail\FallbackMailer([
+	$smtpMailer,
+	$backupSmtpMailer,
+	$sendmailMailer
+]);
+$mailer->send($mail);
+```
+
+Other parameters in the constructor include the number of repeat and waiting time in miliseconds.
+
+
+DKIM
+====
+
+DKIM (DomainKeys Identified Mail) is a trustworthy email technology that also helps detect spoofed messages. The sent message is signed with the private key of the sender's domain and this signature is stored in the email header.
+The recipient's server compares this signature with the public key stored in the domain's DNS records. By matching the signature, it is shown that the email actually originated from the sender's domain and that the message was not modified during the transmission of the message.
+
+```php
+$options = [
+	'domain' => 'nette.org',
+	'selector' => 'dkim',
+	'privateKey' => file_get_contents('../dkim/dkim.key'),
+	'passPhrase' => '****',
+];
+
+$mailer = new Nette\Mail\SendmailMailer; // or SmtpMailer
+$mailer->setSigner(new Nette\Mail\DkimSigner($options));
+$mailer->send($mail);
+```
