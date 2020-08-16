@@ -40,7 +40,7 @@ class FailingMailer implements IMailer
 }
 
 
-test(function () {
+test('', function () {
 	$subMailerA = new FailingMailer(3);
 	$subMailerB = new FailingMailer(3);
 
@@ -58,7 +58,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$subMailerA = new FailingMailer(3);
 	$subMailerB = new FailingMailer(2);
 
@@ -72,7 +72,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$subMailerA = new FailingMailer(0);
 	$subMailerB = new FailingMailer(2);
 
