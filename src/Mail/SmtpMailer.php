@@ -179,7 +179,7 @@ class SmtpMailer implements Mailer
 			}
 		}
 
-		if ($this->username != null && $this->password != null) {
+		if ($this->username !== '') {
 			$authMechanisms = [];
 			if (preg_match('~^250[ -]AUTH (.*)$~im', $ehloResponse, $matches)) {
 				$authMechanisms = explode(' ', trim($matches[1]));
@@ -191,7 +191,9 @@ class SmtpMailer implements Mailer
 			} else {
 				$this->write('AUTH LOGIN', 334);
 				$this->write(base64_encode($this->username), 334, 'username');
-				$this->write(base64_encode($this->password), 235, 'password');
+				if ($this->password !== '') {
+					$this->write(base64_encode($this->password), 235, 'password');
+				}
 			}
 		}
 	}
