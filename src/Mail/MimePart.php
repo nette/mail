@@ -34,6 +34,10 @@ class MimePart
 
 	public const LINE_LENGTH = 76;
 
+	private const
+		SEQUENCE_VALUE = 1, // value, RFC 2231
+		SEQUENCE_WORD = 2;  // encoded-word, RFC 2047
+
 	/** @var array */
 	private $headers = [];
 
@@ -124,16 +128,16 @@ class MimePart
 			$s = '';
 			foreach ($this->headers[$name] as $email => $name) {
 				if ($name != null) { // intentionally ==
-					$s .= self::encodeSequence($name, $offset, true);
+					$s .= self::encodeSequence($name, $offset, self::SEQUENCE_WORD);
 					$email = " <$email>";
 				}
 				$s .= self::append($email . ',', $offset);
 			}
 			return ltrim(substr($s, 0, -1)); // last comma
 
-		} elseif (preg_match('#^(\S+; (?:file)?name=)(".*")$#D', $this->headers[$name], $m)) { // Content-Disposition
+		} elseif (preg_match('#^(\S+; (?:file)?name=)"(.*)"$#D', $this->headers[$name], $m)) { // Content-Disposition
 			$offset += strlen($m[1]);
-			return $m[1] . self::append(stripslashes($m[2]), $offset);
+			return $m[1] . self::encodeSequence(stripslashes($m[2]), $offset, self::SEQUENCE_VALUE);
 
 		} else {
 			return ltrim(self::encodeSequence($this->headers[$name], $offset));
@@ -276,10 +280,10 @@ class MimePart
 	/**
 	 * Converts a 8 bit header to a string.
 	 */
-	private static function encodeSequence(string $s, int &$offset = 0, bool $quotes = false): string
+	private static function encodeSequence(string $s, int &$offset = 0, int $type = null): string
 	{
 		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)) {
-			if ($quotes && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
+			if ($type && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
 				return self::append('"' . addcslashes($s, '"\\') . '"', $offset);
 			}
 			return self::append($s, $offset);
@@ -298,7 +302,11 @@ class MimePart
 		]);
 
 		$offset = strlen($s) - strrpos($s, "\n");
-		$s = str_replace("\n ", "\n\t", substr($s, $old + 2)); // adds ': '
+		$s = substr($s, $old + 2); // adds ': '
+		if ($type === self::SEQUENCE_VALUE) {
+			$s = '"' . $s . '"';
+		}
+		$s = str_replace("\n ", "\n\t", $s);
 		return $o . $s;
 	}
 

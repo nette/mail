@@ -101,7 +101,8 @@ Content-Transfer-Encoding: 7bit
 ----------%S%
 Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="žluťoučký.zip"
+Content-Disposition: attachment; filename="=?UTF-8?B?xb5sdcWlb3XEjWs=?=
+	=?UTF-8?B?w70uemlw?="
 
 UEsDBBQ=
 ----------%S%
@@ -114,19 +115,19 @@ UEsDBBQ=
 ----------%S%
 Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="ž"
+Content-Disposition: attachment; filename="=?UTF-8?B?xb4=?="
 
 UEsDBBQ=
 ----------%S%
 Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="abc"
+Content-Disposition: attachment; filename=abc
 
 UEsDBBQ=
 ----------%S%
 Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=""\"
+Content-Disposition: attachment; filename="\"\\"
 
 UEsDBBQ=
 ----------%S%--
