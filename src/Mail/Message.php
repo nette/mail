@@ -298,6 +298,7 @@ class Message extends MimePart
 		$part = new MimePart;
 		if ($content === null) {
 			$content = Nette\Utils\FileSystem::read($file);
+			$file = Strings::fixEncoding(basename($file));
 		}
 		if (!$contentType) {
 			$contentType = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
@@ -311,7 +312,6 @@ class Message extends MimePart
 		$part->setBody($content);
 		$part->setContentType($contentType);
 		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
-		$file = Strings::fixEncoding(basename($file));
 		$part->setHeader('Content-Disposition', $disposition . '; filename="' . addcslashes($file, '"\\') . '"');
 		return $part;
 	}
