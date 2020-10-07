@@ -78,8 +78,11 @@ EOD
 
 
 $mail = new Message;
-$name = iconv('UTF-8', 'WINDOWS-1250', 'žluťoučký.zip');
-$mail->addAttachment($name, file_get_contents(__DIR__ . '/fixtures/example.zip'), 'application/zip');
+$mail->addAttachment('žluťoučký.zip', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
+$mail->addAttachment('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail.pdf', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
+$mail->addAttachment('ž', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
+$mail->addAttachment('abc', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
+$mail->addAttachment('"\\', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
@@ -96,43 +99,36 @@ Content-Transfer-Encoding: 7bit
 
 
 ----------%S%
-Content-Type: application/zip
+Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="%S?%"
+Content-Disposition: attachment; filename="žluťoučký.zip"
 
-UEsDBBQAAAAIACeIMjsmkSpnQAAAAEEAAAALAAAAdmVyc2lvbi50eHTzSy0pSVVwK0rMTS3PL8pW
-MNCz1DNU0ChKLcsszszPU0hJNjMwTzNQKErNSU0sTk1RAIoZGRhY6gKRoYUmLxcAUEsBAhQAFAAA
-AAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAAB
-AAEAOQAAAGkAAAAAAA==
-----------%S%--
-EOD
-, TestMailer::$output);
-
-
-$mail = new Message;
-$mail->addAttachment('lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip', file_get_contents(__DIR__ . '/fixtures/example.zip'), 'application/zip');
-$mailer->send($mail);
-
-Assert::match(<<<'EOD'
-MIME-Version: 1.0
-X-Mailer: Nette Framework
-Date: %a%
-Message-ID: <%S%@%S%>
-Content-Type: multipart/mixed;
-	boundary="--------%S%"
-
+UEsDBBQ=
 ----------%S%
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-
-----------%S%
-Content-Type: application/zip
+Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename=
-	"lorem-ipsum-dlouhy-text-nazvu-pdf-dokumentu.zip"
+	"veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail.pdf"
 
-%A%
+UEsDBBQ=
+----------%S%
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="ž"
+
+UEsDBBQ=
+----------%S%
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="abc"
+
+UEsDBBQ=
+----------%S%
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="""
+
+UEsDBBQ=
 ----------%S%--
 EOD
 , TestMailer::$output);
