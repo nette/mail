@@ -108,8 +108,10 @@ UEsDBBQ=
 ----------%S%
 Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=
-	"veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail.pdf"
+Content-Disposition: attachment; filename="=?UTF-8?B?dmVyeXZlcnl2ZXI=?=
+	=?UTF-8?B?eXZlcnl2ZXJ5dmVyeXZlcnl2ZXJ5dmVyeXZlcnl2ZXJ5dmVyeXZlcnk=?=
+	=?UTF-8?B?dmVyeXZlcnl2ZXJ5dmVyeXZlcnl2ZXJ5dmVyeXZlcnl2ZXJ5dmVyeXY=?=
+	=?UTF-8?B?ZXJ5bG9uZ2VtYWlsLnBkZg==?="
 
 UEsDBBQ=
 ----------%S%

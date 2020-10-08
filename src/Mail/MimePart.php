@@ -282,7 +282,10 @@ class MimePart
 	 */
 	private static function encodeSequence(string $s, int &$offset = 0, int $type = null): string
 	{
-		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)) {
+		if (
+			(strlen($s) < self::LINE_LENGTH - 3) && // 3 is tab + quotes
+			strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
+		) {
 			if ($type && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
 				return self::append('"' . addcslashes($s, '"\\') . '"', $offset);
 			}
