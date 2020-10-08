@@ -124,7 +124,7 @@ class MimePart
 			$s = '';
 			foreach ($this->headers[$name] as $email => $name) {
 				if ($name != null) { // intentionally ==
-					$s .= self::encodeHeader($name, $offset, true);
+					$s .= self::encodeSequence($name, $offset, true);
 					$email = " <$email>";
 				}
 				$s .= self::append($email . ',', $offset);
@@ -136,7 +136,7 @@ class MimePart
 			return $m[1] . self::append(stripslashes($m[2]), $offset);
 
 		} else {
-			return ltrim(self::encodeHeader($this->headers[$name], $offset));
+			return ltrim(self::encodeSequence($this->headers[$name], $offset));
 		}
 	}
 
@@ -276,7 +276,7 @@ class MimePart
 	/**
 	 * Converts a 8 bit header to a string.
 	 */
-	private static function encodeHeader(string $s, int &$offset = 0, bool $quotes = false): string
+	private static function encodeSequence(string $s, int &$offset = 0, bool $quotes = false): string
 	{
 		if (strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)) {
 			if ($quotes && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
