@@ -9,6 +9,8 @@ Nette Mail: Sending E-mails
 
 Almost every web application needs to send e-mails, whether newsletters or order confirmations. That's why Nette Framework provides necessary tools.
 
+It requires PHP version 5.6 and supports PHP up to 8.0.
+
 Example of creating an e-mail using `Nette\Mail\Message` class:
 
 ```php
