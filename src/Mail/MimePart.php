@@ -190,7 +190,7 @@ class MimePart
 	 */
 	public function addPart(self $part = null): self
 	{
-		return $this->parts[] = $part === null ? new self : $part;
+		return $this->parts[] = $part ?? new self;
 	}
 
 
@@ -284,7 +284,7 @@ class MimePart
 	{
 		if (
 			(strlen($s) < self::LINE_LENGTH - 3) && // 3 is tab + quotes
-			strspn($s, "!\"#$%&\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
+			strspn($s, "!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
 		) {
 			if ($type && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
 				return self::append('"' . addcslashes($s, '"\\') . '"', $offset);

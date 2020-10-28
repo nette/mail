@@ -218,9 +218,11 @@ class Message extends MimePart
 				if (!isset($cids[$file])) {
 					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
 				}
-				$html = substr_replace($html,
+				$html = substr_replace(
+					$html,
 					"{$m[1][0]}{$m[2][0]}cid:{$cids[$file]}",
-					$m[0][1], strlen($m[0][0])
+					$m[0][1],
+					strlen($m[0][0])
 				);
 			}
 		}
@@ -293,8 +295,12 @@ class Message extends MimePart
 	/**
 	 * Creates file MIME part.
 	 */
-	private function createAttachment(string $file, ?string $content, ?string $contentType, string $disposition): MimePart
-	{
+	private function createAttachment(
+		string $file,
+		?string $content,
+		?string $contentType,
+		string $disposition
+	): MimePart {
 		$part = new MimePart;
 		if ($content === null) {
 			$content = Nette\Utils\FileSystem::read($file);

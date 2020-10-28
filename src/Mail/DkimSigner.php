@@ -54,7 +54,9 @@ class DkimSigner implements Signer
 		$this->selector = $options['selector'] ?? '';
 		$this->privateKey = $options['privateKey'] ?? '';
 		$this->passPhrase = $options['passPhrase'] ?? '';
-		$this->signHeaders = count($signHeaders) > 0 ? $signHeaders : self::DEFAULT_SIGN_HEADERS;
+		$this->signHeaders = count($signHeaders) > 0
+			? $signHeaders
+			: self::DEFAULT_SIGN_HEADERS;
 	}
 
 

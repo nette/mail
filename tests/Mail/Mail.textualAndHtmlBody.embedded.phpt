@@ -45,7 +45,7 @@ $mail->setHTMLBody("
 	<a href='test.php?src=SOME'>some link</a>
 	<script src=script.js></script>
 	<div title=\"background:url(background.png)\">
-	<style></style> background: url(\'background.png\');
+	<style></style> background: url(\\'background.png\\');
 	[[backgroun%64.png]]
 ", __DIR__ . '/fixtures');
 
