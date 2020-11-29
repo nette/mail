@@ -115,7 +115,7 @@ class SmtpMailer implements Mailer
 
 			if (
 				($from = $mail->getHeader('Return-Path'))
-				|| ($from = array_keys((array) $mail->getHeader('From'))[0])
+				|| ($from = array_keys((array) $mail->getHeader('From'))[0] ?? null)
 			) {
 				$this->write("MAIL FROM:<$from>", 250);
 			}
