@@ -58,6 +58,11 @@ class SendmailMailer implements Mailer
 			str_replace(Message::EOL, PHP_EOL, $parts[1]),
 			str_replace(Message::EOL, PHP_VERSION_ID >= 80000 ? "\r\n" : PHP_EOL, $parts[0]),
 		];
+
+		if ($from = $mail->getFrom()) {
+			$args[] = '-f' . key($from);
+		}
+
 		if ($this->commandArgs) {
 			$args[] = $this->commandArgs;
 		}
