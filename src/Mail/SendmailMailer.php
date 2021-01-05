@@ -55,6 +55,11 @@ class SendmailMailer implements Mailer
 			str_replace(Message::EOL, PHP_EOL, $parts[1]),
 			$parts[0],
 		];
+
+		if ($from = $mail->getFrom()) {
+			$args[] = '-f' . key($from);
+		}
+
 		if ($this->commandArgs) {
 			$args[] = $this->commandArgs;
 		}
