@@ -17,7 +17,7 @@ class FallbackMailer implements Mailer
 	use Nette\SmartObject;
 
 	/** @var callable[]  function (FallbackMailer $sender, SendException $e, Mailer $mailer, Message $mail): void */
-	public $onFailure;
+	public $onFailure = [];
 
 	/** @var Mailer[] */
 	private $mailers;
@@ -64,7 +64,7 @@ class FallbackMailer implements Mailer
 
 				} catch (SendException $e) {
 					$failures[] = $e;
-					$this->onFailure($this, $e, $mailer, $mail);
+					Nette\Utils\Arrays::invoke($this->onFailure, $this, $e, $mailer, $mail);
 				}
 			}
 		}
