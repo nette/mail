@@ -2,7 +2,7 @@ Nette Mail: Sending E-mails
 ===========================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/mail.svg)](https://packagist.org/packages/nette/mail)
-[![Build Status](https://travis-ci.org/nette/mail.svg?branch=master)](https://travis-ci.org/nette/mail)
+[![Tests](https://github.com/nette/mail/workflows/Tests/badge.svg?branch=master)](https://github.com/nette/mail/actions)
 [![Coverage Status](https://coveralls.io/repos/github/nette/mail/badge.svg?branch=master)](https://coveralls.io/github/nette/mail?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/nette/mail/v/stable)](https://github.com/nette/mail/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/mail/blob/master/license.md)
