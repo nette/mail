@@ -342,7 +342,11 @@ class Message extends MimePart
 	public function build()
 	{
 		$mail = clone $this;
-		$mail->setHeader('Message-ID', $this->getRandomId());
+
+		$messageIdHeaderName = 'Message-ID';
+		if ($mail->getHeader($messageIdHeaderName) === null) {
+			$mail->setHeader($messageIdHeaderName, $this->getRandomId());
+		}
 
 		$cursor = $mail;
 		if ($mail->attachments) {
