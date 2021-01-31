@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Mail\Message valid email addresses.
+ * Test: Nette\Mail\Message custom Message-ID header.
  */
 
 declare(strict_types=1);
