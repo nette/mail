@@ -13,9 +13,21 @@ Introduction
 
 Are you going to send emails such as newsletters or order confirmations? Nette Framework provides the necessary tools with a very nice API.
 
-Documentation can be found on the [website](https://doc.nette.org/mailing). If you like it, **[please make a donation now](https://github.com/sponsors/dg)**. Thank you!
+Documentation can be found on the [website](https://doc.nette.org/mailing).
 
-Installation:
+
+[Support Me](https://github.com/sponsors/dg)
+--------------------------------------------
+
+Do you like Nette Mail? Are you looking forward to the new features?
+
+[![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
+
+Thank you!
+
+
+Installation
+------------
 
 ```shell
 composer require nette/mail
