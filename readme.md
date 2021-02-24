@@ -33,7 +33,7 @@ Installation
 composer require nette/mail
 ```
 
-It requires PHP version 7.1 and supports PHP up to 8.2.
+It requires PHP version 8.0 and supports PHP up to 8.2.
 
 
 Creating Emails
