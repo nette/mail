@@ -22,24 +22,23 @@ $mail->addAttachment(__DIR__ . '/fixtures/example.eml', null, 'MESSAGE/RFC822');
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
-MIME-Version: 1.0
-X-Mailer: Nette Framework
-Date: %a%
-Message-ID: <%S%@%S%>
-Content-Type: multipart/mixed;
-	boundary="--------%S%"
+	MIME-Version: 1.0
+	X-Mailer: Nette Framework
+	Date: %a%
+	Message-ID: <%S%@%S%>
+	Content-Type: multipart/mixed;
+		boundary="--------%S%"
 
-----------%S%
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	----------%S%
+	Content-Type: text/plain; charset=UTF-8
+	Content-Transfer-Encoding: 7bit
 
 
-----------%S%
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="example.eml"
+	----------%S%
+	Content-Type: application/octet-stream
+	Content-Transfer-Encoding: base64
+	Content-Disposition: attachment; filename="example.eml"
 
-Um%A%=
-----------%S%--
-EOD
-	, TestMailer::$output);
+	Um%A%=
+	----------%S%--
+	EOD, TestMailer::$output);

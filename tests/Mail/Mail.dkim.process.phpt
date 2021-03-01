@@ -24,7 +24,7 @@ $signer = new class ([], ['From', 'To', 'Subject', 'X-Mailer', 'Content-Type']) 
 
 		Assert::match(
 			'DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer:Content-Type; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=',
-			$headers
+			$headers,
 		);
 
 		return $headers;
@@ -34,13 +34,13 @@ $signer = new class ([], ['From', 'To', 'Subject', 'X-Mailer', 'Content-Type']) 
 	public function sign(string $value): string
 	{
 		$headers = <<<'EOT'
-from:John Doe <doe@example.com>
-to:Lady Jane <jane@example.com>
-subject:Hello Jane!
-x-mailer:Nette Framework
-content-type:text/plain; charset=UTF-8
-dkim-signature:v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer:Content-Type; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=
-EOT;
+			from:John Doe <doe@example.com>
+			to:Lady Jane <jane@example.com>
+			subject:Hello Jane!
+			x-mailer:Nette Framework
+			content-type:text/plain; charset=UTF-8
+			dkim-signature:v=1; a=rsa-sha256; q=dns/txt; l=31; s=; t=%i%; c=relaxed/simple; h=From:To:Subject:X-Mailer:Content-Type; d=; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=
+			EOT;
 
 		Assert::match($headers, $value);
 
@@ -78,12 +78,12 @@ $signer->generateSignedMessage($mail);
 /* ------- Compute body hash ------- */
 Assert::same(
 	'abFfM+PwY0xL0+O1BKLPEFMxG2LPt7VnNuT0ID67bPo=',
-	$signer->computeBodyHash('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> " <br><a href=\'http://horse.example.com\'>kůň</a></b>')
+	$signer->computeBodyHash('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> " <br><a href=\'http://horse.example.com\'>kůň</a></b>'),
 );
 
 Assert::same(
 	's2Jb3VCMpa9+zZIo1utaYU2hUO1CYARjhuvfZK53qaw=',
-	$signer->computeBodyHash('I L@ve Nette <3')
+	$signer->computeBodyHash('I L@ve Nette <3'),
 );
 
 

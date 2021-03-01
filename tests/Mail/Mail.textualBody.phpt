@@ -27,16 +27,15 @@ $mailer = new TestMailer;
 $mailer->send($mail);
 
 Assert::match(<<<'EOD'
-MIME-Version: 1.0
-X-Mailer: Nette Framework
-Date: %a%
-From: John Doe <doe@example.com>
-To: Lady Jane <jane@example.com>
-Subject: Hello Jane!
-Message-ID: <%S%@%S%>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+	MIME-Version: 1.0
+	X-Mailer: Nette Framework
+	Date: %a%
+	From: John Doe <doe@example.com>
+	To: Lady Jane <jane@example.com>
+	Subject: Hello Jane!
+	Message-ID: <%S%@%S%>
+	Content-Type: text/plain; charset=UTF-8
+	Content-Transfer-Encoding: 8bit
 
-Žluťoučký kůň
-EOD
-	, TestMailer::$output);
+	Žluťoučký kůň
+	EOD, TestMailer::$output);

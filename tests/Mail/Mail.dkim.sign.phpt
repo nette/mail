@@ -33,17 +33,16 @@ $signer = new class (['privateKey' => $privateKey, 'domain' => 'nette.org', 'sel
 };
 
 Assert::match(<<<'EOD'
-MIME-Version: 1.0
-X-Mailer: Nette Framework
-Date: %a%
-From: John Doe <doe@example.com>
-To: Lady Jane <jane@example.com>
-Subject: Hello Jane!
-Message-ID: <%a%@%a%>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=selector; t=0; c=relaxed/simple; h=From:To:Subject; d=nette.org; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=l/nd5fGVXwzPZNZFJrn3f7kvFmaFV5cybkBUYzvIoc6hDPNw6750KpBtwsdjvJQ8u7YaEo9kSm7v2CBQj6KVSafGUZ4hDr8Yv18TjOzO9j7iUjdVJulpYq77vNzinQo3cwpSdijbZEBOd+CJwsRyk+OtMG17Yz7sNa8+Xd2Lp+Q=
+	MIME-Version: 1.0
+	X-Mailer: Nette Framework
+	Date: %a%
+	From: John Doe <doe@example.com>
+	To: Lady Jane <jane@example.com>
+	Subject: Hello Jane!
+	Message-ID: <%a%@%a%>
+	Content-Type: text/plain; charset=UTF-8
+	Content-Transfer-Encoding: 8bit
+	DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=selector; t=0; c=relaxed/simple; h=From:To:Subject; d=nette.org; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=l/nd5fGVXwzPZNZFJrn3f7kvFmaFV5cybkBUYzvIoc6hDPNw6750KpBtwsdjvJQ8u7YaEo9kSm7v2CBQj6KVSafGUZ4hDr8Yv18TjOzO9j7iUjdVJulpYq77vNzinQo3cwpSdijbZEBOd+CJwsRyk+OtMG17Yz7sNa8+Xd2Lp+Q=
 
-Příliš žluťoučký kůň
-EOD
-	, $signer->generateSignedMessage($mail));
+	Příliš žluťoučký kůň
+	EOD, $signer->generateSignedMessage($mail));

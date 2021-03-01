@@ -34,9 +34,10 @@ class MimePart
 
 	public const LineLength = 76;
 
+	/** value (RFC 2231), encoded-word (RFC 2047) */
 	private const
-		SequenceValue = 1, // value, RFC 2231
-		SequenceWord = 2;  // encoded-word, RFC 2047
+		SequenceValue = 1,
+		SequenceWord = 2;
 
 	/** @var array */
 	private $headers = [];
