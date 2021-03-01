@@ -39,7 +39,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 					'privateKey' => Expect::string()->required(),
 					'passPhrase' => Expect::string()->dynamic(),
 					'testMode' => Expect::bool(false)->dynamic(),
-				])->castTo('array')
+				])->castTo('array'),
 			),
 		])->castTo('array');
 	}
