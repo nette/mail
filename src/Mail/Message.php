@@ -27,20 +27,16 @@ class Message extends MimePart
 		NORMAL = 3,
 		LOW = 5;
 
-	/** @var array */
-	public static $defaultHeaders = [
+	public static array $defaultHeaders = [
 		'MIME-Version' => '1.0',
 		'X-Mailer' => 'Nette Framework',
 	];
 
-	/** @var array */
-	private $attachments = [];
+	private array $attachments = [];
 
-	/** @var array */
-	private $inlines = [];
+	private array $inlines = [];
 
-	/** @var string */
-	private $htmlBody = '';
+	private string $htmlBody = '';
 
 
 	public function __construct()
