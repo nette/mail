@@ -28,20 +28,15 @@ class DkimSigner implements Signer
 
 	private const DKIM_SIGNATURE = 'DKIM-Signature';
 
-	/** @var string */
-	private $domain;
+	private string $domain;
 
-	/** @var array */
-	private $signHeaders;
+	private array $signHeaders;
 
-	/** @var string */
-	private $selector;
+	private string $selector;
 
-	/** @var string */
-	private $privateKey;
+	private string $privateKey;
 
-	/** @var string */
-	private $passPhrase;
+	private string $passPhrase;
 
 
 	/** @throws Nette\NotSupportedException */

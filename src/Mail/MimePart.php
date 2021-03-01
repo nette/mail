@@ -38,14 +38,11 @@ class MimePart
 		SEQUENCE_VALUE = 1, // value, RFC 2231
 		SEQUENCE_WORD = 2;  // encoded-word, RFC 2047
 
-	/** @var array */
-	private $headers = [];
+	private array $headers = [];
 
-	/** @var array */
-	private $parts = [];
+	private array $parts = [];
 
-	/** @var string */
-	private $body = '';
+	private string $body = '';
 
 
 	/**
