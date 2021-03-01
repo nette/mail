@@ -135,15 +135,7 @@ class DkimSigner implements Signer
 		}
 
 		if (openssl_sign($value, $signature, $privateKey, 'sha256WithRSAEncryption')) {
-			if (PHP_VERSION_ID < 80000) {
-				openssl_pkey_free($privateKey);
-			}
-
 			return base64_encode($signature);
-		}
-
-		if (PHP_VERSION_ID < 80000) {
-			openssl_pkey_free($privateKey);
 		}
 
 		return '';
