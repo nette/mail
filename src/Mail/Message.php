@@ -50,9 +50,8 @@ class Message extends MimePart
 
 	/**
 	 * Sets the sender of the message. Email or format "John Doe" <doe@example.com>
-	 * @return static
 	 */
-	public function setFrom(string $email, string $name = null)
+	public function setFrom(string $email, string $name = null): static
 	{
 		$this->setHeader('From', $this->formatEmail($email, $name));
 		return $this;
@@ -70,9 +69,8 @@ class Message extends MimePart
 
 	/**
 	 * Adds the reply-to address. Email or format "John Doe" <doe@example.com>
-	 * @return static
 	 */
-	public function addReplyTo(string $email, string $name = null)
+	public function addReplyTo(string $email, string $name = null): static
 	{
 		$this->setHeader('Reply-To', $this->formatEmail($email, $name), true);
 		return $this;
@@ -81,9 +79,8 @@ class Message extends MimePart
 
 	/**
 	 * Sets the subject of the message.
-	 * @return static
 	 */
-	public function setSubject(string $subject)
+	public function setSubject(string $subject): static
 	{
 		$this->setHeader('Subject', $subject);
 		return $this;
@@ -101,9 +98,8 @@ class Message extends MimePart
 
 	/**
 	 * Adds email recipient. Email or format "John Doe" <doe@example.com>
-	 * @return static
 	 */
-	public function addTo(string $email, string $name = null) // addRecipient()
+	public function addTo(string $email, string $name = null): static // addRecipient()
 	{
 		$this->setHeader('To', $this->formatEmail($email, $name), true);
 		return $this;
@@ -112,9 +108,8 @@ class Message extends MimePart
 
 	/**
 	 * Adds carbon copy email recipient. Email or format "John Doe" <doe@example.com>
-	 * @return static
 	 */
-	public function addCc(string $email, string $name = null)
+	public function addCc(string $email, string $name = null): static
 	{
 		$this->setHeader('Cc', $this->formatEmail($email, $name), true);
 		return $this;
@@ -123,9 +118,8 @@ class Message extends MimePart
 
 	/**
 	 * Adds blind carbon copy email recipient. Email or format "John Doe" <doe@example.com>
-	 * @return static
 	 */
-	public function addBcc(string $email, string $name = null)
+	public function addBcc(string $email, string $name = null): static
 	{
 		$this->setHeader('Bcc', $this->formatEmail($email, $name), true);
 		return $this;
@@ -151,9 +145,8 @@ class Message extends MimePart
 
 	/**
 	 * Sets the Return-Path header of the message.
-	 * @return static
 	 */
-	public function setReturnPath(string $email)
+	public function setReturnPath(string $email): static
 	{
 		$this->setHeader('Return-Path', $email);
 		return $this;
@@ -171,9 +164,8 @@ class Message extends MimePart
 
 	/**
 	 * Sets email priority.
-	 * @return static
 	 */
-	public function setPriority(int $priority)
+	public function setPriority(int $priority): static
 	{
 		$this->setHeader('X-Priority', (string) $priority);
 		return $this;
@@ -191,9 +183,8 @@ class Message extends MimePart
 
 	/**
 	 * Sets HTML body.
-	 * @return static
 	 */
-	public function setHtmlBody(string $html, string $basePath = null)
+	public function setHtmlBody(string $html, string $basePath = null): static
 	{
 		if ($basePath) {
 			$cids = [];
@@ -260,9 +251,8 @@ class Message extends MimePart
 
 	/**
 	 * Adds inlined Mime Part.
-	 * @return static
 	 */
-	public function addInlinePart(MimePart $part)
+	public function addInlinePart(MimePart $part): static
 	{
 		$this->inlines[] = $part;
 		return $this;
@@ -333,9 +323,8 @@ class Message extends MimePart
 
 	/**
 	 * Builds email. Does not modify itself, but returns a new object.
-	 * @return static
 	 */
-	public function build()
+	public function build(): static
 	{
 		$mail = clone $this;
 		$mail->setHeader('Message-ID', $mail->getHeader('Message-ID') ?? $this->getRandomId());
