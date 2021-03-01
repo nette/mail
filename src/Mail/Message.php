@@ -212,7 +212,7 @@ class Message extends MimePart
 					(["\']?)(?![a-z]+:|[/\#])([^"\'>)\s]+)
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix',
-				PREG_OFFSET_CAPTURE
+				PREG_OFFSET_CAPTURE,
 			);
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
@@ -223,7 +223,7 @@ class Message extends MimePart
 					$html,
 					"{$m[1][0]}{$m[2][0]}cid:{$cids[$file]}",
 					$m[0][1],
-					strlen($m[0][0])
+					strlen($m[0][0]),
 				);
 			}
 		}
@@ -300,7 +300,7 @@ class Message extends MimePart
 		string $file,
 		?string $content,
 		?string $contentType,
-		string $disposition
+		string $disposition,
 	): MimePart {
 		$part = new MimePart;
 		if ($content === null) {
