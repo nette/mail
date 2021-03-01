@@ -123,7 +123,7 @@ class SmtpMailer implements Mailer
 			foreach (array_merge(
 				(array) $mail->getHeader('To'),
 				(array) $mail->getHeader('Cc'),
-				(array) $mail->getHeader('Bcc')
+				(array) $mail->getHeader('Bcc'),
 			) as $email => $name) {
 				$this->write("RCPT TO:<$email>", [250, 251]);
 			}
@@ -157,7 +157,7 @@ class SmtpMailer implements Mailer
 			$error,
 			$this->timeout,
 			STREAM_CLIENT_CONNECT,
-			$this->context
+			$this->context,
 		);
 		if (!$this->connection) {
 			throw new SmtpException($error ?: error_get_last()['message'], $errno);
@@ -171,7 +171,7 @@ class SmtpMailer implements Mailer
 			if (!stream_socket_enable_crypto(
 				$this->connection,
 				true,
-				STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
+				STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
 			)) {
 				throw new SmtpException('Unable to connect via TLS.');
 			}

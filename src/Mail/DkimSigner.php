@@ -150,8 +150,8 @@ class DkimSigner implements Signer
 		return base64_encode(
 			pack(
 				'H*',
-				hash('sha256', $body)
-			)
+				hash('sha256', $body),
+			),
 		);
 	}
 
@@ -166,9 +166,7 @@ class DkimSigner implements Signer
 
 	protected function getSignedHeaders(Message $message): array
 	{
-		return array_filter($this->signHeaders, function ($name) use ($message) {
-			return $message->getHeader($name) !== null;
-		});
+		return array_filter($this->signHeaders, fn($name) => $message->getHeader($name) !== null);
 	}
 
 
