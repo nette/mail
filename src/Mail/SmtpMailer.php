@@ -19,38 +19,30 @@ class SmtpMailer implements Mailer
 {
 	use Nette\SmartObject;
 
-	/** @var Signer|null */
-	private $signer;
+	private ?Signer $signer = null;
 
-	/** @var resource|null */
+	/** @var ?resource */
 	private $connection;
 
-	/** @var string */
-	private $host;
+	private string $host;
 
-	/** @var int */
-	private $port;
+	private ?int $port;
 
-	/** @var string */
-	private $username;
+	private string $username;
 
-	/** @var string */
-	private $password;
+	private string $password;
 
-	/** @var string ssl | tls | (empty) */
-	private $secure;
+	/** ssl | tls | (empty) */
+	private string $secure;
 
-	/** @var int */
-	private $timeout;
+	private int $timeout;
 
 	/** @var resource */
 	private $context;
 
-	/** @var bool */
-	private $persistent;
+	private bool $persistent;
 
-	/** @var string */
-	private $clientHost;
+	private string $clientHost;
 
 
 	public function __construct(array $options = [])
