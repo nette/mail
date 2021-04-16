@@ -50,9 +50,9 @@ class SendmailMailer implements Mailer
 		$parts = explode(Message::EOL . Message::EOL, $data, 2);
 
 		$args = [
-			str_replace(Message::EOL, PHP_EOL, (string) $mail->getEncodedHeader('To')),
-			str_replace(Message::EOL, PHP_EOL, (string) $mail->getEncodedHeader('Subject')),
-			str_replace(Message::EOL, PHP_EOL, $parts[1]),
+			(string) $mail->getEncodedHeader('To'),
+			(string) $mail->getEncodedHeader('Subject'),
+			$parts[1],
 			$parts[0],
 		];
 
