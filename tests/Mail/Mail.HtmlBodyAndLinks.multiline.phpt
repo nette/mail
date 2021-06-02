@@ -50,7 +50,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 Příliš žluťoučký <http://green.example.com>
- žlutý kůň <http://horse.example.com>
+žlutý kůň <http://horse.example.com>
 ----------%S%
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 8bit

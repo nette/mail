@@ -397,6 +397,7 @@ class Message extends MimePart
 		]);
 		$text = Nette\Utils\Html::htmlToText($html);
 		$text = Strings::replace($text, '#[ \t]+#', ' ');
+		$text = implode("\n", array_map('trim', explode("\n", $text)));
 		return trim($text);
 	}
 
