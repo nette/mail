@@ -178,7 +178,7 @@ class SmtpMailer implements Mailer
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
 			if ((int) $ehloResponse !== 250) {
-				throw new SmtpException('SMTP server did not accept EHLO with error: ' . trim($response));
+				throw new SmtpException('SMTP server did not accept EHLO with error: ' . trim($ehloResponse));
 			}
 
 		} else {
