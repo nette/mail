@@ -189,7 +189,8 @@ class Message extends MimePart
 	 */
 	public function getPriority(): ?int
 	{
-		return $this->getHeader('X-Priority');
+		$priority = $this->getHeader('X-Priority');
+		return is_numeric($priority) ? (int) $priority : null;
 	}
 
 
