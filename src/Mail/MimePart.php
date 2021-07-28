@@ -256,7 +256,7 @@ class MimePart
 		}
 
 		if ($this->parts) {
-			if (substr($output, -strlen(self::EOL)) !== self::EOL) {
+			if (!str_ends_with($output, self::EOL)) {
 				$output .= self::EOL;
 			}
 
