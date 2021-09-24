@@ -16,8 +16,8 @@ use Nette\Utils\Strings;
 /**
  * Mail provides functionality to compose and send both text and MIME-compliant multipart email messages.
  *
- * @property   string $subject
- * @property   string $htmlBody
+ * @property-deprecated   string $subject
+ * @property-deprecated   string $htmlBody
  */
 class Message extends MimePart
 {

@@ -16,7 +16,7 @@ use Nette\Utils\Strings;
 /**
  * MIME message part.
  *
- * @property   string $body
+ * @property-deprecated   string $body
  */
 class MimePart
 {
