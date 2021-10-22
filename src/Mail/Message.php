@@ -82,6 +82,7 @@ class Message extends MimePart
 	 */
 	public function setSubject(string $subject): static
 	{
+		$subject = str_replace('&nbsp;', ' ', $subject);
 		$this->setHeader('Subject', $subject);
 		return $this;
 	}
