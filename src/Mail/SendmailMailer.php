@@ -43,6 +43,7 @@ class SendmailMailer implements Mailer
 		if (!function_exists('mail')) {
 			throw new SendException('Unable to send email: mail() has been disabled.');
 		}
+
 		$tmp = clone $mail;
 		$tmp->setHeader('Subject', null);
 		$tmp->setHeader('To', null);
@@ -61,6 +62,7 @@ class SendmailMailer implements Mailer
 		if ($this->commandArgs) {
 			$args[] = $this->commandArgs;
 		}
+
 		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function (string $message) use (&$info): void {
 			$info = ": $message";
 		});

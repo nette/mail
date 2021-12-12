@@ -50,6 +50,7 @@ class DkimSigner implements Signer
 		if (!extension_loaded('openssl')) {
 			throw new Nette\NotSupportedException('DkimSigner requires PHP extension openssl which is not loaded.');
 		}
+
 		$this->domain = $options['domain'] ?? '';
 		$this->selector = $options['selector'] ?? '';
 		$this->privateKey = $options['privateKey'] ?? '';
@@ -70,6 +71,7 @@ class DkimSigner implements Signer
 
 			return rtrim($header, "\r\n") . "\r\n" . $this->getSignature($message, $header, $this->normalizeNewLines($body)) . "\r\n\r\n" . $body;
 		}
+
 		throw new SignException('Malformed email');
 	}
 
@@ -136,11 +138,14 @@ class DkimSigner implements Signer
 			if (PHP_VERSION_ID < 80000) {
 				openssl_pkey_free($privateKey);
 			}
+
 			return base64_encode($signature);
 		}
+
 		if (PHP_VERSION_ID < 80000) {
 			openssl_pkey_free($privateKey);
 		}
+
 		return '';
 	}
 

@@ -48,6 +48,7 @@ class Message extends MimePart
 		foreach (static::$defaultHeaders as $name => $value) {
 			$this->setHeader($name, $value);
 		}
+
 		$this->setHeader('Date', date('r'));
 	}
 
@@ -149,6 +150,7 @@ class Message extends MimePart
 				$name = $tmp;
 			}
 		}
+
 		return [$email => $name];
 	}
 
@@ -219,6 +221,7 @@ class Message extends MimePart
 				if (!isset($cids[$file])) {
 					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
 				}
+
 				$html = substr_replace(
 					$html,
 					"{$m[1][0]}{$m[2][0]}cid:{$cids[$file]}",
@@ -308,9 +311,11 @@ class Message extends MimePart
 			$content = Nette\Utils\FileSystem::read($file);
 			$file = Strings::fixEncoding(basename($file));
 		}
+
 		if (!$contentType) {
 			$contentType = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
 		}
+
 		if (!strcasecmp($contentType, 'message/rfc822')) { // not allowed for attached files
 			$contentType = 'application/octet-stream';
 		} elseif (!strcasecmp($contentType, 'image/svg')) { // Troublesome for some mailers...
@@ -366,6 +371,7 @@ class Message extends MimePart
 					$tmp->addPart($value);
 				}
 			}
+
 			$alt->setContentType('text/html', 'UTF-8')
 				->setEncoding(preg_match('#[^\n]{990}#', $mail->htmlBody)
 					? self::ENCODING_QUOTED_PRINTABLE

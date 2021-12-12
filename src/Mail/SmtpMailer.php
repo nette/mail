@@ -64,6 +64,7 @@ class SmtpMailer implements Mailer
 			$this->host = ini_get('SMTP');
 			$this->port = (int) ini_get('smtp_port');
 		}
+
 		$this->username = $options['username'] ?? '';
 		$this->password = $options['password'] ?? '';
 		$this->secure = $options['secure'] ?? '';
@@ -76,6 +77,7 @@ class SmtpMailer implements Mailer
 		if (!$this->port) {
 			$this->port = $this->secure === 'ssl' ? 465 : 25;
 		}
+
 		$this->persistent = !empty($options['persistent']);
 		if (isset($options['clientHost'])) {
 			$this->clientHost = $options['clientHost'];
@@ -141,6 +143,7 @@ class SmtpMailer implements Mailer
 			if ($this->connection) {
 				$this->disconnect();
 			}
+
 			throw $e;
 		}
 	}
@@ -162,6 +165,7 @@ class SmtpMailer implements Mailer
 		if (!$this->connection) {
 			throw new SmtpException($error ?: error_get_last()['message'], $errno);
 		}
+
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
@@ -175,12 +179,12 @@ class SmtpMailer implements Mailer
 			)) {
 				throw new SmtpException('Unable to connect via TLS.');
 			}
+
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
 			if ((int) $ehloResponse !== 250) {
 				throw new SmtpException('SMTP server did not accept EHLO with error: ' . trim($ehloResponse));
 			}
-
 		} else {
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
@@ -247,6 +251,7 @@ class SmtpMailer implements Mailer
 				break;
 			}
 		}
+
 		return $s;
 	}
 }

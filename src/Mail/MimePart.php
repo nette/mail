@@ -63,7 +63,6 @@ class MimePart
 			if (!$append) {
 				unset($this->headers[$name]);
 			}
-
 		} elseif (is_array($value)) { // email
 			$tmp = &$this->headers[$name];
 			if (!$append || !is_array($tmp)) {
@@ -78,17 +77,19 @@ class MimePart
 				} elseif (preg_match('#[\r\n]#', $recipient)) {
 					throw new Nette\InvalidArgumentException('Name must not contain line separator.');
 				}
+
 				Nette\Utils\Validators::assert($email, 'email', "header '$name'");
 				$tmp[$email] = $recipient;
 			}
-
 		} else {
 			$value = (string) $value;
 			if (!Strings::checkEncoding($value)) {
 				throw new Nette\InvalidArgumentException('Header is not valid UTF-8 string.');
 			}
+
 			$this->headers[$name] = preg_replace('#[\r\n]+#', ' ', $value);
 		}
+
 		return $this;
 	}
 
@@ -131,8 +132,10 @@ class MimePart
 					$s .= self::encodeSequence($name, $offset, self::SEQUENCE_WORD);
 					$email = " <$email>";
 				}
+
 				$s .= self::append($email . ',', $offset);
 			}
+
 			return ltrim(substr($s, 0, -1)); // last comma
 
 		} elseif (preg_match('#^(\S+; (?:file)?name=)"(.*)"$#D', $this->headers[$name], $m)) { // Content-Disposition
@@ -230,8 +233,10 @@ class MimePart
 			if ($this->parts && $name === 'Content-Type') {
 				$output .= ';' . self::EOL . "\tboundary=\"$boundary\"";
 			}
+
 			$output .= self::EOL;
 		}
+
 		$output .= self::EOL;
 
 		$body = $this->body;
@@ -264,9 +269,11 @@ class MimePart
 			if (substr($output, -strlen(self::EOL)) !== self::EOL) {
 				$output .= self::EOL;
 			}
+
 			foreach ($this->parts as $part) {
 				$output .= '--' . $boundary . self::EOL . $part->getEncodedMessage() . self::EOL;
 			}
+
 			$output .= '--' . $boundary . '--';
 		}
 
@@ -289,6 +296,7 @@ class MimePart
 			if ($type && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
 				return self::append('"' . addcslashes($s, '"\\') . '"', $offset);
 			}
+
 			return self::append($s, $offset);
 		}
 
@@ -309,6 +317,7 @@ class MimePart
 		if ($type === self::SEQUENCE_VALUE) {
 			$s = '"' . $s . '"';
 		}
+
 		$s = str_replace("\n ", "\n\t", $s);
 		return $o . $s;
 	}
@@ -320,6 +329,7 @@ class MimePart
 			$offset = 1;
 			$s = self::EOL . "\t" . $s;
 		}
+
 		$offset += strlen($s);
 		return $s;
 	}
