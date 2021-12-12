@@ -73,8 +73,7 @@ class FallbackMailer implements Mailer
 	}
 
 
-	/** @return static */
-	public function addMailer(Mailer $mailer)
+	public function addMailer(Mailer $mailer): static
 	{
 		$this->mailers[] = $mailer;
 		return $this;
