@@ -161,7 +161,7 @@ class MimePart
 	 * Sets Content-Type header.
 	 * @return static
 	 */
-	public function setContentType(string $contentType, string $charset = null)
+	public function setContentType(string $contentType, ?string $charset = null)
 	{
 		$this->setHeader('Content-Type', $contentType . ($charset ? "; charset=$charset" : ''));
 		return $this;
@@ -191,7 +191,7 @@ class MimePart
 	/**
 	 * Adds or creates new multipart.
 	 */
-	public function addPart(self $part = null): self
+	public function addPart(?self $part = null): self
 	{
 		return $this->parts[] = $part ?? new self;
 	}
@@ -287,7 +287,7 @@ class MimePart
 	/**
 	 * Converts a 8 bit header to a string.
 	 */
-	private static function encodeSequence(string $s, int &$offset = 0, int $type = null): string
+	private static function encodeSequence(string $s, int &$offset = 0, ?int $type = null): string
 	{
 		if (
 			(strlen($s) < self::LINE_LENGTH - 3) && // 3 is tab + quotes
