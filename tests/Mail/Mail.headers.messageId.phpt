@@ -31,7 +31,7 @@ Message-ID: <%a%@%a%>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);
 
 
 $mail->setHeader('Message-ID', 'xxx.yyy.zzz@example.com');

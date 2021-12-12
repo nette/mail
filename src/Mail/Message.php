@@ -301,7 +301,8 @@ class Message extends MimePart
 		?string $content,
 		?string $contentType,
 		string $disposition
-	): MimePart {
+	): MimePart
+	{
 		$part = new MimePart;
 		if ($content === null) {
 			$content = Nette\Utils\FileSystem::read($file);

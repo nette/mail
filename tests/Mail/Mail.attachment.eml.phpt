@@ -42,4 +42,4 @@ Content-Disposition: attachment; filename="example.eml"
 Um%A%=
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

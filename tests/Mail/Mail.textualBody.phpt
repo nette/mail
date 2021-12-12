@@ -39,4 +39,4 @@ Content-Transfer-Encoding: 8bit
 
 Žluťoučký kůň
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

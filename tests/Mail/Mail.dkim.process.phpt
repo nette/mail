@@ -17,7 +17,7 @@ if (!extension_loaded('openssl')) {
 	Tester\Environment::skip('OpenSSL not installed');
 }
 
-$signer = new class([], ['From', 'To', 'Subject', 'X-Mailer', 'Content-Type']) extends DkimSigner {
+$signer = new class ([], ['From', 'To', 'Subject', 'X-Mailer', 'Content-Type']) extends DkimSigner {
 	public function computeSignature(string $rawHeader, string $signature): string
 	{
 		$headers = parent::computeSignature($rawHeader, $signature);
@@ -78,7 +78,7 @@ $signer->generateSignedMessage($mail);
 /* ------- Compute body hash ------- */
 Assert::same(
 	'abFfM+PwY0xL0+O1BKLPEFMxG2LPt7VnNuT0ID67bPo=',
-	$signer->computeBodyHash('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> "' . ' <br><a href=\'http://horse.example.com\'>kůň</a></b>')
+	$signer->computeBodyHash('<b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> " <br><a href=\'http://horse.example.com\'>kůň</a></b>')
 );
 
 Assert::same(

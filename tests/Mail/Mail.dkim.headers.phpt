@@ -17,7 +17,7 @@ if (!extension_loaded('openssl')) {
 	Tester\Environment::skip('OpenSSL not installed');
 }
 
-$signer = new class([], ['From', 'To', 'Date', 'Subject', 'Message-ID', 'X-Mailer', 'Content-Type']) extends DkimSigner {
+$signer = new class ([], ['From', 'To', 'Date', 'Subject', 'Message-ID', 'X-Mailer', 'Content-Type']) extends DkimSigner {
 	public function getSignedHeaders(Message $message): array
 	{
 		return parent::getSignedHeaders($message);

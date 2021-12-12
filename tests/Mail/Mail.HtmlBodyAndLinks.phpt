@@ -51,4 +51,4 @@ Content-Transfer-Encoding: 8bit
 <b><span>Příliš </span> <a href="http://green.example.com">žluťoučký</a> " <br><a href='http://horse.example.com'>kůň</a></b>
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

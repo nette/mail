@@ -45,7 +45,7 @@ AAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAAB
 AAEAOQAAAGkAAAAAAA==
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);
 
 
 $mail = new Message;
@@ -74,7 +74,7 @@ Content-Disposition: attachment; filename="example.zip"
 PK=03=04=14=00=00=00=08=00'=882;&=91*g@=00=00=00A=00=00=00=0B=00=00=00versi=%A%00
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);
 
 
 $mail = new Message;
@@ -134,4 +134,4 @@ Content-Disposition: attachment; filename="\"\\"
 UEsDBBQ=
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

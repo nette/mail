@@ -51,4 +51,4 @@ Content-Transfer-Encoding: 8bit
 <b>Žluťoučký kůň</b>
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

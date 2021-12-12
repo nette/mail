@@ -55,4 +55,4 @@ AAgAJ4gyOyaRKmdAAAAAQQAAAAsAAAAAAAAAAAAgAAAAAAAAAHZlcnNpb24udHh0UEsFBgAAAAAB
 AAEAOQAAAGkAAAAAAA==
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);

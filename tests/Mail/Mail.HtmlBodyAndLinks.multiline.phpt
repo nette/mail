@@ -66,4 +66,4 @@ Content-Transfer-Encoding: 8bit
 </b>
 ----------%S%--
 EOD
-, TestMailer::$output);
+	, TestMailer::$output);
