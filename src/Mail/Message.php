@@ -23,9 +23,18 @@ class Message extends MimePart
 {
 	/** Priority */
 	public const
-		HIGH = 1,
-		NORMAL = 3,
-		LOW = 5;
+		High = 1,
+		Normal = 3,
+		Low = 5;
+
+	/** @deprecated use Message::High */
+	public const HIGH = self::High;
+
+	/** @deprecated use Message::Normal */
+	public const NORMAL = self::Normal;
+
+	/** @deprecated use Message::Low */
+	public const LOW = self::Low;
 
 	public static array $defaultHeaders = [
 		'MIME-Version' => '1.0',
@@ -308,7 +317,7 @@ class Message extends MimePart
 
 		$part->setBody($content);
 		$part->setContentType($contentType);
-		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
+		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::Encoding8Bit : self::EncodingBase64);
 		$part->setHeader('Content-Disposition', $disposition . '; filename="' . addcslashes($file, '"\\') . '"');
 		return $part;
 	}
@@ -357,8 +366,8 @@ class Message extends MimePart
 
 			$alt->setContentType('text/html', 'UTF-8')
 				->setEncoding(preg_match('#[^\n]{990}#', $mail->htmlBody)
-					? self::ENCODING_QUOTED_PRINTABLE
-					: (preg_match('#[\x80-\xFF]#', $mail->htmlBody) ? self::ENCODING_8BIT : self::ENCODING_7BIT))
+					? self::EncodingQuotedPrintable
+					: (preg_match('#[\x80-\xFF]#', $mail->htmlBody) ? self::Encoding8Bit : self::Encoding7Bit))
 				->setBody($mail->htmlBody);
 		}
 
@@ -366,8 +375,8 @@ class Message extends MimePart
 		$mail->setBody('');
 		$cursor->setContentType('text/plain', 'UTF-8')
 			->setEncoding(preg_match('#[^\n]{990}#', $text)
-				? self::ENCODING_QUOTED_PRINTABLE
-				: (preg_match('#[\x80-\xFF]#', $text) ? self::ENCODING_8BIT : self::ENCODING_7BIT))
+				? self::EncodingQuotedPrintable
+				: (preg_match('#[\x80-\xFF]#', $text) ? self::Encoding8Bit : self::Encoding7Bit))
 			->setBody($text);
 
 		return $mail;

@@ -26,7 +26,7 @@ $mail->addReplyTo('reply@example.com');
 $mail->setReturnPath('doe@example.com');
 
 $mail->setSubject('Hello Jane!');
-$mail->setPriority(Message::HIGH);
+$mail->setPriority(Message::High);
 
 $mail->setHeader('X-Gmail-Label', 'love');
 

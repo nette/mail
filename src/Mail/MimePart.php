@@ -24,10 +24,10 @@ class MimePart
 
 	/** encoding */
 	public const
-		ENCODING_BASE64 = 'base64',
-		ENCODING_7BIT = '7bit',
-		ENCODING_8BIT = '8bit',
-		ENCODING_QUOTED_PRINTABLE = 'quoted-printable';
+		EncodingBase64 = 'base64',
+		Encoding7Bit = '7bit',
+		Encoding8Bit = '8bit',
+		EncodingQuotedPrintable = 'quoted-printable';
 
 	/** @internal */
 	public const EOL = "\r\n";
@@ -232,19 +232,19 @@ class MimePart
 		$body = $this->body;
 		if ($body !== '') {
 			switch ($this->getEncoding()) {
-				case self::ENCODING_QUOTED_PRINTABLE:
+				case self::EncodingQuotedPrintable:
 					$output .= quoted_printable_encode($body);
 					break;
 
-				case self::ENCODING_BASE64:
+				case self::EncodingBase64:
 					$output .= rtrim(chunk_split(base64_encode($body), self::LineLength, self::EOL));
 					break;
 
-				case self::ENCODING_7BIT:
+				case self::Encoding7Bit:
 					$body = preg_replace('#[\x80-\xFF]+#', '', $body);
 					// break omitted
 
-				case self::ENCODING_8BIT:
+				case self::Encoding8Bit:
 					$body = str_replace(["\x00", "\r"], '', $body);
 					$body = str_replace("\n", self::EOL, $body);
 					$output .= $body;
