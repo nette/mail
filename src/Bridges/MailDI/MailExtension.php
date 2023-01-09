@@ -24,11 +24,11 @@ class MailExtension extends Nette\DI\CompilerExtension
 			'smtp' => Expect::bool(false),
 			'host' => Expect::string()->dynamic(),
 			'port' => Expect::int()->dynamic(),
-			'username' => Expect::string()->dynamic(),
-			'password' => Expect::string()->dynamic(),
+			'username' => Expect::string('')->dynamic(),
+			'password' => Expect::string('')->dynamic(),
 			'secure' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(), // deprecated
 			'encryption' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(),
-			'timeout' => Expect::int()->dynamic(),
+			'timeout' => Expect::int(20)->dynamic(),
 			'context' => Expect::arrayOf('array')->dynamic(),
 			'clientHost' => Expect::string()->dynamic(),
 			'persistent' => Expect::bool(false)->dynamic(),
@@ -65,8 +65,18 @@ class MailExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($this->config['smtp']) {
-			$this->config['secure'] = $this->config['encryption'] ?? $this->config['secure'];
-			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$this->config]);
+			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [
+				'host' => $this->config['host'] ?? ini_get('SMTP'),
+				'port' => isset($this->config['host']) ? $this->config['port'] : (int) ini_get('smtp_port'),
+				'username' => $this->config['username'],
+				'password' => $this->config['password'],
+				'encryption' => $this->config['encryption'] ?? $this->config['secure'],
+				'persistent' => $this->config['persistent'],
+				'timeout' => $this->config['timeout'],
+				'clientHost' => $this->config['clientHost'],
+				'streamOptions' => $this->config['context'] ?: null,
+			]);
+
 		} else {
 			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
 		}

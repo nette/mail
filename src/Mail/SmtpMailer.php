@@ -19,55 +19,40 @@ class SmtpMailer implements Mailer
 {
 	use Nette\SmartObject;
 
-	private ?Signer $signer = null;
+	public const
+		EncryptionSSL = 'ssl',
+		EncryptionTLS = 'tls';
 
 	/** @var ?resource */
 	private $connection;
-	private string $host;
-	private ?int $port;
-	private string $username;
-	private string $password;
-	private string $secure;
-	private int $timeout;
 
 	/** @var resource */
 	private $context;
-	private bool $persistent;
 	private string $clientHost;
+	private ?Signer $signer = null;
 
 
-	public function __construct(array $options = [])
-	{
-		if (isset($options['host'])) {
-			$this->host = $options['host'];
-			$this->port = isset($options['port'])
-				? (int) $options['port']
-				: null;
-		} else {
-			$this->host = ini_get('SMTP');
-			$this->port = (int) ini_get('smtp_port');
-		}
+	public function __construct(
+		private string $host,
+		private string $username,
+		private string $password,
+		private ?int $port = null,
+		private ?string $encryption = null,
+		private bool $persistent = false,
+		private int $timeout = 20,
+		?string $clientHost = null,
+		?array $streamOptions = null,
+	) {
+		$this->context = $streamOptions === null
+			? stream_context_get_default()
+			: stream_context_create($streamOptions);
 
-		$this->username = $options['username'] ?? '';
-		$this->password = $options['password'] ?? '';
-		$this->secure = $options['secure'] ?? '';
-		$this->timeout = isset($options['timeout'])
-			? (int) $options['timeout']
-			: 20;
-		$this->context = isset($options['context'])
-			? stream_context_create($options['context'])
-			: stream_context_get_default();
-		if (!$this->port) {
-			$this->port = $this->secure === 'ssl' ? 465 : 25;
-		}
-
-		$this->persistent = !empty($options['persistent']);
-		if (isset($options['clientHost'])) {
-			$this->clientHost = $options['clientHost'];
-		} else {
+		if ($clientHost === null) {
 			$this->clientHost = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+$#D', $_SERVER['HTTP_HOST'])
 				? $_SERVER['HTTP_HOST']
 				: 'localhost';
+		} else {
+			$this->clientHost = $clientHost;
 		}
 	}
 
@@ -136,8 +121,9 @@ class SmtpMailer implements Mailer
 	 */
 	protected function connect(): void
 	{
+		$port = $this->port ?? ($this->encryption === self::EncryptionSSL ? 465 : 25);
 		$this->connection = @stream_socket_client(// @ is escalated to exception
-			($this->secure === 'ssl' ? 'ssl://' : '') . $this->host . ':' . $this->port,
+			($this->encryption === self::EncryptionSSL ? 'ssl://' : '') . $this->host . ':' . $port,
 			$errno,
 			$error,
 			$this->timeout,
@@ -151,7 +137,7 @@ class SmtpMailer implements Mailer
 		stream_set_timeout($this->connection, $this->timeout, 0);
 		$this->read(); // greeting
 
-		if ($this->secure === 'tls') {
+		if ($this->encryption === self::EncryptionTLS) {
 			$this->write("EHLO $this->clientHost", 250);
 			$this->write('STARTTLS', 220);
 			if (!stream_socket_enable_crypto(
