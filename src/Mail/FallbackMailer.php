@@ -62,7 +62,7 @@ class FallbackMailer implements Mailer
 
 				} catch (SendException $e) {
 					$failures[] = $e;
-					$this->onFailure($this, $e, $mailer, $mail);
+					Nette\Utils\Arrays::invoke($this->onFailure, $this, $e, $mailer, $mail);
 				}
 			}
 		}

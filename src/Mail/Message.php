@@ -208,7 +208,7 @@ class Message extends MimePart
 					(["\']?)(?![a-z]+:|[/\#])([^"\'>)\s]+)
 					|\[\[ ([\w()+./@~-]+) \]\]
 				#ix',
-				PREG_OFFSET_CAPTURE,
+				captureOffset: true,
 			);
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
