@@ -26,7 +26,8 @@ class MailExtension extends Nette\DI\CompilerExtension
 			'port' => Expect::int()->dynamic(),
 			'username' => Expect::string()->dynamic(),
 			'password' => Expect::string()->dynamic(),
-			'secure' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(),
+			'secure' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(), // deprecated
+			'encryption' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(),
 			'timeout' => Expect::int()->dynamic(),
 			'context' => Expect::arrayOf('array')->dynamic(),
 			'clientHost' => Expect::string()->dynamic(),
@@ -38,7 +39,6 @@ class MailExtension extends Nette\DI\CompilerExtension
 					'selector' => Expect::string()->dynamic(),
 					'privateKey' => Expect::string()->required(),
 					'passPhrase' => Expect::string()->dynamic(),
-					'testMode' => Expect::bool(false)->dynamic(),
 				])->castTo('array')
 			),
 		])->castTo('array');
@@ -65,6 +65,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($this->config['smtp']) {
+			$this->config['secure'] = $this->config['encryption'] ?? $this->config['secure'];
 			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [$this->config]);
 		} else {
 			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
