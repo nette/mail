@@ -25,7 +25,7 @@ $mail->addTo('Lady Jane <jane@example.com>');
 $mail->setSubject('Hello Jane!');
 $mail->setBody('Příliš žluťoučký kůň');
 
-$signer = new class (['privateKey' => $privateKey, 'domain' => 'nette.org', 'selector' => 'selector'], ['From', 'To', 'Subject']) extends DkimSigner {
+$signer = new class ('nette.org', 'selector', $privateKey, null, ['From', 'To', 'Subject']) extends DkimSigner {
 	protected function getTime(): int
 	{
 		return 0;

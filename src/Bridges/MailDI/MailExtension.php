@@ -35,8 +35,8 @@ class MailExtension extends Nette\DI\CompilerExtension
 			'dkim' => Expect::anyOf(
 				Expect::null(),
 				Expect::structure([
-					'domain' => Expect::string()->dynamic(),
-					'selector' => Expect::string()->dynamic(),
+					'domain' => Expect::string()->required()->dynamic(),
+					'selector' => Expect::string()->required()->dynamic(),
 					'privateKey' => Expect::string()->required(),
 					'passPhrase' => Expect::string()->dynamic(),
 				])->castTo('array'),
@@ -59,7 +59,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 			$signer = $builder->addDefinition($this->prefix('signer'))
 				->setType(Nette\Mail\Signer::class)
-				->setFactory(Nette\Mail\DkimSigner::class, [$dkim]);
+				->setFactory(Nette\Mail\DkimSigner::class, $dkim);
 
 			$mailer->addSetup('setSigner', [$signer]);
 		}

@@ -18,7 +18,7 @@ if (!extension_loaded('openssl')) {
 	Tester\Environment::skip('OpenSSL not installed');
 }
 
-$signer = new DkimSigner([]);
+$signer = new DkimSigner('', '', '');
 
 $mail = new Message;
 $mail->setFrom('John Doe <doe@example.com>');
