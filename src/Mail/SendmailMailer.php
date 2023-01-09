@@ -19,11 +19,8 @@ class SendmailMailer implements Mailer
 {
 	use Nette\SmartObject;
 
-	/** @var string|null */
-	public $commandArgs;
-
-	/** @var Signer|null */
-	private $signer;
+	public ?string $commandArgs = null;
+	private ?Signer $signer = null;
 
 
 	/** @return static */

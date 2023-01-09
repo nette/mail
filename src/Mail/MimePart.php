@@ -39,14 +39,9 @@ class MimePart
 		SequenceValue = 1,
 		SequenceWord = 2;
 
-	/** @var array */
-	private $headers = [];
-
-	/** @var array */
-	private $parts = [];
-
-	/** @var string */
-	private $body = '';
+	private array $headers = [];
+	private array $parts = [];
+	private string $body = '';
 
 
 	/**

@@ -27,21 +27,11 @@ class DkimSigner implements Signer
 	];
 
 	private const DkimSignature = 'DKIM-Signature';
-
-	/** @var string */
-	private $domain;
-
-	/** @var array */
-	private $signHeaders;
-
-	/** @var string */
-	private $selector;
-
-	/** @var string */
-	private $privateKey;
-
-	/** @var string */
-	private $passPhrase;
+	private string $domain;
+	private array $signHeaders;
+	private string $selector;
+	private string $privateKey;
+	private string $passPhrase;
 
 
 	/** @throws Nette\NotSupportedException */
@@ -109,7 +99,7 @@ class DkimSigner implements Signer
 
 		$parts = [];
 		foreach ($test = explode("\r\n", $rawHeader) as $key => $header) {
-			if (strpos($header, ':') !== false) {
+			if (str_contains($header, ':')) {
 				[$heading, $value] = explode(':', $header, 2);
 
 				if (($index = array_search($heading, $selectedHeaders, true)) !== false) {
