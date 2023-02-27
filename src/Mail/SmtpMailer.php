@@ -35,6 +35,7 @@ class SmtpMailer implements Mailer
 	public function __construct(
 		private string $host,
 		private string $username,
+		#[\SensitiveParameter]
 		private string $password,
 		private ?int $port = null,
 		private ?string $encryption = null,
