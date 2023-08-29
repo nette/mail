@@ -9,16 +9,12 @@ declare(strict_types=1);
 
 namespace Nette\Mail;
 
-use Nette;
-
 
 /**
  * Sends emails via the SMTP server.
  */
 class SmtpMailer implements Mailer
 {
-	use Nette\SmartObject;
-
 	public const
 		EncryptionSSL = 'ssl',
 		EncryptionTLS = 'tls';

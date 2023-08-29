@@ -14,8 +14,6 @@ use Nette;
 
 class DkimSigner implements Signer
 {
-	use Nette\SmartObject;
-
 	private const DefaultSignHeaders = [
 		'From',
 		'To',
