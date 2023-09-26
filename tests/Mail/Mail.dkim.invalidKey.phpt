@@ -26,6 +26,7 @@ $mail->addTo('Lady Jane <jane@example.com>');
 $mail->setSubject('Hello Jane!');
 $mail->setBody('Příliš žluťoučký kůň');
 
-Assert::exception(function () use ($signer, $mail) {
-	$signer->generateSignedMessage($mail);
-}, SignException::class);
+Assert::exception(
+	fn() => $signer->generateSignedMessage($mail),
+	SignException::class,
+);

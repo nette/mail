@@ -80,7 +80,7 @@ class Message extends MimePart
 	 */
 	public function addReplyTo(string $email, ?string $name = null): static
 	{
-		$this->setHeader('Reply-To', $this->formatEmail($email, $name), true);
+		$this->setHeader('Reply-To', $this->formatEmail($email, $name), append: true);
 		return $this;
 	}
 
@@ -109,7 +109,7 @@ class Message extends MimePart
 	 */
 	public function addTo(string $email, ?string $name = null): static // addRecipient()
 	{
-		$this->setHeader('To', $this->formatEmail($email, $name), true);
+		$this->setHeader('To', $this->formatEmail($email, $name), append: true);
 		return $this;
 	}
 
@@ -119,7 +119,7 @@ class Message extends MimePart
 	 */
 	public function addCc(string $email, ?string $name = null): static
 	{
-		$this->setHeader('Cc', $this->formatEmail($email, $name), true);
+		$this->setHeader('Cc', $this->formatEmail($email, $name), append: true);
 		return $this;
 	}
 
@@ -129,7 +129,7 @@ class Message extends MimePart
 	 */
 	public function addBcc(string $email, ?string $name = null): static
 	{
-		$this->setHeader('Bcc', $this->formatEmail($email, $name), true);
+		$this->setHeader('Bcc', $this->formatEmail($email, $name), append: true);
 		return $this;
 	}
 

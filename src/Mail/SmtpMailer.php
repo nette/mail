@@ -168,7 +168,7 @@ class SmtpMailer implements Mailer
 				$authMechanisms = explode(' ', trim($matches[1]));
 			}
 
-			if (in_array('PLAIN', $authMechanisms, true)) {
+			if (in_array('PLAIN', $authMechanisms, strict: true)) {
 				$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
 				$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
 			} else {
@@ -201,7 +201,7 @@ class SmtpMailer implements Mailer
 		fwrite($this->connection, $line . Message::EOL);
 		if ($expectedCode) {
 			$response = $this->read();
-			if (!in_array((int) $response, (array) $expectedCode, true)) {
+			if (!in_array((int) $response, (array) $expectedCode, strict: true)) {
 				throw new SmtpException('SMTP server did not accept ' . ($message ?: $line) . ' with error: ' . trim($response));
 			}
 		}

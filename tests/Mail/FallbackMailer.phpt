@@ -49,9 +49,11 @@ test('', function () {
 		$onFailureCalls[] = $mailer;
 	};
 
-	$e = Assert::exception(function () use ($mailer) {
-		$mailer->send(new Message);
-	}, FallbackMailerException::class, 'All mailers failed to send the message.');
+	$e = Assert::exception(
+		fn() => $mailer->send(new Message),
+		FallbackMailerException::class,
+		'All mailers failed to send the message.',
+	);
 	Assert::same([$subMailerA, $subMailerB, $subMailerA, $subMailerB, $subMailerA, $subMailerB], $onFailureCalls);
 	Assert::count(6, $e->failures);
 	Assert::same('Failure #1', $e->failures[0]->getMessage());

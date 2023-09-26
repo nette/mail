@@ -17,14 +17,20 @@ require __DIR__ . '/Mail.php';
 
 $mail = new Message;
 
-Assert::exception(function () use ($mail) {
-	$mail->setHeader('', 'value');
-}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, '' given.");
+Assert::exception(
+	fn() => $mail->setHeader('', 'value'),
+	InvalidArgumentException::class,
+	"Header name must be non-empty alphanumeric string, '' given.",
+);
 
-Assert::exception(function () use ($mail) {
-	$mail->setHeader(' name', 'value');
-}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, ' name' given.");
+Assert::exception(
+	fn() => $mail->setHeader(' name', 'value'),
+	InvalidArgumentException::class,
+	"Header name must be non-empty alphanumeric string, ' name' given.",
+);
 
-Assert::exception(function () use ($mail) {
-	$mail->setHeader('n*ame', 'value');
-}, InvalidArgumentException::class, "Header name must be non-empty alphanumeric string, 'n*ame' given.");
+Assert::exception(
+	fn() => $mail->setHeader('n*ame', 'value'),
+	InvalidArgumentException::class,
+	"Header name must be non-empty alphanumeric string, 'n*ame' given.",
+);
