@@ -74,7 +74,7 @@ Images can also be extremely easily inserted into the HTML body of an email. Jus
 // automatically adds /path/to/images/background.gif to the email
 $mail->setHtmlBody(
 	'<b>Hello</b> <img src="background.gif">',
-	'/path/to/images'
+	'/path/to/images',
 );
 ```
 
@@ -118,14 +118,14 @@ $mail = new Nette\Mail\Message;
 $mail->setFrom('John <john@example.com>')
 	->addTo('jack@example.com')
 	->setHtmlBody(
-		$latte->renderToString('email.latte', $params),
-		'/path/to/images'
+		$latte->renderToString('/path/to/email.latte', $params),
+		'/path/to/images',
 	);
 ```
 
 File `email.latte`:
 
-```html
+```latte
 <html>
 <head>
 	<meta charset="utf-8">
@@ -174,22 +174,22 @@ SmtpMailer
 To send mail via the SMTP server, use `SmtpMailer`.
 
 ```php
-$mailer = new Nette\Mail\SmtpMailer([
-	'host' => 'smtp.gmail.com',
-	'username' => 'franta@gmail.com',
-	'password' => '*****',
-	'secure' => 'ssl',
-]);
+$mailer = new Nette\Mail\SmtpMailer(
+	host: 'smtp.gmail.com',
+	username: 'franta@gmail.com',
+	password: '*****',
+	encryption: Nette\Mail\SmtpMailer::EncryptionSSL,
+);
 $mailer->send($mail);
 ```
 
-If you do not specify `host`, the value from php.ini will be used. The following additional keys can be used in the options:
+The following additional parameters can be passed to the constructor:
 
 * `port` - if not set, the default 25 or 465 for `ssl` will be used
-* `context` - allows you to set [SSL context options](https://www.php.net/manual/en/context.ssl.php) for connection
 * `timeout` - timeout for SMTP connection
 * `persistent` - use persistent connection
 * `clientHost` - client designation
+* `streamOptions` - allows you to set [SSL context options](https://www.php.net/manual/en/context.ssl.php) for connection
 
 
 FallbackMailer
@@ -201,12 +201,12 @@ It does not send email but sends them through a set of mailers. If one mailer fa
 $mailer = new Nette\Mail\FallbackMailer([
 	$smtpMailer,
 	$backupSmtpMailer,
-	$sendmailMailer
+	$sendmailMailer,
 ]);
 $mailer->send($mail);
 ```
 
-Other parameters in the constructor include the number of repeat and waiting time in miliseconds.
+Other parameters in the constructor include the number of repeat and waiting time in milliseconds.
 
 
 DKIM
@@ -216,14 +216,14 @@ DKIM (DomainKeys Identified Mail) is a trustworthy email technology that also he
 The recipient's server compares this signature with the public key stored in the domain's DNS records. By matching the signature, it is shown that the email actually originated from the sender's domain and that the message was not modified during the transmission of the message.
 
 ```php
-$options = [
-	'domain' => 'nette.org',
-	'selector' => 'dkim',
-	'privateKey' => file_get_contents('../dkim/dkim.key'),
-	'passPhrase' => '****',
-];
+$signer = new Nette\Mail\DkimSigner(
+	domain: 'nette.org',
+	selector: 'dkim',
+	privateKey: file_get_contents('../dkim/dkim.key'),
+	passPhrase: '****',
+);
 
 $mailer = new Nette\Mail\SendmailMailer; // or SmtpMailer
-$mailer->setSigner(new Nette\Mail\DkimSigner($options));
+$mailer->setSigner($signer);
 $mailer->send($mail);
 ```
