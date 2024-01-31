@@ -19,11 +19,22 @@ class SendmailMailer implements Mailer
 {
 	public string $commandArgs = '';
 	private ?Signer $signer = null;
+	// Setting an envelope address using command arg (-f $from) is allowed by default
+	private bool envelopeFrom = true;
 
 
 	public function setSigner(Signer $signer): static
 	{
 		$this->signer = $signer;
+		return $this;
+	}
+
+	/**
+	 * Enable/disable setting an envelope address using command arg (-f $from) 
+	 */
+	public function setEnvelopeFrom(bool $envelopeFrom): static
+	{
+		$this->evelopeFrom = $envelopeFrom;
 		return $this;
 	}
 
@@ -48,7 +59,7 @@ class SendmailMailer implements Mailer
 		$parts = explode(Message::EOL . Message::EOL, $data, 2);
 
 		$cmd = $this->commandArgs;
-		if ($from = $mail->getFrom()) {
+		if (($this->evelopeFrom) && ($from = $mail->getFrom())) {
 			$cmd .= ' -f' . key($from);
 		}
 
