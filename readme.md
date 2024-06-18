@@ -38,7 +38,7 @@ Installation
 composer require nette/mail
 ```
 
-It requires PHP version 8.0 and supports PHP up to 8.3.
+It requires PHP version 8.0 and supports PHP up to 8.4.
 
  <!---->
 
