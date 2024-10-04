@@ -19,11 +19,22 @@ class SendmailMailer implements Mailer
 {
 	public string $commandArgs = '';
 	private ?Signer $signer = null;
+	private bool $envelopeSender = true;
 
 
 	public function setSigner(Signer $signer): static
 	{
 		$this->signer = $signer;
+		return $this;
+	}
+
+
+	/**
+	 * Sets whether to use the envelope sender (-f option) in the mail command.
+	 */
+	public function setEnvelopeSender(bool $state = true): static
+	{
+		$this->envelopeSender = $state;
 		return $this;
 	}
 
@@ -48,7 +59,7 @@ class SendmailMailer implements Mailer
 		$parts = explode(Message::EOL . Message::EOL, $data, 2);
 
 		$cmd = $this->commandArgs;
-		if ($from = $mail->getFrom()) {
+		if ($this->envelopeSender && ($from = $mail->getFrom())) {
 			$cmd .= ' -f' . key($from);
 		}
 
