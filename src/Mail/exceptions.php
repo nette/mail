@@ -13,7 +13,7 @@ use Nette;
 
 
 /**
- * Exception thrown when a mail sending error is encountered.
+ * Failed to send the email.
  */
 class SendException extends Nette\InvalidStateException
 {
@@ -21,13 +21,16 @@ class SendException extends Nette\InvalidStateException
 
 
 /**
- * SMTP mailer exception.
+ * Failed to communicate with the SMTP server.
  */
 class SmtpException extends SendException
 {
 }
 
 
+/**
+ * All configured mailers failed to send the email.
+ */
 class FallbackMailerException extends SendException
 {
 	/** @var SendException[] */
@@ -35,6 +38,9 @@ class FallbackMailerException extends SendException
 }
 
 
+/**
+ * Failed to create or verify the email signature.
+ */
 class SignException extends SendException
 {
 }
