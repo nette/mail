@@ -40,7 +40,7 @@ class FailingMailer implements IMailer
 }
 
 
-test('', function () {
+test('all mailers fail after retries, triggering onFailure events', function () {
 	$subMailerA = new FailingMailer(3);
 	$subMailerB = new FailingMailer(3);
 
@@ -60,7 +60,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('partial failures with eventual success after retries', function () {
 	$subMailerA = new FailingMailer(3);
 	$subMailerB = new FailingMailer(2);
 
@@ -74,7 +74,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('immediate success without triggering failure events', function () {
 	$subMailerA = new FailingMailer(0);
 	$subMailerB = new FailingMailer(2);
 
