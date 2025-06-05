@@ -30,7 +30,10 @@
 		"ext-openssl": "to use Nette\\Mail\\DkimSigner"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": ["src/"],
+		"psr-4": {
+			"Nette\\": "src"
+		}
 	},
 	"minimum-stability": "dev",
 	"scripts": {
