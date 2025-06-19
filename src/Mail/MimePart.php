@@ -11,6 +11,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
+use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
 
 
 /**

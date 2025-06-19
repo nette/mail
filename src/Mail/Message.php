@@ -11,6 +11,8 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
+use function addcslashes, array_map, array_reverse, basename, date, explode, finfo_buffer, finfo_open, implode, is_numeric, ltrim, php_uname, preg_match, preg_replace, rtrim, str_replace, strcasecmp, stripslashes, strlen, substr, substr_replace, trim, urldecode;
+use const FILEINFO_MIME_TYPE;
 
 
 /**

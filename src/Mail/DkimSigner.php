@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Mail;
 
 use Nette;
+use function array_filter, array_merge, array_search, base64_encode, explode, extension_loaded, hash, implode, ksort, openssl_pkey_get_private, openssl_sign, pack, preg_match, preg_replace, rtrim, str_contains, str_replace, strlen, strtolower, time, trim;
 
 
 class DkimSigner implements Signer

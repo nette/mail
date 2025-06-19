@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Nette\Mail;
 
+use function in_array, is_resource;
+use const STREAM_CLIENT_CONNECT, STREAM_CRYPTO_METHOD_TLS_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
 
 /**
  * Sends emails via the SMTP server.
