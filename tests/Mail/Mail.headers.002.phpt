@@ -17,7 +17,7 @@ require __DIR__ . '/Mail.php';
 
 $mail = new Message;
 
-$mail->setFrom('John Doe <doe@example.com>');
+$mail->setFrom('Kdo uteče, obědvá <doe@example.com>');
 
 $mail->addTo('Lady Jane <jane@example.com>');
 $mail->addCc('jane@example.info');
@@ -37,7 +37,7 @@ Assert::match(<<<'EOD'
 	MIME-Version: 1.0
 	X-Mailer: Nette Framework
 	Date: %a%
-	From: John Doe <doe@example.com>
+	From: =?UTF-8?B?IktkbyB1dGXEjWUsIG9ixJtkdsOhIg==?= <doe@example.com>
 	To: Lady Jane <jane@example.com>
 	Cc: jane@example.info
 	Bcc: bcc@example.com
@@ -50,3 +50,5 @@ Assert::match(<<<'EOD'
 	Content-Type: text/plain; charset=UTF-8
 	Content-Transfer-Encoding: 7bit
 	EOD, TestMailer::$output);
+
+Assert::match('"Kdo uteče, obědvá"', iconv_mime_decode('=?UTF-8?B?IktkbyB1dGXEjWUsIG9ixJtkdsOhIg==?='));
