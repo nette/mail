@@ -31,7 +31,7 @@ class SmtpException extends SendException
  */
 class FallbackMailerException extends SendException
 {
-	/** @var SendException[] */
+	/** @var list<SendException> */
 	public array $failures;
 }
 

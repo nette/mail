@@ -36,12 +36,16 @@ class Message extends MimePart
 	#[\Deprecated('use Message::Low')]
 	public const LOW = self::Low;
 
+	/** @var array<string, string> */
 	public static array $defaultHeaders = [
 		'MIME-Version' => '1.0',
 		'X-Mailer' => 'Nette Framework',
 	];
 
+	/** @var list<MimePart> */
 	private array $attachments = [];
+
+	/** @var array<MimePart> */
 	private array $inlines = [];
 	private string $htmlBody = '';
 
@@ -68,6 +72,7 @@ class Message extends MimePart
 
 	/**
 	 * Returns the sender of the message.
+	 * @return ?array<string, ?string>
 	 */
 	public function getFrom(): ?array
 	{
@@ -136,6 +141,7 @@ class Message extends MimePart
 
 	/**
 	 * Formats recipient email.
+	 * @return array<string, ?string>
 	 */
 	private function formatEmail(string $email, ?string $name = null): array
 	{
@@ -281,7 +287,7 @@ class Message extends MimePart
 
 	/**
 	 * Gets all email attachments.
-	 * @return MimePart[]
+	 * @return list<MimePart>
 	 */
 	public function getAttachments(): array
 	{
