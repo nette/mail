@@ -43,6 +43,7 @@ class Message extends MimePart
 		'X-Mailer' => 'Nette Framework',
 	];
 
+	/** @var MimePart[] */
 	private array $attachments = [];
 	private array $inlines = [];
 	private string $htmlBody = '';
