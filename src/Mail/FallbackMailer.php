@@ -17,23 +17,14 @@ class FallbackMailer implements Mailer
 	/** @var array<callable(self, SendException, Mailer, Message): void> */
 	public array $onFailure = [];
 
-	/** @var Mailer[] */
-	private array $mailers;
 
-	private int $retryCount;
-
-	/** in miliseconds */
-	private int $retryWaitTime;
-
-
-	/**
-	 * @param Mailer[]  $mailers
-	 */
-	public function __construct(array $mailers, int $retryCount = 3, int $retryWaitTime = 1000)
-	{
-		$this->mailers = $mailers;
-		$this->retryCount = $retryCount;
-		$this->retryWaitTime = $retryWaitTime;
+	public function __construct(
+		/** @var list<Mailer> */
+		private array $mailers,
+		private int $retryCount = 3,
+		/** in miliseconds */
+		private int $retryWaitTime = 1000,
+	) {
 	}
 
 

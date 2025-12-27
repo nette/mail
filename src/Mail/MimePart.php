@@ -40,14 +40,17 @@ class MimePart
 		SequenceValue = 1,
 		SequenceWord = 2;
 
+	/** @var array<string, string|array<string, ?string>> */
 	private array $headers = [];
+
+	/** @var list<MimePart> */
 	private array $parts = [];
 	private string $body = '';
 
 
 	/**
 	 * Sets a header.
-	 * @param  string|array|null  $value  value or pair email => name
+	 * @param  string|array<string, ?string>|null  $value  value or pair email => name
 	 */
 	public function setHeader(string $name, string|array|null $value, bool $append = false): static
 	{
@@ -92,6 +95,7 @@ class MimePart
 
 	/**
 	 * Returns a header.
+	 * @return string|array<string, ?string>|null
 	 */
 	public function getHeader(string $name): mixed
 	{
@@ -144,6 +148,7 @@ class MimePart
 
 	/**
 	 * Returns all headers.
+	 * @return array<string, string|array<string, ?string>>
 	 */
 	public function getHeaders(): array
 	{

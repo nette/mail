@@ -31,6 +31,7 @@ class SmtpMailer implements Mailer
 	private ?Signer $signer = null;
 
 
+	/** @param array<string, array<string, mixed>>|null  $streamOptions */
 	public function __construct(
 		private string $host,
 		private string $username,
@@ -197,7 +198,7 @@ class SmtpMailer implements Mailer
 
 	/**
 	 * Writes data to server and checks response against expected code if some provided.
-	 * @param  int|int[]  $expectedCode
+	 * @param int|list<int>|null  $expectedCode
 	 */
 	protected function write(string $line, int|array|null $expectedCode = null, ?string $message = null): void
 	{

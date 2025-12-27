@@ -36,6 +36,7 @@ class DkimSigner implements Signer
 		private string $privateKey,
 		#[\SensitiveParameter]
 		private ?string $passPhrase = null,
+		/** @var list<string> */
 		private array $signHeaders = self::DefaultSignHeaders,
 	) {
 		if (!extension_loaded('openssl')) {
@@ -144,6 +145,7 @@ class DkimSigner implements Signer
 	}
 
 
+	/** @return list<string> */
 	protected function getSignedHeaders(Message $message): array
 	{
 		return array_filter($this->signHeaders, fn($name) => $message->getHeader($name) !== null);
