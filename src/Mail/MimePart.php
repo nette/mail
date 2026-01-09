@@ -40,7 +40,10 @@ class MimePart
 		SequenceValue = 1,
 		SequenceWord = 2;
 
+	/** @var array<string, string|array<string, ?string>> */
 	private array $headers = [];
+
+	/** @var MimePart[] */
 	private array $parts = [];
 	private string $body = '';
 
@@ -144,6 +147,7 @@ class MimePart
 
 	/**
 	 * Returns all headers.
+	 * @return array<string, string|array<string, ?string>>
 	 */
 	public function getHeaders(): array
 	{

@@ -45,6 +45,8 @@ class Message extends MimePart
 
 	/** @var MimePart[] */
 	private array $attachments = [];
+
+	/** @var MimePart[] */
 	private array $inlines = [];
 	private string $htmlBody = '';
 
@@ -71,6 +73,7 @@ class Message extends MimePart
 
 	/**
 	 * Returns the sender of the message.
+	 * @return array<string, ?string>|null
 	 */
 	public function getFrom(): ?array
 	{
@@ -139,6 +142,7 @@ class Message extends MimePart
 
 	/**
 	 * Formats recipient email.
+	 * @return array<string, ?string>
 	 */
 	private function formatEmail(string $email, ?string $name = null): array
 	{
