@@ -234,8 +234,9 @@ class Message extends MimePart
 		}
 
 		if ($this->getSubject() == null) { // intentionally ==
-			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function (array $m): void {
+			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function (array $m): string {
 				$this->setSubject(Nette\Utils\Html::htmlToText($m[1]));
+				return '';
 			});
 		}
 

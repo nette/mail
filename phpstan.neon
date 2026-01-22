@@ -1,8 +1,12 @@
 parameters:
-	level: 5
+	level: 6
 
 	paths:
 		- src
 
-includes:
-	- vendor/phpstan/phpstan-nette/extension.neon
+	checkMissingCallableSignature: true
+
+	ignoreErrors:
+		-   # backward compatibility alias IMailer
+			identifier: if.alwaysFalse
+			path: src/Mail/Mailer.php
