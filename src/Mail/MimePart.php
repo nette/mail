@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
-use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
+use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
 
 
 /**
@@ -95,7 +95,7 @@ class MimePart
 	 * Returns a header.
 	 * @return string|array<string, ?string>|null
 	 */
-	public function getHeader(string $name): mixed
+	public function getHeader(string $name): string|array|null
 	{
 		return $this->headers[$name] ?? null;
 	}
@@ -179,7 +179,8 @@ class MimePart
 	 */
 	public function getEncoding(): string
 	{
-		return $this->getHeader('Content-Transfer-Encoding');
+		$encoding = $this->getHeader('Content-Transfer-Encoding');
+		return is_string($encoding) ? $encoding : '';
 	}
 
 
@@ -304,7 +305,7 @@ class MimePart
 			'scheme' => 'B', // Q is broken
 			'input-charset' => 'UTF-8',
 			'output-charset' => 'UTF-8',
-		]);
+		]) ?: '';
 
 		$offset = strlen($s) - strrpos($s, "\n");
 		$s = substr($s, $old + 2); // adds ': '

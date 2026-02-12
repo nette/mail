@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
-use function addcslashes, array_map, array_reverse, basename, date, explode, finfo_buffer, finfo_open, implode, is_numeric, ltrim, php_uname, preg_match, preg_replace, rtrim, str_replace, strcasecmp, stripslashes, strlen, substr, substr_replace, trim, urldecode;
+use function addcslashes, array_map, array_reverse, basename, date, explode, finfo_buffer, finfo_open, implode, is_array, is_numeric, is_string, ltrim, php_uname, preg_match, preg_replace, rtrim, str_replace, strcasecmp, stripslashes, strlen, substr, substr_replace, trim, urldecode;
 use const FILEINFO_MIME_TYPE;
 
 
@@ -76,7 +76,8 @@ class Message extends MimePart
 	 */
 	public function getFrom(): ?array
 	{
-		return $this->getHeader('From');
+		$value = $this->getHeader('From');
+		return is_array($value) ? $value : null;
 	}
 
 
@@ -105,7 +106,8 @@ class Message extends MimePart
 	 */
 	public function getSubject(): ?string
 	{
-		return $this->getHeader('Subject');
+		$value = $this->getHeader('Subject');
+		return is_string($value) ? $value : null;
 	}
 
 
@@ -173,7 +175,8 @@ class Message extends MimePart
 	 */
 	public function getReturnPath(): ?string
 	{
-		return $this->getHeader('Return-Path');
+		$value = $this->getHeader('Return-Path');
+		return is_string($value) ? $value : null;
 	}
 
 
@@ -219,7 +222,8 @@ class Message extends MimePart
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
 				if (!isset($cids[$file])) {
-					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
+					$contentId = $this->addEmbeddedFile($file)->getHeader('Content-ID');
+					$cids[$file] = is_string($contentId) ? substr($contentId, 1, -1) : '';
 				}
 
 				$html = substr_replace(
@@ -312,7 +316,9 @@ class Message extends MimePart
 		}
 
 		if (!$contentType) {
-			$contentType = finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$contentType = $finfo ? finfo_buffer($finfo, $content) : false;
+			$contentType = $contentType ?: 'application/octet-stream';
 		}
 
 		if (!strcasecmp($contentType, 'message/rfc822')) { // not allowed for attached files
