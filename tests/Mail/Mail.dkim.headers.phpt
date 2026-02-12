@@ -31,9 +31,9 @@ $mail->setSubject('Hello Jane!');
 $mail->setBody('Příliš žluťoučký kůň');
 
 Assert::equal([
-	0 => 'From',
-	1 => 'To',
-	2 => 'Date',
-	3 => 'Subject',
-	5 => 'X-Mailer',
+	'From',
+	'To',
+	'Date',
+	'Subject',
+	'X-Mailer',
 ], $signer->getSignedHeaders($mail));

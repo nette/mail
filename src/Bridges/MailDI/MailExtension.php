@@ -41,21 +41,23 @@ class MailExtension extends Nette\DI\CompilerExtension
 					'passPhrase' => Expect::string()->dynamic(),
 				])->castTo('array'),
 			),
-		])->castTo('array');
+		]);
 	}
 
 
 	public function loadConfiguration(): void
 	{
+		/** @var \stdClass $config */
+		$config = $this->config;
 		$builder = $this->getContainerBuilder();
 
 		$mailer = $builder->addDefinition($this->prefix('mailer'))
 			->setType(Nette\Mail\Mailer::class);
 
-		if ($this->config['dkim']) {
-			$dkim = $this->config['dkim'];
+		if ($config->dkim) {
+			$dkim = $config->dkim;
 			$dkim['privateKey'] = Nette\Utils\FileSystem::read($dkim['privateKey']);
-			unset($this->config['dkim']);
+			unset($config->dkim);
 
 			$signer = $builder->addDefinition($this->prefix('signer'))
 				->setType(Nette\Mail\Signer::class)
@@ -64,17 +66,17 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->addSetup('setSigner', [$signer]);
 		}
 
-		if ($this->config['smtp']) {
+		if ($config->smtp) {
 			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [
-				'host' => $this->config['host'] ?? ini_get('SMTP'),
-				'port' => isset($this->config['host']) ? $this->config['port'] : (int) ini_get('smtp_port'),
-				'username' => $this->config['username'],
-				'password' => $this->config['password'],
-				'encryption' => $this->config['encryption'] ?? $this->config['secure'],
-				'persistent' => $this->config['persistent'],
-				'timeout' => $this->config['timeout'],
-				'clientHost' => $this->config['clientHost'],
-				'streamOptions' => $this->config['context'] ?: null,
+				'host' => $config->host ?? ini_get('SMTP'),
+				'port' => isset($config->host) ? $config->port : (int) ini_get('smtp_port'),
+				'username' => $config->username,
+				'password' => $config->password,
+				'encryption' => $config->encryption ?? $config->secure,
+				'persistent' => $config->persistent,
+				'timeout' => $config->timeout,
+				'clientHost' => $config->clientHost,
+				'streamOptions' => $config->context ?: null,
 			]);
 
 		} else {

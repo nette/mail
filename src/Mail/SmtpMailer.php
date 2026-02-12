@@ -87,10 +87,12 @@ class SmtpMailer implements Mailer
 				$this->connect();
 			}
 
-			if (
-				($from = $mail->getHeader('Return-Path'))
-				|| ($from = array_keys((array) $mail->getHeader('From'))[0] ?? null)
-			) {
+			$from = $mail->getHeader('Return-Path');
+			if (!is_string($from)) {
+				$from = array_keys((array) $mail->getHeader('From'))[0] ?? null;
+			}
+
+			if (is_string($from)) {
 				$this->write("MAIL FROM:<$from>", 250);
 			}
 
@@ -127,7 +129,7 @@ class SmtpMailer implements Mailer
 	protected function connect(): void
 	{
 		$port = $this->port ?? ($this->encryption === self::EncryptionSSL ? 465 : 25);
-		$this->connection = @stream_socket_client(// @ is escalated to exception
+		$connection = @stream_socket_client(// @ is escalated to exception
 			($this->encryption === self::EncryptionSSL ? 'ssl://' : '') . $this->host . ':' . $port,
 			$errno,
 			$error,
@@ -135,18 +137,20 @@ class SmtpMailer implements Mailer
 			STREAM_CLIENT_CONNECT,
 			$this->context,
 		);
-		if (!$this->connection) {
-			throw new SmtpException($error ?: error_get_last()['message'], $errno);
+		if (!$connection) {
+			throw new SmtpException($error ?: error_get_last()['message'] ?? 'Unknown error', (int) $errno);
 		}
 
-		stream_set_timeout($this->connection, $this->timeout, 0);
+		$this->connection = $connection;
+
+		stream_set_timeout($connection, $this->timeout, 0);
 		$this->read(); // greeting
 
 		if ($this->encryption === self::EncryptionTLS) {
 			$this->write("EHLO $this->clientHost", 250);
 			$this->write('STARTTLS', 220);
 			if (!stream_socket_enable_crypto(
-				$this->connection,
+				$connection,
 				true,
 				STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
 			)) {
@@ -191,8 +195,10 @@ class SmtpMailer implements Mailer
 	 */
 	protected function disconnect(): void
 	{
-		fclose($this->connection);
-		$this->connection = null;
+		if ($this->connection) {
+			fclose($this->connection);
+			$this->connection = null;
+		}
 	}
 
 
@@ -202,7 +208,7 @@ class SmtpMailer implements Mailer
 	 */
 	protected function write(string $line, int|array|null $expectedCode = null, ?string $message = null): void
 	{
-		fwrite($this->connection, $line . Message::EOL);
+		fwrite($this->connection ?? throw new SmtpException('Not connected to SMTP server.'), $line . Message::EOL);
 		if ($expectedCode) {
 			$response = $this->read();
 			if (!in_array((int) $response, (array) $expectedCode, strict: true)) {
@@ -229,6 +235,8 @@ class SmtpMailer implements Mailer
 				} elseif ($info['eof']) {
 					throw new SmtpException('Connection has been closed unexpectedly.');
 				}
+
+				continue;
 			}
 
 			$data .= $line;

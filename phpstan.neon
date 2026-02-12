@@ -1,5 +1,10 @@
 parameters:
-	level: 5
+	level: 8
 
 	paths:
 		- src
+
+	ignoreErrors:
+		-
+			identifier: if.alwaysFalse
+			path: src/Mail/Mailer.php

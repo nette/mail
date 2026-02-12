@@ -97,7 +97,7 @@ class MimePart
 	 * Returns a header.
 	 * @return string|array<string, ?string>|null
 	 */
-	public function getHeader(string $name): mixed
+	public function getHeader(string $name): string|array|null
 	{
 		return $this->headers[$name] ?? null;
 	}
@@ -181,7 +181,8 @@ class MimePart
 	 */
 	public function getEncoding(): string
 	{
-		return $this->getHeader('Content-Transfer-Encoding');
+		$encoding = $this->getHeader('Content-Transfer-Encoding');
+		return is_string($encoding) ? $encoding : '';
 	}
 
 
@@ -306,7 +307,7 @@ class MimePart
 			'scheme' => 'B', // Q is broken
 			'input-charset' => 'UTF-8',
 			'output-charset' => 'UTF-8',
-		]);
+		]) ?: '';
 
 		$offset = strlen($s) - strrpos($s, "\n");
 		$s = substr($s, $old + 2); // adds ': '

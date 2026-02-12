@@ -148,7 +148,7 @@ class DkimSigner implements Signer
 	/** @return list<string> */
 	protected function getSignedHeaders(Message $message): array
 	{
-		return array_filter($this->signHeaders, fn($name) => $message->getHeader($name) !== null);
+		return array_values(array_filter($this->signHeaders, fn($name) => $message->getHeader($name) !== null));
 	}
 
 
