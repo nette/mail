@@ -286,12 +286,21 @@ class MimePart
 	 */
 	private static function encodeSequence(string $s, int &$offset = 0, ?int $type = null): string
 	{
+		$escape = static function (string $s): string {
+			// RFC 2822 atext except =
+			if (preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1) {
+				return sprintf('"%s"', addcslashes($s, '"\\'));
+			}
+
+			return $s;
+		};
+
 		if (
 			(strlen($s) < self::LineLength - 3) && // 3 is tab + quotes
 			strspn($s, "!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
 		) {
-			if ($type && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s)) { // RFC 2822 atext except =
-				return self::append('"' . addcslashes($s, '"\\') . '"', $offset);
+			if ($type !== null) {
+				$s = $escape($s);
 			}
 
 			return self::append($s, $offset);
@@ -301,6 +310,10 @@ class MimePart
 		if ($offset >= 55) { // maximum for iconv_mime_encode
 			$o = self::EOL . "\t";
 			$offset = 1;
+		}
+
+		if ($type !== null) {
+			$s = $escape($s);
 		}
 
 		$s = iconv_mime_encode(str_repeat(' ', $old = $offset), $s, [
