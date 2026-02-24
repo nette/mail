@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @phpIni disable_functions=mail
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\Message;
 use Tester\Assert;

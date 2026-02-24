@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Common code for Mail test cases.
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\SmtpMailer;
 

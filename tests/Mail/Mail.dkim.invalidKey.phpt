@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Mail\DkimSigner invalid private key.
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\DkimSigner;
 use Nette\Mail\Message;

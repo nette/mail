@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Mail\Message subject.
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\Message;
 use Tester\Assert;

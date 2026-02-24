@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Mail\SmtpMailer correctly handles Bcc-only message
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\Message;
 use Tester\Assert;

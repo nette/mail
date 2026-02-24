@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Mail\Message custom Message-ID header.
  */
-
-declare(strict_types=1);
 
 use Nette\Mail\Message;
 use Tester\Assert;

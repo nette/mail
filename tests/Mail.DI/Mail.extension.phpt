@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: MailExtension.
  */
-
-declare(strict_types=1);
 
 use Nette\Bridges\MailDI\MailExtension;
 use Nette\DI;
