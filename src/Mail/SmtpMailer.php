@@ -8,7 +8,6 @@
 namespace Nette\Mail;
 
 use function in_array, is_resource;
-use const STREAM_CLIENT_CONNECT, STREAM_CRYPTO_METHOD_TLS_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
 
 
 /**
@@ -184,9 +183,6 @@ class SmtpMailer implements Mailer
 	}
 
 
-	/**
-	 * Disconnects from SMTP server.
-	 */
 	protected function disconnect(): void
 	{
 		fclose($this->connection);

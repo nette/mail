@@ -10,6 +10,9 @@ namespace Nette\Mail;
 use Nette;
 
 
+/**
+ * Tries multiple mailers in sequence with retries; throws FallbackMailerException only when all attempts fail.
+ */
 class FallbackMailer implements Mailer
 {
 	/** @var array<callable(self, SendException, Mailer, Message): void> */
@@ -20,7 +23,7 @@ class FallbackMailer implements Mailer
 		/** @var list<Mailer> */
 		private array $mailers,
 		private int $retryCount = 3,
-		/** in miliseconds */
+		/** in milliseconds */
 		private int $retryWaitTime = 1000,
 	) {
 	}
