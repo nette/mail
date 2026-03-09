@@ -21,7 +21,7 @@ class MimePart
 {
 	use Nette\SmartObject;
 
-	/** encoding */
+	/** Content-Transfer-Encoding values */
 	public const
 		EncodingBase64 = 'base64',
 		Encoding7Bit = '7bit',
@@ -92,7 +92,7 @@ class MimePart
 
 
 	/**
-	 * Returns a header.
+	 * Returns the header value, or null if not set.
 	 * @return string|array<string, ?string>|null
 	 */
 	public function getHeader(string $name): mixed
@@ -101,9 +101,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Removes a header.
-	 */
 	public function clearHeader(string $name): static
 	{
 		unset($this->headers[$name]);
@@ -154,9 +151,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Sets Content-Type header.
-	 */
 	public function setContentType(string $contentType, ?string $charset = null): static
 	{
 		$this->setHeader('Content-Type', $contentType . ($charset ? "; charset=$charset" : ''));
@@ -164,9 +158,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Sets Content-Transfer-Encoding header.
-	 */
 	public function setEncoding(string $encoding): static
 	{
 		$this->setHeader('Content-Transfer-Encoding', $encoding);
@@ -174,9 +165,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Returns Content-Transfer-Encoding header.
-	 */
 	public function getEncoding(): string
 	{
 		return $this->getHeader('Content-Transfer-Encoding');
@@ -192,9 +180,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Sets textual body.
-	 */
 	public function setBody(string $body): static
 	{
 		$this->body = $body;
@@ -202,9 +187,6 @@ class MimePart
 	}
 
 
-	/**
-	 * Gets textual body.
-	 */
 	public function getBody(): string
 	{
 		return $this->body;
@@ -279,7 +261,7 @@ class MimePart
 
 
 	/**
-	 * Converts a 8 bit header to a string.
+	 * MIME-encodes a string for use in a header, handling line length and folding.
 	 */
 	private static function encodeSequence(string $s, int &$offset = 0, ?int $type = null): string
 	{

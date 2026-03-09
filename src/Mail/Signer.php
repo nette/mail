@@ -9,10 +9,13 @@ namespace Nette\Mail;
 
 
 /**
- * Signer interface.
+ * Signs email messages.
  */
 interface Signer
 {
-	/** @throws SignException */
+	/**
+	 * Returns the signed email message as a string.
+	 * @throws SignException
+	 */
 	public function generateSignedMessage(Message $message): string;
 }

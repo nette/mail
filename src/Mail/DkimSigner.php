@@ -11,6 +11,9 @@ use Nette;
 use function array_filter, array_merge, array_search, base64_encode, explode, extension_loaded, hash, implode, ksort, openssl_pkey_get_private, openssl_sign, pack, preg_match, preg_replace, rtrim, str_contains, str_replace, strlen, strtolower, time, trim;
 
 
+/**
+ * Signs email messages using DKIM (DomainKeys Identified Mail).
+ */
 class DkimSigner implements Signer
 {
 	private const DefaultSignHeaders = [
@@ -43,7 +46,10 @@ class DkimSigner implements Signer
 	}
 
 
-	/** @throws SignException */
+	/**
+	 * Returns the signed message as a string with the DKIM-Signature header prepended.
+	 * @throws SignException
+	 */
 	public function generateSignedMessage(Message $message): string
 	{
 		$message = $message->build();
@@ -58,6 +64,9 @@ class DkimSigner implements Signer
 	}
 
 
+	/**
+	 * Builds the DKIM-Signature header value.
+	 */
 	protected function getSignature(Message $message, string $header, string $body): string
 	{
 		$parts = [];
@@ -83,6 +92,9 @@ class DkimSigner implements Signer
 	}
 
 
+	/**
+	 * Canonicalizes the selected headers, signs them, and returns the complete DKIM-Signature header string.
+	 */
 	protected function computeSignature(string $rawHeader, string $signature): string
 	{
 		$selectedHeaders = array_merge($this->signHeaders, [self::DkimSignature]);
@@ -108,7 +120,10 @@ class DkimSigner implements Signer
 	}
 
 
-	/** @throws SignException */
+	/**
+	 * Signs the value with the RSA private key and returns the base64-encoded signature.
+	 * @throws SignException
+	 */
 	protected function sign(string $value): string
 	{
 		$privateKey = openssl_pkey_get_private($this->privateKey, $this->passPhrase);
@@ -124,6 +139,9 @@ class DkimSigner implements Signer
 	}
 
 
+	/**
+	 * Computes the base64-encoded SHA-256 hash of the canonicalized body.
+	 */
 	protected function computeBodyHash(string $body): string
 	{
 		return base64_encode(
@@ -135,6 +153,9 @@ class DkimSigner implements Signer
 	}
 
 
+	/**
+	 * Normalizes line endings to CRLF and ensures the body ends with a single CRLF.
+	 */
 	protected function normalizeNewLines(string $s): string
 	{
 		$s = str_replace(["\r\n", "\n"], "\r", $s);

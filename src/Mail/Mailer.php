@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 
 /**
- * Mailer interface.
+ * Sends email messages.
  */
 interface Mailer
 {
