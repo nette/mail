@@ -17,12 +17,12 @@
 	"require": {
 		"php": "8.2 - 8.5",
 		"ext-iconv": "*",
-		"nette/utils": "^4.0"
+		"nette/utils": "^4.1"
 	},
 	"require-dev": {
 		"nette/di": "^3.1 || ^4.0",
 		"nette/tester": "^2.6",
-		"tracy/tracy": "^2.8",
+		"tracy/tracy": "^2.11",
 		"phpstan/phpstan-nette": "^2.0@stable"
 	},
 	"suggest": {
