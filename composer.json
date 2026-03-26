@@ -28,6 +28,7 @@
 		"nette/phpstan-rules": "^1.0"
 	},
 	"suggest": {
+		"ext-dom": "to use Nette\\Mail\\CssInliner",
 		"ext-fileinfo": "to detect type of attached files",
 		"ext-openssl": "to use Nette\\Mail\\DkimSigner"
 	},

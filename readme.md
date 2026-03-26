@@ -153,6 +153,23 @@ File `email.latte`:
 
 Nette automatically inserts all images, sets the subject according to the `<title>` element, and generates text alternative for HTML body.
 
+
+CSS Inlining
+------------
+
+Email clients often ignore `<style>` tags, so CSS needs to be applied as inline `style` attributes. The `CssInliner` does this automatically and also adds HTML attributes (`bgcolor`, `width`, `align`) for Outlook.
+
+```php
+$html = (new Nette\Mail\CssInliner)
+	->addCss('p { margin: 0; } a { color: #a0704e; }')
+	->inline($html);
+```
+
+Rules from `<style>` tags in the HTML are extracted and inlined too. The `<style>` tags are preserved so that `@media` queries keep working. CSS nesting is supported.
+
+Requires PHP 8.4+ (`ext-dom`).
+
+
  <!---->
 
 
