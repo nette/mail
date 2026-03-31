@@ -200,6 +200,33 @@ test('data: URI in <style> tag', function () {
 });
 
 
+test('unquoted SVG data: URI with parentheses in content', function () {
+	$result = (new CssInliner)
+		->addCss("div { background-image: url(data:image/svg+xml,<svg><g transform='translate(50,50)'></g></svg>); }")
+		->inline('<html><body><div>X</div></body></html>');
+
+	Assert::contains("background-image: url(data:image/svg+xml,<svg><g transform='translate(50,50)'></g></svg>)", $result);
+});
+
+
+test('unquoted SVG data: URI with rgba() in content', function () {
+	$result = (new CssInliner)
+		->addCss("div { background-image: url(data:image/svg+xml,<svg><rect fill='rgba(255,0,0,0.5)'/></svg>); }")
+		->inline('<html><body><div>X</div></body></html>');
+
+	Assert::contains("background-image: url(data:image/svg+xml,<svg><rect fill='rgba(255,0,0,0.5)'/></svg>)", $result);
+});
+
+
+test('unquoted SVG data: URI with url() reference in content', function () {
+	$result = (new CssInliner)
+		->addCss("div { background-image: url(data:image/svg+xml,<svg><rect fill='url(#grad)'/></svg>); }")
+		->inline('<html><body><div>X</div></body></html>');
+
+	Assert::contains("background-image: url(data:image/svg+xml,<svg><rect fill='url(#grad)'/></svg>)", $result);
+});
+
+
 test('braces inside string values in stylesheet', function () {
 	$result = (new CssInliner)->inline(
 		'<html><head><style>.a { content: "{hello}"; color: red; } .b { margin: 0; }</style></head><body><p class="b">X</p></body></html>',
