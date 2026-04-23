@@ -47,29 +47,36 @@ class SendmailMailer implements Mailer
 			throw new SendException('Unable to send email: mail() has been disabled.');
 		}
 
-		$tmp = clone $mail;
-		$tmp->setHeader('Subject', null);
-		$tmp->setHeader('To', null);
-
 		$data = $this->signer
-			? $this->signer->generateSignedMessage($tmp)
-			: $tmp->generateMessage();
-		$parts = explode(Message::EOL . Message::EOL, $data, 2);
+			? $this->signer->generateSignedMessage($mail)
+			: $mail->generateMessage();
+		[$headers, $body] = explode(Message::EOL . Message::EOL, $data, 2);
+
+		// mail() adds 'To' and 'Subject' itself, remove them from the header block (after DKIM signing)
+		$lines = preg_split('#\r\n(?![ \t])#', $headers);
+		$lines = array_filter($lines, fn($line) => !preg_match('#^(?:To|Subject):#', $line));
+		$headers = implode(Message::EOL, $lines);
 
 		$cmd = $this->commandArgs;
 		if ($this->envelopeSender && ($from = $mail->getFrom())) {
 			$cmd .= ' -f' . key($from);
 		}
 
-		$args = [
+		$this->invokeMail(
 			(string) $mail->getEncodedHeader('To'),
 			(string) $mail->getEncodedHeader('Subject'),
-			$parts[1],
-			$parts[0],
+			$body,
+			$headers,
 			$cmd,
-		];
+		);
+	}
 
-		$res = Nette\Utils\Callback::invokeSafe('mail', $args, function (string $message) use (&$info): void {
+
+	/** @throws SendException */
+	protected function invokeMail(string $to, string $subject, string $body, string $headers, string $cmd): void
+	{
+		$info = '';
+		$res = Nette\Utils\Callback::invokeSafe('mail', [$to, $subject, $body, $headers, $cmd], function (string $message) use (&$info): void {
 			$info = ": $message";
 		});
 		if ($res === false) {
