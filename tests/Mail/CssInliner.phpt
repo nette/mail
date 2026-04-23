@@ -395,3 +395,23 @@ test('void elements serialized without closing tag', function () {
 	Assert::notContains('</hr>', $result);
 	Assert::notContains('</img>', $result);
 });
+
+
+test('selectors unsupported by DOM engine are skipped', function () {
+	$html = '<html><head><style>li::marker { color: #ca1818; } a:hover { color: blue; } p { margin: 0; }</style></head><body><ul><li>item</li></ul><p>text</p></body></html>';
+	$result = (new CssInliner)->inline($html);
+
+	Assert::contains('<p style="margin: 0">text</p>', $result);
+	Assert::contains('<style>', $result);
+	Assert::notContains('style="color: #ca1818"', $result);
+});
+
+
+test('addCss() unsupported selectors are skipped', function () {
+	$result = (new CssInliner)
+		->addCss('li::marker { color: red; } p { margin: 0; }')
+		->inline('<html><body><ul><li>item</li></ul><p>text</p></body></html>');
+
+	Assert::contains('<p style="margin: 0">text</p>', $result);
+	Assert::notContains('color: red', $result);
+});

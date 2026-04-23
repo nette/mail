@@ -96,7 +96,12 @@ class CssInliner
 		$allRules = array_merge($styleRules, $this->rules);
 
 		foreach ($allRules as [$selector, $declarations]) {
-			foreach ($doc->querySelectorAll($selector) as $element) {
+			try {
+				$matched = $doc->querySelectorAll($selector);
+			} catch (\DOMException) {
+				continue;
+			}
+			foreach ($matched as $element) {
 				$id = spl_object_id($element);
 				$elements[$id] = $element;
 				$collectedStyles[$id] = array_merge($collectedStyles[$id] ?? [], $declarations);
