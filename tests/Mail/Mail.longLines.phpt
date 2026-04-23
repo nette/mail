@@ -32,9 +32,9 @@ Assert::match(<<<'EOD'
 	X-Mailer: Nette Framework
 	Date: %a%
 	From: John Doe <doe@example.com>
-	To: Lady Jane <jane@example.foo>,williams@example.foo,=?UTF-8?B?xZg=?=
-		=?UTF-8?B?ZWhvxZkgxZjDrXplaw==?= <rizek@example.foo>,
-		=?UTF-8?B?THVib8WhIFNtYcW+w6Fr?= <smazak@example.foo>
+	To: Lady Jane <jane@example.foo>,williams@example.foo,=?UTF-8?B?Ig==?=
+		=?UTF-8?B?xZhlaG/FmSDFmMOtemVrIg==?= <rizek@example.foo>,
+		=?UTF-8?B?Ikx1Ym/FoSBTbWHFvsOhayI=?= <smazak@example.foo>
 	Subject: Hello Jane!
 	Message-ID: <%S%@%S%>
 	Content-Type: text/plain; charset=UTF-8
