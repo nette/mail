@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/Mail.php';
 
 
-foreach (['back ground.png'] as $filename) {
+foreach (['back ground.png', 'back(1).png'] as $filename) {
 	TestMailer::$output = '';
 
 	$mail = new Message;
