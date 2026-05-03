@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
-use function addcslashes, array_map, array_reverse, basename, date, explode, finfo_buffer, finfo_open, implode, is_array, is_numeric, is_string, ltrim, php_uname, preg_match, preg_replace, rtrim, str_replace, strcasecmp, stripslashes, strlen, substr, substr_replace, trim, urldecode;
+use function addcslashes, basename, date, finfo_buffer, finfo_open, is_array, is_numeric, is_string, ltrim, php_uname, preg_match, preg_replace, str_replace, strcasecmp, stripslashes, substr;
 
 
 /**
@@ -188,51 +188,11 @@ class Message extends MimePart
 	 */
 	public function setHtmlBody(string $html, ?string $basePath = null): static
 	{
+		$composer = new HtmlComposer($html);
 		if ($basePath) {
-			$cids = [];
-			$matches = Strings::matchAll(
-				$html,
-				'#
-					(<img(?:(?!\s src\s*=)[^<>])*+\s src\s*=\s*
-					|<body(?:(?!\s background\s*=)[^<>])*+\s background\s*=\s*
-					|<(?:(?!\s style\s*=)[^<>])++\s style\s*=\s* ["\'][^"\'>]+[:\s] url\(
-					|<style[^>]*>[^<]+ [:\s] url\()
-					(?|
-						(["\'])(?![a-z]+:|[/\#])([^"\'>]+)
-						|()(?![a-z]+:|[/\#])([^"\'>)\s]+)
-					)
-					|\[\[ ([\w()+./@~-]+) \]\]
-				#ix',
-				captureOffset: true,
-			);
-			foreach (array_reverse($matches) as $m) {
-				$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
-				if (!isset($cids[$file])) {
-					$contentId = $this->addEmbeddedFile($file)->getHeader('Content-ID');
-					$cids[$file] = is_string($contentId) ? substr($contentId, 1, -1) : '';
-				}
-
-				$html = substr_replace(
-					$html,
-					"{$m[1][0]}{$m[2][0]}cid:{$cids[$file]}",
-					$m[0][1],
-					strlen($m[0][0]),
-				);
-			}
+			$composer->embedImages($basePath);
 		}
-
-		if ($this->getSubject() == null) { // intentionally ==
-			$html = Strings::replace($html, '#<title>(.+?)</title>#is', function (array $m): void {
-				$this->setSubject(Nette\Utils\Html::htmlToText($m[1]));
-			});
-		}
-
-		$this->htmlBody = ltrim(str_replace("\r", '', $html), "\n");
-
-		if ($this->getBody() === '' && $html !== '') {
-			$this->setBody($this->buildText($html));
-		}
-
+		$composer->applyTo($this);
 		return $this;
 	}
 
@@ -240,6 +200,13 @@ class Message extends MimePart
 	public function getHtmlBody(): string
 	{
 		return $this->htmlBody;
+	}
+
+
+	/** @internal used by HtmlComposer */
+	public function setRawHtmlBody(string $html): void
+	{
+		$this->htmlBody = ltrim(str_replace("\r", '', $html), "\n");
 	}
 
 
@@ -376,25 +343,6 @@ class Message extends MimePart
 			->setBody($text);
 
 		return $mail;
-	}
-
-
-	/**
-	 * Generates a plain-text alternative from HTML.
-	 */
-	protected function buildText(string $html): string
-	{
-		$html = Strings::replace($html, [
-			'#<(style|script|head).*</\1>#Uis' => '',
-			'#<t[dh][ >]#i' => ' $0',
-			'#<a\s[^>]*href=(?|"([^"]+)"|\'([^\']+)\')[^>]*>(.*?)</a>#is' => '$2 &lt;$1&gt;',
-			'#[\r\n]+#' => ' ',
-			'#<(/?p|/?h\d|li|br|/tr)[ >/]#i' => "\n$0",
-		]);
-		$text = Nette\Utils\Html::htmlToText($html);
-		$text = Strings::replace($text, '#[ \t]+#', ' ');
-		$text = implode("\n", array_map('trim', explode("\n", $text)));
-		return trim($text);
 	}
 
 
