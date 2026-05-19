@@ -234,6 +234,31 @@ $mailer->send($mail);
 Other parameters in the constructor include the number of repeat and waiting time in milliseconds.
 
 
+Interceptor
+-----------
+
+For debugging or as a safety net on staging, `Interceptor` wraps any mailer. When `redirectTo` is set, every outgoing message is cloned and the headers `To`, `Cc`, `Bcc`, `Disposition-Notification-To` and `X-Confirm-Reading-To` are replaced with the fixed address; the original values are preserved as `X-Original-*` headers and the original `Message` instance is left untouched.
+
+```php
+$mailer = new Nette\Mail\Interceptor(
+	mailer: $smtpMailer,
+	redirectTo: 'dev@example.com',
+	subjectPrefix: '[debug]',
+);
+$mailer->send($mail);
+```
+
+The `$onSent` callable list is invoked after each `send()` with the original `Message` (before any redirect rewrite) and either `null` on success or a `Throwable` on failure:
+
+```php
+$mailer->onSent[] = function (Nette\Mail\Interceptor $sender, Nette\Mail\Message $mail, ?Throwable $error): void {
+	// audit log, metrics, …
+};
+```
+
+In a Nette application, the Interceptor is wired automatically when `mail.redirect` is set in the configuration.
+
+
  <!---->
 
 DKIM

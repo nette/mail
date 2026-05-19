@@ -27,6 +27,7 @@ use Nette\Schema\Expect;
  *     clientHost: string|null,
  *     persistent: bool,
  *     dkim: array{domain: string, selector: string, privateKey: string, passPhrase?: string}|null,
+ *     redirect: array{to: string, subjectPrefix: string}|null,
  * } $config
  */
 class MailExtension extends Nette\DI\CompilerExtension
@@ -54,6 +55,14 @@ class MailExtension extends Nette\DI\CompilerExtension
 					'passPhrase' => Expect::string()->dynamic(),
 				])->castTo('array'),
 			),
+			'redirect' => Expect::anyOf(
+				Expect::null(),
+				Expect::type('email')->transform(fn($v) => ['to' => $v]),
+				Expect::structure([
+					'to' => Expect::type('email')->required()->dynamic(),
+					'subjectPrefix' => Expect::string('')->dynamic(),
+				])->castTo('array'),
+			),
 		]);
 	}
 
@@ -63,8 +72,11 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$config = $this->config;
 		$builder = $this->getContainerBuilder();
 
-		$mailer = $builder->addDefinition($this->prefix('mailer'))
-			->setType(Nette\Mail\Mailer::class);
+		$useInterceptor = (bool) $config->redirect;
+
+		$mailer = $builder->addDefinition($this->prefix($useInterceptor ? 'innerMailer' : 'mailer'))
+			->setType(Nette\Mail\Mailer::class)
+			->setAutowired(!$useInterceptor);
 
 		if ($config->dkim) {
 			$dkim = $config->dkim;
@@ -93,6 +105,16 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 		} else {
 			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
+		}
+
+		if ($useInterceptor) {
+			$builder->addDefinition($this->prefix('mailer'))
+				->setType(Nette\Mail\Mailer::class)
+				->setFactory(Nette\Mail\Interceptor::class, [
+					'mailer' => $mailer,
+					'redirectTo' => $config->redirect['to'],
+					'subjectPrefix' => $config->redirect['subjectPrefix'],
+				]);
 		}
 
 		if ($this->name === 'mail') {
