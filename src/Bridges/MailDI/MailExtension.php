@@ -13,6 +13,21 @@ use Nette\Schema\Expect;
 
 /**
  * Mail extension for Nette DI.
+ *
+ * @property object{
+ *     smtp: bool,
+ *     host: string|null,
+ *     port: int|null,
+ *     username: string,
+ *     password: string,
+ *     secure: 'ssl'|'tls'|null,
+ *     encryption: 'ssl'|'tls'|null,
+ *     timeout: int,
+ *     context: array<string, array<mixed>>,
+ *     clientHost: string|null,
+ *     persistent: bool,
+ *     dkim: array{domain: string, selector: string, privateKey: string, passPhrase?: string}|null,
+ * } $config
  */
 class MailExtension extends Nette\DI\CompilerExtension
 {
@@ -46,7 +61,6 @@ class MailExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$config = $this->config;
-		\assert($config instanceof \stdClass);
 		$builder = $this->getContainerBuilder();
 
 		$mailer = $builder->addDefinition($this->prefix('mailer'))
