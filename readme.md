@@ -256,7 +256,7 @@ $mailer->onSent[] = function (Nette\Mail\Interceptor $sender, Nette\Mail\Message
 };
 ```
 
-In a Nette application, the Interceptor is wired automatically when `mail.redirect` is set in the configuration.
+In a Nette application, the Interceptor is wired automatically when `mail.redirect` or `mail.debugger: true` is set. In debug mode, a Tracy Bar panel listing sent emails is attached as well.
 
 
  <!---->

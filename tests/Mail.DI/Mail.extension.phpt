@@ -87,3 +87,72 @@ mail:
 	Assert::same('dev@example.com', $ref->getProperty('redirectTo')->getValue($interceptor));
 	Assert::same('', $ref->getProperty('subjectPrefix')->getValue($interceptor));
 });
+
+
+test('debug mode without redirect or debugger -> no Interceptor, no panel', function () {
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('mail', new MailExtension(debugMode: true));
+	$container = createContainer($compiler, '
+mail:
+');
+	Assert::type(Nette\Mail\SendmailMailer::class, $container->getService('mail.mailer'));
+	Assert::false($container->hasService('mail.panel'));
+});
+
+
+test('debugger: true + debug mode + Tracy\Bar -> Interceptor + panel', function () {
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('mail', new MailExtension(debugMode: true));
+	$container = createContainer($compiler, '
+services:
+	- Tracy\Bar
+mail:
+	debugger: true
+');
+	Assert::type(Nette\Mail\Interceptor::class, $container->getService('mail.mailer'));
+	Assert::type(Nette\Mail\SendmailMailer::class, $container->getService('mail.innerMailer'));
+	Assert::type(Nette\Bridges\MailTracy\MailPanel::class, $container->getService('mail.panel'));
+});
+
+
+test('redirect + debug mode + Tracy\Bar -> Interceptor (from redirect) + panel', function () {
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('mail', new MailExtension(debugMode: true));
+	$container = createContainer($compiler, '
+services:
+	- Tracy\Bar
+mail:
+	redirect: dev@example.com
+');
+	Assert::type(Nette\Mail\Interceptor::class, $container->getService('mail.mailer'));
+	Assert::type(Nette\Bridges\MailTracy\MailPanel::class, $container->getService('mail.panel'));
+});
+
+
+test('redirect + debugger: false -> Interceptor exists, but panel does NOT', function () {
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('mail', new MailExtension(debugMode: true));
+	$container = createContainer($compiler, '
+services:
+	- Tracy\Bar
+mail:
+	redirect: dev@example.com
+	debugger: false
+');
+	Assert::type(Nette\Mail\Interceptor::class, $container->getService('mail.mailer'));
+	Assert::false($container->hasService('mail.panel'));
+});
+
+
+test('debugger: true but NOT in debug mode -> Interceptor exists (eager), but no panel', function () {
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('mail', new MailExtension(debugMode: false));
+	$container = createContainer($compiler, '
+services:
+	- Tracy\Bar
+mail:
+	debugger: true
+');
+	Assert::type(Nette\Mail\Interceptor::class, $container->getService('mail.mailer'));
+	Assert::false($container->hasService('mail.panel'));
+});

@@ -1,0 +1,34 @@
+{varType list<array{from: ?string, to: ?string, cc: ?string, bcc: ?string, subject: ?string, error: ?Throwable}> $messages}
+{varType int $count}
+<style class="tracy-debug">
+	#tracy-debug .nette-MailPanel-error { background: #FFE7E7 !important; }
+	#tracy-debug .nette-MailPanel-recipients { color: #555; font-size: 85%; }
+</style>
+
+<h1>Emails sent: {$count}</h1>
+
+<div class="tracy-inner" style="min-width: 600px">
+	<table class="tracy-sortable">
+		<tr>
+			<th>From</th>
+			<th>To / Cc / Bcc</th>
+			<th>Subject</th>
+			<th>Status</th>
+		</tr>
+
+		{foreach $messages as $msg}
+			<tr class="{$msg['error'] ? nette-MailPanel-error}">
+				<td>{$msg['from']}</td>
+				<td>
+					{$msg['to']}
+					{if $msg['cc']}<div class="nette-MailPanel-recipients">Cc: {$msg['cc']}</div>{/if}
+					{if $msg['bcc']}<div class="nette-MailPanel-recipients">Bcc: {$msg['bcc']}</div>{/if}
+				</td>
+				<td>{$msg['subject']}</td>
+				<td>{$msg['error'] ? "Error: {$msg['error']->getMessage()}" : 'OK'}</td>
+			</tr>
+		{/foreach}
+	</table>
+
+	<p n:if="count($messages) < $count">...and {$count - count($messages)} more</p>
+</div>

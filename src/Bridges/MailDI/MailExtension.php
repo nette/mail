@@ -9,12 +9,14 @@ namespace Nette\Bridges\MailDI;
 
 use Nette;
 use Nette\Schema\Expect;
+use Tracy;
 
 
 /**
  * Mail extension for Nette DI.
  *
  * @property object{
+ *     debugger: bool|null,
  *     smtp: bool,
  *     host: string|null,
  *     port: int|null,
@@ -32,9 +34,16 @@ use Nette\Schema\Expect;
  */
 class MailExtension extends Nette\DI\CompilerExtension
 {
+	public function __construct(
+		private readonly bool $debugMode = false,
+	) {
+	}
+
+
 	public function getConfigSchema(): Nette\Schema\Schema
 	{
 		return Expect::structure([
+			'debugger' => Expect::bool()->nullable(),
 			'smtp' => Expect::bool(false),
 			'host' => Expect::string()->dynamic(),
 			'port' => Expect::int()->dynamic(),
@@ -72,7 +81,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		$config = $this->config;
 		$builder = $this->getContainerBuilder();
 
-		$useInterceptor = (bool) $config->redirect;
+		$useInterceptor = $config->redirect || $config->debugger === true;
 
 		$mailer = $builder->addDefinition($this->prefix($useInterceptor ? 'innerMailer' : 'mailer'))
 			->setType(Nette\Mail\Mailer::class)
@@ -112,13 +121,36 @@ class MailExtension extends Nette\DI\CompilerExtension
 				->setType(Nette\Mail\Mailer::class)
 				->setFactory(Nette\Mail\Interceptor::class, [
 					'mailer' => $mailer,
-					'redirectTo' => $config->redirect['to'],
-					'subjectPrefix' => $config->redirect['subjectPrefix'],
+					'redirectTo' => $config->redirect['to'] ?? null,
+					'subjectPrefix' => $config->redirect['subjectPrefix'] ?? '',
 				]);
 		}
 
 		if ($this->name === 'mail') {
 			$builder->addAlias('nette.mailer', $this->prefix('mailer'));
 		}
+	}
+
+
+	public function beforeCompile(): void
+	{
+		if (!$this->debugMode) {
+			return;
+		}
+
+		$builder = $this->getContainerBuilder();
+		$useDebugger = $this->config->debugger || ($this->config->redirect && $this->config->debugger !== false);
+
+		if (!$useDebugger || !$builder->getByType(Tracy\Bar::class)) {
+			return;
+		}
+
+		$panel = $builder->addDefinition($this->prefix('panel'))
+			->setFactory(Nette\Bridges\MailTracy\MailPanel::class)
+			->addSetup('@' . Tracy\Bar::class . '::addPanel', ['@self']);
+
+		$mailer = $builder->getDefinition($this->prefix('mailer'));
+		\assert($mailer instanceof Nette\DI\Definitions\ServiceDefinition);
+		$mailer->addSetup('$onSent[]', [[$panel, 'recordSent']]);
 	}
 }

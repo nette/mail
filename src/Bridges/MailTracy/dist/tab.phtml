@@ -1,0 +1,17 @@
+<?php declare(strict_types=1);
+
+/** @var int $count */
+echo '<span title="Nette\\Mail: ';
+echo Tracy\Helpers::escapeHtml($count) /* pos 2:26 */;
+echo ' email';
+echo Tracy\Helpers::escapeHtml($count === 1 ? '' : 's') /* pos 2:40 */;
+echo ' sent">
+	<svg viewBox="0 0 24 24">
+		<path';
+echo ($ʟ_tmp = ($count ? '#338ad5' : '#aaa')) === null ? '' : ' fill="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 4:16 */;
+echo ' d="M2 5c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V5zm2 .5v.4l8 5 8-5v-.4H4zm16 2.2-7.5 4.7c-.3.2-.7.2-1 0L4 7.7V19h16V7.7z"></path>
+	</svg><span class="tracy-label">';
+echo Tracy\Helpers::escapeHtml($count) /* pos 6:29 */;
+echo '</span>
+</span>
+';

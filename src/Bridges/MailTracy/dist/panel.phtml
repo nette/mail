@@ -1,0 +1,69 @@
+<?php declare(strict_types=1);
+
+/** @var list<array{from:?string,to:?string,cc:?string,bcc:?string,subject:?string,error:?Throwable}> $messages */
+/** @var int $count */
+echo '<style class="tracy-debug">
+	#tracy-debug .nette-MailPanel-error { background: #FFE7E7 !important; }
+	#tracy-debug .nette-MailPanel-recipients { color: #555; font-size: 85%; }
+</style>
+
+<h1>Emails sent: ';
+echo Tracy\Helpers::escapeHtml($count) /* pos 8:18 */;
+echo '</h1>
+
+<div class="tracy-inner" style="min-width: 600px">
+	<table class="tracy-sortable">
+		<tr>
+			<th>From</th>
+			<th>To / Cc / Bcc</th>
+			<th>Subject</th>
+			<th>Status</th>
+		</tr>
+
+';
+foreach ($messages as $msg) /* pos 19:3 */ {
+	echo '		<tr';
+	echo ($ʟ_tmp = ($msg['error'] ? 'nette-MailPanel-error' : null)) === null ? '' : ' class="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 20:16 */;
+	echo '>
+			<td>';
+	echo Tracy\Helpers::escapeHtml($msg['from']) /* pos 21:9 */;
+	echo '</td>
+			<td>
+				';
+	echo Tracy\Helpers::escapeHtml($msg['to']) /* pos 23:6 */;
+	echo "\n";
+	if ($msg['cc']) /* pos 24:6 */ {
+		echo '				<div class="nette-MailPanel-recipients">Cc: ';
+		echo Tracy\Helpers::escapeHtml($msg['cc']) /* pos 24:65 */;
+		echo '</div>';
+	}
+	echo "\n";
+	if ($msg['bcc']) /* pos 25:6 */ {
+		echo '				<div class="nette-MailPanel-recipients">Bcc: ';
+		echo Tracy\Helpers::escapeHtml($msg['bcc']) /* pos 25:67 */;
+		echo '</div>';
+	}
+	echo '
+			</td>
+			<td>';
+	echo Tracy\Helpers::escapeHtml($msg['subject']) /* pos 27:9 */;
+	echo '</td>
+			<td>';
+	echo Tracy\Helpers::escapeHtml($msg['error'] ? ("Error: " . ($msg['error']->getMessage()) . "") : 'OK') /* pos 28:9 */;
+	echo '</td>
+		</tr>
+';
+
+}
+
+echo '	</table>
+
+';
+if (count($messages) < $count) /* pos 33:5 */ {
+	echo '	<p>...and ';
+	echo Tracy\Helpers::escapeHtml($count - count($messages)) /* pos 33:45 */;
+	echo ' more</p>
+';
+}
+echo '</div>
+';
