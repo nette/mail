@@ -15,7 +15,7 @@ use Nette;
  */
 class FallbackMailer implements Mailer
 {
-	/** @var array<callable(self, SendException, Mailer, Message): void> */
+	/** @var array<callable(static, SendException, Mailer, Message): void> */
 	public array $onFailure = [];
 
 
