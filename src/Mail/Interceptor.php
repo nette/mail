@@ -19,7 +19,7 @@ class Interceptor implements Mailer
 {
 	private const LeakyHeaders = ['To', 'Cc', 'Bcc', 'Disposition-Notification-To', 'X-Confirm-Reading-To'];
 
-	/** @var list<callable(self, Message, ?\Throwable): void> */
+	/** @var array<callable(static, Message, ?\Throwable): void> */
 	public array $onSent = [];
 
 
