@@ -5,6 +5,7 @@ parameters:
 		- src
 
 	ignoreErrors:
-		-
+		-   # `if (false) { class_alias(...) }` block — never executed at runtime, present only as IDE hint for backward-compat class alias
 			identifier: if.alwaysFalse
+			count: 1
 			path: src/Mail/Mailer.php
