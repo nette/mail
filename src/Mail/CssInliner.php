@@ -118,12 +118,16 @@ class CssInliner
 			// Generate HTML attributes for email client compatibility (Outlook)
 			$tag = strtolower($element->tagName);
 			foreach (self::HtmlAttributes as $cssProp => [$attr, $type, $tags]) {
-				if (isset($declarations[$cssProp]) && in_array($tag, $tags, true)) {
-					$value = $declarations[$cssProp];
-					if ($type === 'int' && !str_contains($value, '%')) {
-						$value = (string) (int) $value;
-					}
+				if (!isset($declarations[$cssProp])) {
+					continue;
+				}
 
+				$value = $declarations[$cssProp];
+				if ($type === 'int' && !str_contains($value, '%')) {
+					$value = (string) (int) $value;
+				}
+
+				if (in_array($tag, $tags, true)) {
 					$element->setAttribute($attr, $value);
 				}
 			}
