@@ -11,6 +11,7 @@ use Nette;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
 use Tracy;
+use function count, is_array;
 
 
 /**

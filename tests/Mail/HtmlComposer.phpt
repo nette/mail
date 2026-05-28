@@ -2,6 +2,7 @@
 
 /**
  * Test: Nette\Mail\HtmlComposer
+ * @phpVersion 8.4
  */
 
 use Nette\Mail\HtmlComposer;

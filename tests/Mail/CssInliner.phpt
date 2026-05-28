@@ -133,15 +133,6 @@ test('addCss() overrides <style> tag for same property', function () {
 });
 
 
-test('addCss() overrides <style> tag for same property', function () {
-	$result = (new CssInliner)
-		->addCss('p { color: red; }')
-		->inline('<html><head><style>p { color: green; }</style></head><body><p>Hello</p></body></html>');
-
-	Assert::contains('<p style="color: red">Hello</p>', $result);
-});
-
-
 test('later rules override earlier rules', function () {
 	$result = (new CssInliner)
 		->addCss('p { color: red; }')

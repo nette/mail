@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
-use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
+use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
 
 
 /**
@@ -79,7 +79,6 @@ class MimePart
 				$tmp[$email] = $recipient;
 			}
 		} else {
-			$value = (string) $value;
 			if (!Strings::checkEncoding($value)) {
 				throw new Nette\InvalidArgumentException('Header is not valid UTF-8 string.');
 			}
