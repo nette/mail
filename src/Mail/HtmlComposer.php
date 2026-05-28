@@ -23,7 +23,7 @@ class HtmlComposer
 
 
 	public function __construct(
-		private string $html,
+		private readonly string $html,
 	) {
 	}
 

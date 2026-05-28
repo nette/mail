@@ -30,14 +30,14 @@ class SmtpMailer implements Mailer
 
 	/** @param array<string, array<string, mixed>>|null  $streamOptions */
 	public function __construct(
-		private string $host,
-		private string $username,
+		private readonly string $host,
+		private readonly string $username,
 		#[\SensitiveParameter]
-		private string $password,
-		private ?int $port = null,
-		private ?string $encryption = null,
-		private bool $persistent = false,
-		private int $timeout = 20,
+		private readonly string $password,
+		private readonly ?int $port = null,
+		private readonly ?string $encryption = null,
+		private readonly bool $persistent = false,
+		private readonly int $timeout = 20,
 		?string $clientHost = null,
 		?array $streamOptions = null,
 	) {

@@ -22,9 +22,9 @@ class FallbackMailer implements Mailer
 	public function __construct(
 		/** @var list<Mailer> */
 		private array $mailers,
-		private int $retryCount = 3,
+		private readonly int $retryCount = 3,
 		/** in milliseconds */
-		private int $retryWaitTime = 1000,
+		private readonly int $retryWaitTime = 1000,
 	) {
 	}
 

@@ -31,14 +31,14 @@ class DkimSigner implements Signer
 
 	/** @throws Nette\NotSupportedException */
 	public function __construct(
-		private string $domain,
-		private string $selector,
+		private readonly string $domain,
+		private readonly string $selector,
 		#[\SensitiveParameter]
-		private string $privateKey,
+		private readonly string $privateKey,
 		#[\SensitiveParameter]
-		private ?string $passPhrase = null,
+		private readonly ?string $passPhrase = null,
 		/** @var list<string> */
-		private array $signHeaders = self::DefaultSignHeaders,
+		private readonly array $signHeaders = self::DefaultSignHeaders,
 	) {
 		if (!extension_loaded('openssl')) {
 			throw new Nette\NotSupportedException('DkimSigner requires PHP extension openssl which is not loaded.');
