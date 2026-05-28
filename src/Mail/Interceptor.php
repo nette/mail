@@ -24,9 +24,9 @@ class Interceptor implements Mailer
 
 
 	public function __construct(
-		private Mailer $mailer,
-		private ?string $redirectTo = null,
-		private string $subjectPrefix = '',
+		private readonly Mailer $mailer,
+		private readonly ?string $redirectTo = null,
+		private readonly string $subjectPrefix = '',
 	) {
 		Validators::assert($redirectTo, 'email|null', 'redirect address');
 	}
