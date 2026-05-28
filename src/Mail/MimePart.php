@@ -79,7 +79,6 @@ class MimePart
 				$tmp[$email] = $recipient;
 			}
 		} else {
-			$value = (string) $value;
 			if (!Strings::checkEncoding($value)) {
 				throw new Nette\InvalidArgumentException('Header is not valid UTF-8 string.');
 			}

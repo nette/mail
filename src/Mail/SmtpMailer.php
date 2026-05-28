@@ -140,7 +140,7 @@ class SmtpMailer implements Mailer
 
 		$this->connection = $connection;
 
-		stream_set_timeout($connection, $this->timeout, 0);
+		stream_set_timeout($connection, $this->timeout);
 		$this->read(); // greeting
 
 		if ($this->encryption === self::EncryptionTLS) {

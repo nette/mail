@@ -102,7 +102,7 @@ class DkimSigner implements Signer
 		$rawHeader = preg_replace("/\r\n[ \t]+/", ' ', rtrim($rawHeader, "\r\n") . "\r\n" . $signature);
 
 		$parts = [];
-		foreach ($test = explode("\r\n", $rawHeader) as $key => $header) {
+		foreach (explode("\r\n", $rawHeader) as $header) {
 			if (str_contains($header, ':')) {
 				[$heading, $value] = explode(':', $header, 2);
 
