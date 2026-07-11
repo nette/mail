@@ -7,6 +7,7 @@
 
 namespace Nette\Mail;
 
+use Nette;
 use function in_array, is_resource, is_string;
 
 
@@ -134,14 +135,7 @@ class SmtpMailer implements Mailer
 		if ($this->encryption === self::EncryptionTLS) {
 			$this->write("EHLO $this->clientHost", 250);
 			$this->write('STARTTLS', 220);
-			if (!stream_socket_enable_crypto(
-				$connection,
-				true,
-				STREAM_CRYPTO_METHOD_TLS_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT,
-			)) {
-				throw new SmtpException('Unable to connect via TLS.');
-			}
-
+			$this->upgradeToTls($connection);
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
 			if ((int) $ehloResponse !== 250) {
@@ -171,6 +165,28 @@ class SmtpMailer implements Mailer
 					$this->write(base64_encode($this->password), 235, 'password');
 				}
 			}
+		}
+	}
+
+
+	/**
+	 * Upgrades the connection to TLS 1.2 or 1.3; the earlier versions are deprecated (RFC 8996).
+	 * @param  resource  $connection
+	 * @throws SmtpException
+	 */
+	private function upgradeToTls($connection): void
+	{
+		$info = '';
+		$res = Nette\Utils\Callback::invokeSafe(
+			'stream_socket_enable_crypto',
+			[$connection, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT],
+			function (string $message) use (&$info): void {
+				$info = ": $message";
+			},
+		);
+
+		if ($res !== true) {
+			throw new SmtpException("Unable to connect via TLS$info.");
 		}
 	}
 
