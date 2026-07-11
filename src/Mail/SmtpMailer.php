@@ -32,6 +32,9 @@ class SmtpMailer implements Mailer
 	private string $clientHost;
 	private ?Signer $signer = null;
 
+	/** @var ?\Closure(): string */
+	private ?\Closure $accessToken = null;
+
 
 	/** @param array<string, array<string, mixed>>|null  $streamOptions */
 	public function __construct(
@@ -63,6 +66,18 @@ class SmtpMailer implements Mailer
 	public function setSigner(Signer $signer): static
 	{
 		$this->signer = $signer;
+		return $this;
+	}
+
+
+	/**
+	 * Authenticates with an OAuth 2.0 access token (XOAUTH2), as required by Gmail and Microsoft 365.
+	 * A callback is resolved on each connection, so an expiring token can be renewed.
+	 * @param  string|\Closure(): string  $token
+	 */
+	public function setAccessToken(string|\Closure $token): static
+	{
+		$this->accessToken = is_string($token) ? fn() => $token : $token;
 		return $this;
 	}
 
@@ -115,7 +130,9 @@ class SmtpMailer implements Mailer
 				$this->write('QUIT', 221);
 				$this->disconnect();
 			}
-		} catch (SmtpException $e) {
+		} catch (\Throwable $e) {
+			// not just SmtpException: an access-token callback may throw anything, and the connection
+			// is now in an unknown state
 			if ($this->connection) {
 				$this->disconnect();
 			}
@@ -153,7 +170,7 @@ class SmtpMailer implements Mailer
 			}
 		}
 
-		if ($this->username !== '') {
+		if ($this->username !== '' || $this->accessToken) {
 			$this->authenticate($ehloResponse);
 		}
 	}
@@ -173,6 +190,16 @@ class SmtpMailer implements Mailer
 		if (!$mechanisms) {
 			throw new SmtpException('SMTP server does not support authentication.');
 
+		} elseif ($this->accessToken) {
+			if ($this->username === '') {
+				throw new SmtpException('XOAUTH2 needs a username: the token alone does not say who is signing in.');
+
+			} elseif (!in_array('XOAUTH2', $mechanisms, strict: true)) {
+				throw new SmtpException('SMTP server does not support XOAUTH2 authentication.');
+			}
+
+			$this->authenticateOAuth(($this->accessToken)());
+
 		} elseif (in_array('PLAIN', $mechanisms, strict: true)) {
 			$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
 			$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
@@ -185,6 +212,28 @@ class SmtpMailer implements Mailer
 
 		} else {
 			throw new SmtpException('SMTP server does not offer a supported authentication mechanism, only: ' . implode(', ', $mechanisms) . '.');
+		}
+	}
+
+
+	/**
+	 * Performs the XOAUTH2 exchange (https://developers.google.com/gmail/imap/xoauth2-protocol).
+	 * @throws SmtpException
+	 */
+	private function authenticateOAuth(#[\SensitiveParameter] string $token): void
+	{
+		$credentials = "user=$this->username\1auth=Bearer $token\1\1";
+		$this->write('AUTH XOAUTH2 ' . base64_encode($credentials));
+		$response = $this->read();
+
+		if ((int) $response === 334) {
+			// the rejection reason came in the challenge; the server expects an empty line before the final failure
+			$this->write('');
+			$response = $this->read();
+		}
+
+		if ((int) $response !== 235) {
+			throw new SmtpException('SMTP server did not accept XOAUTH2 credentials with error: ' . trim($response));
 		}
 	}
 
