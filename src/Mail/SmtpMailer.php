@@ -125,19 +125,7 @@ class SmtpMailer implements Mailer
 	 */
 	protected function connect(): void
 	{
-		$port = $this->port ?? ($this->encryption === self::EncryptionSSL ? 465 : 25);
-		$connection = @stream_socket_client(// @ is escalated to exception
-			($this->encryption === self::EncryptionSSL ? 'ssl://' : '') . $this->host . ':' . $port,
-			$errno,
-			$error,
-			$this->timeout,
-			STREAM_CLIENT_CONNECT,
-			$this->context,
-		);
-		if (!$connection) {
-			throw new SmtpException($error ?: error_get_last()['message'] ?? 'Unknown error', (int) $errno);
-		}
-
+		$connection = $this->openStream($this->getAddress());
 		$this->connection = $connection;
 
 		stream_set_timeout($connection, $this->timeout);
@@ -184,6 +172,45 @@ class SmtpMailer implements Mailer
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * Returns the address to connect to. Without an explicit port, uses the default for the encryption:
+	 * 465 for implicit SSL, 587 (the submission port) for STARTTLS, 25 otherwise.
+	 */
+	private function getAddress(): string
+	{
+		$port = $this->port ?? match ($this->encryption) {
+			self::EncryptionSSL => 465,
+			self::EncryptionTLS => 587,
+			default => 25,
+		};
+
+		return ($this->encryption === self::EncryptionSSL ? 'ssl://' : '') . $this->host . ':' . $port;
+	}
+
+
+	/**
+	 * Opens the network stream to the SMTP server.
+	 * @return resource
+	 * @throws SmtpException
+	 */
+	protected function openStream(string $address)
+	{
+		$connection = @stream_socket_client(// @ is escalated to exception
+			$address,
+			$errno,
+			$error,
+			$this->timeout,
+			STREAM_CLIENT_CONNECT,
+			$this->context,
+		);
+		if (!$connection) {
+			throw new SmtpException($error ?: error_get_last()['message'] ?? 'Unknown error', (int) $errno);
+		}
+
+		return $connection;
 	}
 
 
