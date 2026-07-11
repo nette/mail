@@ -24,6 +24,8 @@ class DkimSigner implements Signer
 		'Message-ID',
 		'X-Mailer',
 		'Content-Type',
+		'List-Unsubscribe',
+		'List-Unsubscribe-Post',
 	];
 
 	private const DkimSignature = 'DKIM-Signature';
