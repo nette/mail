@@ -40,12 +40,14 @@ class FallbackMailer implements Mailer
 		}
 
 		$failures = [];
-		for ($i = 0; $i < $this->retryCount; $i++) {
+		$candidates = $this->mailers; // mailers still worth another attempt
+
+		for ($i = 0; $i < $this->retryCount && $candidates; $i++) {
 			if ($i > 0) {
 				usleep($this->retryWaitTime * 1000);
 			}
 
-			foreach ($this->mailers as $mailer) {
+			foreach ($candidates as $key => $mailer) {
 				try {
 					$mailer->send($mail);
 					return;
@@ -53,6 +55,12 @@ class FallbackMailer implements Mailer
 				} catch (SendException $e) {
 					$failures[] = $e;
 					Nette\Utils\Arrays::invoke($this->onFailure, $this, $e, $mailer, $mail);
+
+					if ($e->isPermanent()) {
+						// the server has already made up its mind (a 5xx reply, bad credentials);
+						// asking it the same thing again only delays the fallback
+						unset($candidates[$key]);
+					}
 				}
 			}
 		}

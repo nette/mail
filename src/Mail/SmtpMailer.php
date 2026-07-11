@@ -182,7 +182,7 @@ class SmtpMailer implements Mailer
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
 			if ((int) $ehloResponse !== 250) {
-				throw new SmtpException('SMTP server did not accept EHLO with error: ' . trim($ehloResponse));
+				throw SmtpException::fromReply('SMTP server did not accept EHLO with error: ' . trim($ehloResponse), $ehloResponse);
 			}
 		} else {
 			$this->write("EHLO $this->clientHost");
@@ -209,15 +209,16 @@ class SmtpMailer implements Mailer
 			? explode(' ', trim($m[1]))
 			: [];
 
+		// these are configuration mismatches: the server will not grow the mechanism on a retry
 		if (!$mechanisms) {
-			throw new SmtpException('SMTP server does not support authentication.');
+			throw new SmtpException('SMTP server does not support authentication.', permanent: true);
 
 		} elseif ($this->accessToken) {
 			if ($this->username === '') {
-				throw new SmtpException('XOAUTH2 needs a username: the token alone does not say who is signing in.');
+				throw new SmtpException('XOAUTH2 needs a username: the token alone does not say who is signing in.', permanent: true);
 
 			} elseif (!in_array('XOAUTH2', $mechanisms, strict: true)) {
-				throw new SmtpException('SMTP server does not support XOAUTH2 authentication.');
+				throw new SmtpException('SMTP server does not support XOAUTH2 authentication.', permanent: true);
 			}
 
 			$this->authenticateOAuth(($this->accessToken)());
@@ -233,7 +234,10 @@ class SmtpMailer implements Mailer
 			$this->write(base64_encode($this->password), 235, 'password');
 
 		} else {
-			throw new SmtpException('SMTP server does not offer a supported authentication mechanism, only: ' . implode(', ', $mechanisms) . '.');
+			throw new SmtpException(
+				'SMTP server does not offer a supported authentication mechanism, only: ' . implode(', ', $mechanisms) . '.',
+				permanent: true,
+			);
 		}
 	}
 
@@ -255,7 +259,7 @@ class SmtpMailer implements Mailer
 		}
 
 		if ((int) $response !== 235) {
-			throw new SmtpException('SMTP server did not accept XOAUTH2 credentials with error: ' . trim($response));
+			throw SmtpException::fromReply('SMTP server did not accept XOAUTH2 credentials with error: ' . trim($response), $response);
 		}
 	}
 
@@ -355,7 +359,10 @@ class SmtpMailer implements Mailer
 		if ($expectedCode) {
 			$response = $this->read();
 			if (!in_array((int) $response, (array) $expectedCode, strict: true)) {
-				throw new SmtpException('SMTP server did not accept ' . ($message ?: $line) . ' with error: ' . trim($response));
+				throw SmtpException::fromReply(
+					'SMTP server did not accept ' . ($message ?: $line) . ' with error: ' . trim($response),
+					$response,
+				);
 			}
 		}
 	}
