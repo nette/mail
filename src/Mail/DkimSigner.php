@@ -93,12 +93,13 @@ class DkimSigner implements Signer
 
 	/**
 	 * Canonicalizes the selected headers, signs them, and returns the complete DKIM-Signature header string.
+	 * Uses the 'relaxed' header canonicalization of RFC 6376, §3.4.2.
 	 */
 	protected function computeSignature(string $rawHeader, string $signature): string
 	{
 		$selectedHeaders = array_merge($this->signHeaders, [self::DkimSignature]);
 
-		$rawHeader = preg_replace("/\r\n[ \t]+/", ' ', rtrim($rawHeader, "\r\n") . "\r\n" . $signature);
+		$rawHeader = preg_replace("/\r\n[ \t]+/", ' ', rtrim($rawHeader, "\r\n") . "\r\n" . $signature); // unfold
 
 		$parts = [];
 		foreach (explode("\r\n", $rawHeader) as $header) {
@@ -108,7 +109,7 @@ class DkimSigner implements Signer
 				if (($index = array_search($heading, $selectedHeaders, strict: true)) !== false) {
 					$parts[$index] =
 						trim(strtolower($heading), " \t") . ':' .
-						trim(preg_replace("/[ \t]{2,}/", ' ', $value), " \t");
+						trim(preg_replace('/[ \t]+/', ' ', $value), " \t"); // every WSP sequence collapses to a single space
 				}
 			}
 		}
