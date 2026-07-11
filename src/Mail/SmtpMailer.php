@@ -100,6 +100,10 @@ class SmtpMailer implements Mailer
 			: $tmp->generateMessage();
 
 		try {
+			if ($this->connection && !$this->isAlive()) {
+				$this->disconnect(); // the session went stale between sends, start over
+			}
+
 			if (!$this->connection) {
 				$this->connect();
 			}
@@ -138,6 +142,24 @@ class SmtpMailer implements Mailer
 			}
 
 			throw $e;
+		}
+	}
+
+
+	/**
+	 * Tells whether a connection kept open between sends is still usable; servers hang up on idle sessions.
+	 */
+	private function isAlive(): bool
+	{
+		if (!is_resource($this->connection) || feof($this->connection)) {
+			return false;
+		}
+
+		try {
+			$this->write('NOOP', 250);
+			return true;
+		} catch (SmtpException) {
+			return false;
 		}
 	}
 
