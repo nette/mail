@@ -154,21 +154,37 @@ class SmtpMailer implements Mailer
 		}
 
 		if ($this->username !== '') {
-			$authMechanisms = [];
-			if (preg_match('~^250[ -]AUTH (.*)$~im', $ehloResponse, $matches)) {
-				$authMechanisms = explode(' ', trim($matches[1]));
-			}
+			$this->authenticate($ehloResponse);
+		}
+	}
 
-			if (in_array('PLAIN', $authMechanisms, strict: true)) {
-				$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
-				$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
-			} else {
-				$this->write('AUTH LOGIN', 334);
-				$this->write(base64_encode($this->username), 334, 'username');
-				if ($this->password !== '') {
-					$this->write(base64_encode($this->password), 235, 'password');
-				}
-			}
+
+	/**
+	 * Authenticates with a mechanism the server advertises in its EHLO response.
+	 * @throws SmtpException
+	 */
+	private function authenticate(string $ehloResponse): void
+	{
+		// 'AUTH PLAIN LOGIN' is the standard form, 'AUTH=PLAIN LOGIN' the legacy one some servers still emit
+		$mechanisms = preg_match('~^250[ -]AUTH[ =](.*)$~im', $ehloResponse, $m)
+			? explode(' ', trim($m[1]))
+			: [];
+
+		if (!$mechanisms) {
+			throw new SmtpException('SMTP server does not support authentication.');
+
+		} elseif (in_array('PLAIN', $mechanisms, strict: true)) {
+			$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
+			$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
+
+		} elseif (in_array('LOGIN', $mechanisms, strict: true)) {
+			$this->write('AUTH LOGIN', 334);
+			$this->write(base64_encode($this->username), 334, 'username');
+			// the password line is sent even when empty: the server is waiting for it and would otherwise stall
+			$this->write(base64_encode($this->password), 235, 'password');
+
+		} else {
+			throw new SmtpException('SMTP server does not offer a supported authentication mechanism, only: ' . implode(', ', $mechanisms) . '.');
 		}
 	}
 
