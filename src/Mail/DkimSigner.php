@@ -119,7 +119,8 @@ class DkimSigner implements Signer
 	 */
 	protected function computeSignature(string $rawHeader, string $signature): string
 	{
-		$selectedHeaders = array_merge($this->getHashedHeaders(), [self::DkimSignature]);
+		// header names are case-insensitive; the message may spell them differently than the configuration
+		$selectedHeaders = array_map(strtolower(...), array_merge($this->getHashedHeaders(), [self::DkimSignature]));
 
 		$rawHeader = preg_replace("/\r\n[ \t]+/", ' ', rtrim($rawHeader, "\r\n") . "\r\n" . $signature); // unfold
 
@@ -128,7 +129,7 @@ class DkimSigner implements Signer
 			if (str_contains($header, ':')) {
 				[$heading, $value] = explode(':', $header, 2);
 
-				if (($index = array_search($heading, $selectedHeaders, strict: true)) !== false) {
+				if (($index = array_search(strtolower(trim($heading)), $selectedHeaders, strict: true)) !== false) {
 					$parts[$index] =
 						trim(strtolower($heading), " \t") . ':' .
 						trim(preg_replace('/[ \t]+/', ' ', $value), " \t"); // every WSP sequence collapses to a single space

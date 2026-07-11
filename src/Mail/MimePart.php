@@ -8,8 +8,9 @@
 namespace Nette\Mail;
 
 use Nette;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use function addcslashes, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, stripslashes, strlen, strrpos, strspn, substr;
+use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strrpos, strspn, substr;
 
 
 /**
@@ -47,6 +48,16 @@ class MimePart
 
 
 	/**
+	 * Returns the spelling under which the header is already stored; names are case-insensitive (RFC 5322).
+	 */
+	private function resolveName(string $name): string
+	{
+		return Arrays::first(array_keys($this->headers), fn($key) => strcasecmp($key, $name) === 0)
+			?? $name;
+	}
+
+
+	/**
 	 * Sets a header.
 	 * @param  string|array<string, ?string>|null  $value  value or pair email => name
 	 */
@@ -55,6 +66,8 @@ class MimePart
 		if (!$name || preg_match('#[^a-z0-9-]#i', $name)) {
 			throw new Nette\InvalidArgumentException("Header name must be non-empty alphanumeric string, '$name' given.");
 		}
+
+		$name = $this->resolveName($name);
 
 		if ($value == null) { // intentionally ==
 			if (!$append) {
@@ -96,13 +109,13 @@ class MimePart
 	 */
 	public function getHeader(string $name): string|array|null
 	{
-		return $this->headers[$name] ?? null;
+		return $this->headers[$this->resolveName($name)] ?? null;
 	}
 
 
 	public function clearHeader(string $name): static
 	{
-		unset($this->headers[$name]);
+		unset($this->headers[$this->resolveName($name)]);
 		return $this;
 	}
 
@@ -112,16 +125,18 @@ class MimePart
 	 */
 	public function getEncodedHeader(string $name): ?string
 	{
+		$name = $this->resolveName($name);
+		$value = $this->headers[$name] ?? null;
 		$offset = strlen($name) + 2; // colon + space
 
-		if (!isset($this->headers[$name])) {
+		if ($value === null) {
 			return null;
 
-		} elseif (is_array($this->headers[$name])) {
+		} elseif (is_array($value)) {
 			$s = '';
-			foreach ($this->headers[$name] as $email => $name) {
-				if ($name != null) { // intentionally ==
-					$s .= self::encodeSequence($name, $offset, self::SequenceWord);
+			foreach ($value as $email => $recipient) {
+				if ($recipient != null) { // intentionally ==
+					$s .= self::encodeSequence($recipient, $offset, self::SequenceWord);
 					$email = " <$email>";
 				}
 
@@ -130,12 +145,12 @@ class MimePart
 
 			return ltrim(substr($s, 0, -1)); // last comma
 
-		} elseif (preg_match('#^(\S+; (?:file)?name=)"(.*)"$#D', $this->headers[$name], $m)) { // Content-Disposition
+		} elseif (preg_match('#^(\S+; (?:file)?name=)"(.*)"$#D', $value, $m)) { // Content-Disposition
 			$offset += strlen($m[1]);
 			return $m[1] . self::encodeSequence(stripslashes($m[2]), $offset, self::SequenceValue);
 
 		} else {
-			return ltrim(self::encodeSequence($this->headers[$name], $offset));
+			return ltrim(self::encodeSequence($value, $offset));
 		}
 	}
 
@@ -206,7 +221,8 @@ class MimePart
 
 		foreach ($this->headers as $name => $value) {
 			$output .= $name . ': ' . $this->getEncodedHeader($name);
-			if ($this->parts && $name === 'Content-Type') {
+			// the name is stored as it was first written, which need not be the canonical spelling
+			if ($this->parts && strcasecmp($name, 'Content-Type') === 0) {
 				$output .= ';' . self::EOL . "\tboundary=\"$boundary\"";
 			}
 

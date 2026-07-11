@@ -52,9 +52,9 @@ class SendmailMailer implements Mailer
 			: $mail->generateMessage();
 		[$headers, $body] = explode(Message::EOL . Message::EOL, $data, 2);
 
-		// mail() adds 'To' and 'Subject' itself, remove them from the header block (after DKIM signing)
+		// mail() adds 'To' and 'Subject' itself, remove them (in any spelling) from the header block (after DKIM signing)
 		$lines = preg_split('#\r\n(?![ \t])#', $headers);
-		$lines = array_filter($lines, fn($line) => !preg_match('#^(?:To|Subject):#', $line));
+		$lines = array_filter($lines, fn($line) => !preg_match('#^(?:To|Subject):#i', $line));
 		$headers = implode(Message::EOL, $lines);
 
 		$cmd = $this->commandArgs;
