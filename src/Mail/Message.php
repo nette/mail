@@ -155,7 +155,8 @@ class Message extends MimePart
 
 	public function setReturnPath(string $email): static
 	{
-		$this->setHeader('Return-Path', $email);
+		// stored as a plain string, so it does not pass through the address normalization in setHeader()
+		$this->setHeader('Return-Path', self::toAsciiEmail($email));
 		return $this;
 	}
 

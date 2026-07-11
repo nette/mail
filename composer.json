@@ -30,6 +30,7 @@
 	"suggest": {
 		"ext-dom": "to use Nette\\Mail\\CssInliner",
 		"ext-fileinfo": "to detect type of attached files",
+		"ext-intl": "to send to internationalized (IDN) domains",
 		"ext-openssl": "to use Nette\\Mail\\DkimSigner with an RSA key",
 		"ext-sodium": "to use Nette\\Mail\\DkimSigner with an Ed25519 key"
 	},

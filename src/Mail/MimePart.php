@@ -48,6 +48,28 @@ class MimePart
 
 
 	/**
+	 * Converts an internationalized domain in the address to its ASCII (punycode) form; a UTF-8 domain
+	 * on the wire requires SMTPUTF8 (RFC 6531). Needs ext-intl. The local part is never touched.
+	 */
+	protected static function toAsciiEmail(string $email): string
+	{
+		$pos = strrpos($email, '@');
+		if (
+			$pos === false
+			|| !preg_match('#[\x80-\xFF]#', substr($email, $pos + 1))
+			|| !function_exists('idn_to_ascii')
+		) {
+			return $email;
+		}
+
+		$domain = idn_to_ascii(substr($email, $pos + 1), IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+		return $domain === false
+			? $email
+			: substr($email, 0, $pos + 1) . $domain;
+	}
+
+
+	/**
 	 * Returns the spelling under which the header is already stored; names are case-insensitive (RFC 5322).
 	 */
 	private function resolveName(string $name): string
@@ -89,7 +111,7 @@ class MimePart
 				}
 
 				Nette\Utils\Validators::assert($email, 'email', "header '$name'");
-				$tmp[$email] = $recipient;
+				$tmp[self::toAsciiEmail($email)] = $recipient;
 			}
 		} else {
 			if (!Strings::checkEncoding($value)) {
