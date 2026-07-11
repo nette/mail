@@ -57,6 +57,12 @@ class SmtpMailerMock extends SmtpMailer
 	}
 
 
+	public function write(string $line, int|array|null $expectedCode = null, ?string $message = null): void
+	{
+		parent::write($line, $expectedCode, $message);
+	}
+
+
 	/** Everything the mailer has written to the server so far. */
 	public function getWritten(): string
 	{

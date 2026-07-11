@@ -8,7 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use function in_array, is_resource, is_string;
+use function in_array, is_resource, is_string, strlen, substr;
 
 
 /**
@@ -19,6 +19,8 @@ class SmtpMailer implements Mailer
 	public const
 		EncryptionSSL = 'ssl',
 		EncryptionTLS = 'tls';
+
+	private const WriteChunkLength = 8192;
 
 	/** @var ?resource */
 	private $connection;
@@ -245,7 +247,22 @@ class SmtpMailer implements Mailer
 	 */
 	protected function write(string $line, int|array|null $expectedCode = null, ?string $message = null): void
 	{
-		fwrite($this->connection ?? throw new SmtpException('Not connected to SMTP server.'), $line . Message::EOL);
+		$connection = $this->connection ?? throw new SmtpException('Not connected to SMTP server.');
+		$data = $line . Message::EOL;
+		$length = strlen($data);
+		error_clear_last(); // so that a stale error is not reported as ours
+
+		// fwrite() may write only part of the data; a fixed window avoids re-copying the whole remainder
+		for ($written = 0; $written < $length; $written += $res) {
+			$res = @fwrite($connection, substr($data, $written, self::WriteChunkLength)); // @ is escalated to exception
+			if (!$res) {
+				$info = stream_get_meta_data($connection);
+				throw new SmtpException($info['timed_out']
+					? 'Connection timed out.'
+					: 'Unable to write to the SMTP server: ' . (error_get_last()['message'] ?? 'connection lost'));
+			}
+		}
+
 		if ($expectedCode) {
 			$response = $this->read();
 			if (!in_array((int) $response, (array) $expectedCode, strict: true)) {
