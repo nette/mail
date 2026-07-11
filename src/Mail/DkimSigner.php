@@ -8,7 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use function array_filter, array_merge, array_search, base64_encode, explode, extension_loaded, hash, implode, ksort, openssl_pkey_get_private, openssl_sign, pack, preg_match, preg_replace, rtrim, str_contains, str_replace, strtolower, time, trim;
+use function array_filter, array_merge, array_search, base64_encode, explode, extension_loaded, hash, implode, in_array, ksort, openssl_pkey_get_private, openssl_sign, pack, preg_match, preg_replace, rtrim, str_contains, str_replace, strlen, strtolower, time, trim;
 
 
 /**
@@ -27,6 +27,12 @@ class DkimSigner implements Signer
 	];
 
 	private const DkimSignature = 'DKIM-Signature';
+	private const AlgorithmRsa = 'rsa-sha256';
+	private const AlgorithmEd25519 = 'ed25519-sha256';
+	private const Ed25519SeedLength = 32;
+	private const Ed25519SecretKeyLength = 64;
+
+	private readonly string $algorithm;
 
 
 	/** @throws Nette\NotSupportedException */
@@ -39,10 +45,26 @@ class DkimSigner implements Signer
 		private readonly ?string $passPhrase = null,
 		/** @var list<string> */
 		private readonly array $signHeaders = self::DefaultSignHeaders,
+		/** @var list<string> */
+		private readonly array $oversignHeaders = [],
 	) {
-		if (!extension_loaded('openssl')) {
-			throw new Nette\NotSupportedException('DkimSigner requires PHP extension openssl which is not loaded.');
+		$this->algorithm = self::detectAlgorithm($privateKey);
+		$extension = $this->algorithm === self::AlgorithmEd25519 ? 'sodium' : 'openssl';
+		if (!extension_loaded($extension)) {
+			throw new Nette\NotSupportedException("DkimSigner requires PHP extension $extension which is not loaded.");
 		}
+	}
+
+
+	/**
+	 * Ed25519 keys (RFC 8463) are raw base64, RSA keys are PEM-encoded.
+	 */
+	private static function detectAlgorithm(#[\SensitiveParameter] string $privateKey): string
+	{
+		$raw = base64_decode(trim($privateKey), strict: true);
+		return $raw !== false && in_array(strlen($raw), [self::Ed25519SeedLength, self::Ed25519SecretKeyLength], strict: true)
+			? self::AlgorithmEd25519
+			: self::AlgorithmRsa;
 	}
 
 
@@ -73,7 +95,7 @@ class DkimSigner implements Signer
 		foreach (
 			[
 				'v' => '1',
-				'a' => 'rsa-sha256',
+				'a' => $this->algorithm,
 				'q' => 'dns/txt',
 				's' => $this->selector,
 				't' => $this->getTime(),
@@ -97,7 +119,7 @@ class DkimSigner implements Signer
 	 */
 	protected function computeSignature(string $rawHeader, string $signature): string
 	{
-		$selectedHeaders = array_merge($this->signHeaders, [self::DkimSignature]);
+		$selectedHeaders = array_merge($this->getHashedHeaders(), [self::DkimSignature]);
 
 		$rawHeader = preg_replace("/\r\n[ \t]+/", ' ', rtrim($rawHeader, "\r\n") . "\r\n" . $signature); // unfold
 
@@ -121,10 +143,20 @@ class DkimSigner implements Signer
 
 
 	/**
-	 * Signs the value with the RSA private key and returns the base64-encoded signature.
+	 * Signs the value with the private key and returns the base64-encoded signature.
 	 * @throws SignException
 	 */
 	protected function sign(string $value): string
+	{
+		return match ($this->algorithm) {
+			self::AlgorithmEd25519 => $this->signEd25519($value),
+			default => $this->signRsa($value),
+		};
+	}
+
+
+	/** @throws SignException */
+	private function signRsa(string $value): string
 	{
 		$privateKey = openssl_pkey_get_private($this->privateKey, $this->passPhrase);
 		if (!$privateKey) {
@@ -136,6 +168,20 @@ class DkimSigner implements Signer
 		}
 
 		return '';
+	}
+
+
+	/** @throws SignException */
+	private function signEd25519(string $value): string
+	{
+		$raw = (string) base64_decode(trim($this->privateKey), strict: true);
+		$secretKey = match (strlen($raw)) {
+			self::Ed25519SeedLength => sodium_crypto_sign_secretkey(sodium_crypto_sign_seed_keypair($raw)),
+			self::Ed25519SecretKeyLength => $raw,
+			default => throw new SignException('Invalid private key'),
+		};
+
+		return base64_encode(sodium_crypto_sign_detached($value, $secretKey));
 	}
 
 
@@ -160,9 +206,32 @@ class DkimSigner implements Signer
 
 
 	/** @return list<string> */
+	private function getHashedHeaders(): array
+	{
+		$names = $this->signHeaders;
+		foreach ($this->oversignHeaders as $name) {
+			if (!in_array(strtolower($name), array_map(strtolower(...), $names), strict: true)) {
+				$names[] = $name;
+			}
+		}
+
+		return $names;
+	}
+
+
+	/**
+	 * Returns the headers to list in the h= tag: those present in the message, plus one extra mention
+	 * for each oversigned one (RFC 6376, §3.7).
+	 * @return list<string>
+	 */
 	protected function getSignedHeaders(Message $message): array
 	{
-		return array_values(array_filter($this->signHeaders, fn($name) => $message->getHeader($name) !== null));
+		$present = array_values(array_filter(
+			$this->getHashedHeaders(),
+			fn($name) => $message->getHeader($name) !== null,
+		));
+
+		return array_merge($present, $this->oversignHeaders);
 	}
 
 
