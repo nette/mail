@@ -40,7 +40,7 @@ Assert::match(<<<'EOD'
 	Message-ID: <%a%@%a%>
 	Content-Type: text/plain; charset=UTF-8
 	Content-Transfer-Encoding: 8bit
-	DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; l=31; s=selector; t=0; c=relaxed/simple; h=From:To:Subject; d=nette.org; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=l/nd5fGVXwzPZNZFJrn3f7kvFmaFV5cybkBUYzvIoc6hDPNw6750KpBtwsdjvJQ8u7YaEo9kSm7v2CBQj6KVSafGUZ4hDr8Yv18TjOzO9j7iUjdVJulpYq77vNzinQo3cwpSdijbZEBOd+CJwsRyk+OtMG17Yz7sNa8+Xd2Lp+Q=
+	DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; s=selector; t=0; c=relaxed/simple; h=From:To:Subject; d=nette.org; bh=ajG6YIACaHQVmGzBb/7kmuYS2aRqla4IYr5sTMwVP7k=; b=GQ0mUUir+Dr962CoYDRX0Led3p+zAB/pzdvWldHuUrgEZPtjPEWVJSzb9zlgxTVLhp1wdEBuV0VxGDdr0R0/sR3Cve6DEGlXAdIB8vfDxKjPYXvvd8ihV4ze/4UU/ntiHTVkGCwgwunZqJtNqqLfOgfSqmtiogmUeHDIzue7F18=
 
 	Příliš žluťoučký kůň
 	EOD, $signer->generateSignedMessage($mail));
