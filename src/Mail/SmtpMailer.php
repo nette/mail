@@ -20,6 +20,8 @@ class SmtpMailer implements Mailer
 		EncryptionSSL = 'ssl',
 		EncryptionTLS = 'tls';
 
+	private const MaxResponseLength = 1_000_000;
+
 	private const WriteChunkLength = 8192;
 
 	/** @var ?resource */
@@ -281,10 +283,16 @@ class SmtpMailer implements Mailer
 		$endtime = $this->timeout > 0 ? time() + $this->timeout : 0;
 
 		while (is_resource($this->connection) && !feof($this->connection)) {
-			$line = @fgets($this->connection); // @ is escalated to exception
+			// the deadline holds even while the server keeps sending
+			if ($endtime && time() > $endtime) {
+				throw new SmtpException('Connection timed out.');
+			}
+
+			// bounded, or a newline-less response would exhaust memory inside the call
+			$line = @fgets($this->connection, self::MaxResponseLength); // @ is escalated to exception
 			if ($line === '' || $line === false) {
 				$info = stream_get_meta_data($this->connection);
-				if ($info['timed_out'] || ($endtime && time() > $endtime)) {
+				if ($info['timed_out']) {
 					throw new SmtpException('Connection timed out.');
 				} elseif ($info['eof']) {
 					throw new SmtpException('Connection has been closed unexpectedly.');
@@ -294,6 +302,10 @@ class SmtpMailer implements Mailer
 			}
 
 			$data .= $line;
+			if (strlen($data) > self::MaxResponseLength) {
+				throw new SmtpException('SMTP server response is too long.');
+			}
+
 			if (preg_match('#^.{3}(?:[ \r\n]|$)#D', $line)) {
 				break;
 			}
