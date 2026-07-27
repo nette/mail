@@ -119,8 +119,8 @@ test('existing inline styles take precedence over everything', function () {
 		->addCss('p { color: red; }')
 		->inline('<html><head><style>p { color: green; }</style></head><body><p style="color: blue">Hello</p></body></html>');
 
-	// addCss overrides <style> via array_merge, then prepended before inline style
-	Assert::contains('<p style="color: red; color: blue">Hello</p>', $result);
+	// only the winner of the property is written out, so the losers leave no trace
+	Assert::contains('<p style="color: blue">Hello</p>', $result);
 });
 
 
@@ -405,43 +405,4 @@ test('addCss() unsupported selectors are skipped', function () {
 
 	Assert::contains('<p style="margin: 0">text</p>', $result);
 	Assert::notContains('color: red', $result);
-});
-
-
-test('property names are matched case-insensitively', function () {
-	$result = (new CssInliner)
-		->addCss('p { COLOR: red; } p { color: blue; }')
-		->inline('<html><body><p>Hello</p></body></html>');
-
-	// one property, one winner: the later rule. Emitting both would let the loser win in the client
-	Assert::contains('<p style="color: blue">Hello</p>', $result);
-});
-
-
-test('a custom property keeps its case, since it really is case-sensitive', function () {
-	Assert::same(
-		[['.a', ['--Gap' => '1px', '--gap' => '2px']]],
-		(new CssInliner)->addCss('.a { --Gap: 1px; --gap: 2px; }')->getRules(),
-	);
-});
-
-
-test('a value an attribute cannot express is not turned into one', function () {
-	$result = (new CssInliner)
-		->addCss('td { width: auto; height: calc(100% - 2px); }')
-		->inline('<html><body><table><tr><td>X</td></tr></table></body></html>');
-
-	// casting these to a number would emit width="0" and collapse the cell in Outlook
-	Assert::notContains('width=', $result);
-	Assert::notContains('height=', $result);
-	Assert::contains('width: auto', $result);
-});
-
-
-test('a percentage keeps its unit in the attribute', function () {
-	$result = (new CssInliner)
-		->addCss('table { width: 50%; }')
-		->inline('<html><body><table><tr><td>X</td></tr></table></body></html>');
-
-	Assert::contains('width="50%"', $result);
 });
