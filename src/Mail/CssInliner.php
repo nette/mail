@@ -118,22 +118,35 @@ class CssInliner
 			// Generate HTML attributes for email client compatibility (Outlook)
 			$tag = strtolower($element->tagName);
 			foreach (self::HtmlAttributes as $cssProp => [$attr, $type, $tags]) {
-				if (!isset($declarations[$cssProp])) {
-					continue;
-				}
+				$value = isset($declarations[$cssProp]) && in_array($tag, $tags, true)
+					? self::attributeValue($declarations[$cssProp], $type)
+					: null;
 
-				$value = $declarations[$cssProp];
-				if ($type === 'int' && !str_contains($value, '%')) {
-					$value = (string) (int) $value;
-				}
-
-				if (in_array($tag, $tags, true)) {
+				if ($value !== null) {
 					$element->setAttribute($attr, $value);
 				}
 			}
 		}
 
 		return $doc->saveHtml();
+	}
+
+
+	/**
+	 * Renders a declaration value as an HTML attribute: a length has to lose its unit
+	 * (width: 600px → width="600"), a percentage keeping it (width: 50% → width="50%").
+	 * Returns null for anything an attribute cannot express -- 'auto', 'inherit', calc() -- because
+	 * casting those to a number would silently emit width="0" and collapse the element in Outlook.
+	 * @param  'string'|'int'  $type
+	 */
+	private static function attributeValue(string $value, string $type): ?string
+	{
+		return match ($type) {
+			'string' => $value,
+			'int' => preg_match('~^([+-]?\d+(?:\.\d+)?)(%|[a-z]+)?$~i', $value, $m)
+				? $m[1] . (($m[2] ?? '') === '%' ? '%' : '')
+				: null,
+		};
 	}
 
 
@@ -225,6 +238,14 @@ class CssInliner
 				if ($colonPos !== null) {
 					$property = trim(substr($part, 0, $colonPos));
 					$value = trim(substr($part, $colonPos + 1));
+
+					// property names are case-insensitive, so COLOR and color must not end up as two
+					// separate declarations, one of them overriding the winner in the client. Custom
+					// properties are the exception: --Gap and --gap really are different.
+					if (!str_starts_with($property, '--')) {
+						$property = strtolower($property);
+					}
+
 					if ($property !== '' && $value !== '') {
 						$declarations[$property] = $value;
 					}
