@@ -66,6 +66,17 @@ Sub-parts are serialized recursively; a `boundary=` is appended to `Content-Type
   `Content-Disposition` filenames (quoted, RFC 2231 value), and plain values.
   Folding at `LineLength` (76) with tab continuation is volatile line-level
   mechanics — do not treat its exact offsets as contract.
+- **A display name is quoted on two different tests, one per path.** Emitted
+  literally, a `phrase` holding anything outside `atext` (a dot, a comma, ...) has
+  to become a `quoted-string` — that is real RFC 5322 syntax and the quotes are
+  delimiters. Emitted as an encoded-word, quotes are *not* syntax: per RFC 2047
+  §6.2 decoding happens **after** the field body is parsed into tokens, so the
+  encoding already shields whatever the name contains, and quotes added before
+  encoding land inside the base64 payload and decode as part of the name the
+  recipient sees. The encoded path therefore quotes only for receivers that
+  re-parse the decoded phrase, and only for `,;:<>@"\` — characters able to
+  restructure an address list (#102 was a Gmail DKIM failure caused by a comma).
+  Diacritics and dots cannot restructure anything, so they stay bare.
 - `Message::$defaultHeaders` is a **mutable static** (`MIME-Version`,
   `X-Mailer`), applied in the constructor — changing it affects every
   subsequently created message, and since `X-Mailer` is in DKIM's default

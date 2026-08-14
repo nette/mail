@@ -10,7 +10,7 @@ namespace Nette\Mail;
 use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strrpos, strspn, substr;
+use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strpbrk, strrpos, strspn, substr;
 
 
 /**
@@ -303,15 +303,14 @@ class MimePart
 	 */
 	private static function encodeSequence(string $s, int &$offset = 0, ?int $type = null): string
 	{
-		$escape = fn($s) => preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1 // RFC 2822 atext except =
-			? sprintf('"%s"', addcslashes($s, '"\\'))
-			: $s;
+		$escape = fn($s) => sprintf('"%s"', addcslashes($s, '"\\'));
 
 		if (
 			(strlen($s) < self::LineLength - 3) && // 3 is tab + quotes
 			strspn($s, "!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
 		) {
-			if ($type !== null) {
+			// emitted literally, so anything outside atext has to become a quoted-string
+			if ($type !== null && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1) { // RFC 2822 atext except =
 				$s = $escape($s);
 			}
 
@@ -324,7 +323,10 @@ class MimePart
 			$offset = 1;
 		}
 
-		if ($type === self::SequenceWord) {
+		// RFC 2047 decoding happens after the field is parsed, so the encoding already shields
+		// the phrase. Quote it only for receivers that re-parse the decoded text, and only for
+		// characters able to restructure the address list - quotes added here stay visible.
+		if ($type === self::SequenceWord && strpbrk($s, ',;:<>@"\\') !== false) {
 			$s = $escape($s);
 		}
 

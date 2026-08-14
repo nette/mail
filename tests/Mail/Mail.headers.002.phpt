@@ -49,4 +49,6 @@ Assert::match(<<<'EOD'
 	Content-Transfer-Encoding: 7bit
 	EOD, TestMailer::$output);
 
+// the comma could restructure the address list for a receiver that re-parses the decoded
+// phrase, so this name keeps its quotes (see #102)
 Assert::match('"Kdo uteče, obědvá"', iconv_mime_decode('=?UTF-8?B?IktkbyB1dGXEjWUsIG9ixJtkdsOhIg==?='));
