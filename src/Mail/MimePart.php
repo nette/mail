@@ -10,7 +10,7 @@ namespace Nette\Mail;
 use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strrpos, strspn, substr;
+use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strpbrk, strrpos, strspn, substr;
 
 
 /**
@@ -303,16 +303,12 @@ class MimePart
 	 */
 	private static function encodeSequence(string $s, int &$offset = 0, ?int $type = null): string
 	{
-		$escape = fn($s) => preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1 // RFC 2822 atext except =
-			? sprintf('"%s"', addcslashes($s, '"\\'))
-			: $s;
-
 		if (
 			(strlen($s) < self::LineLength - 3) && // 3 is tab + quotes
 			strspn($s, "!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
 		) {
-			if ($type !== null) {
-				$s = $escape($s);
+			if ($type !== null && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1) { // RFC 2822 atext except =
+				$s = sprintf('"%s"', addcslashes($s, '"\\'));
 			}
 
 			return self::append($s, $offset);
@@ -324,8 +320,11 @@ class MimePart
 			$offset = 1;
 		}
 
-		if ($type === self::SequenceWord) {
-			$s = $escape($s);
+		if ( // could split the address list when decoded before parsing
+			$type === self::SequenceWord
+			&& strpbrk($s, ',;:<>@"\\') !== false
+		) {
+			$s = sprintf('"%s"', addcslashes($s, '"\\'));
 		}
 
 		$s = iconv_mime_encode(str_repeat(' ', $old = $offset), $s, [

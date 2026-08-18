@@ -66,6 +66,12 @@ Sub-parts are serialized recursively; a `boundary=` is appended to `Content-Type
   `Content-Disposition` filenames (quoted, RFC 2231 value), and plain values.
   Folding at `LineLength` (76) with tab continuation is volatile line-level
   mechanics — do not treat its exact offsets as contract.
+- **A display name is quoted on two different tests, one per path.** Emitted
+  literally, anything outside `atext` becomes a `quoted-string` (RFC 5322 syntax).
+  Emitted as an encoded-word, quotes are not syntax: RFC 2047 decoding happens
+  after the field is parsed, so quotes added before encoding stay visible in the
+  decoded name. That path quotes only for `,;:<>@"\`, the characters a receiver
+  re-parsing the decoded phrase could turn into another address (#102).
 - `Message::$defaultHeaders` is a **mutable static** (`MIME-Version`,
   `X-Mailer`), applied in the constructor — changing it affects every
   subsequently created message, and since `X-Mailer` is in DKIM's default
