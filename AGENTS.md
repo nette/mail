@@ -9,6 +9,12 @@ internally and the rationale behind key design decisions - lives in `docs/`.
 Consult it before non-trivial changes; it is the source of truth from which the
 public manual is distilled.
 
+`docs/upgrading.md` records, per released version, every change visible to
+users of the package (renames, removals, deprecations, signatures, behavior,
+configuration), each with its commit hash; internal changes are not in it. It
+is the place to look up the history of a public symbol. Do not write to it; it
+is extended at release time from the git history.
+
 ## Project Overview
 
 Nette Mail is a standalone PHP library for creating and sending emails with support for SMTP, sendmail, DKIM signing, and fallback mechanisms. Part of the Nette Framework ecosystem but usable independently.
