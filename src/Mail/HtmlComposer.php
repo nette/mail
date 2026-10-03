@@ -8,8 +8,10 @@
 namespace Nette\Mail;
 
 use Nette;
+use Nette\Utils\FileSystem;
 use Nette\Utils\Strings;
-use function array_map, array_reverse, explode, implode, is_string, rtrim, strlen, substr, substr_replace, trim, urldecode;
+use function array_key_exists, array_map, array_reverse, explode, finfo_file, finfo_open, implode, is_file, is_string, rtrim, str_starts_with, strlen, substr, substr_replace, trim, urldecode;
+use const DIRECTORY_SEPARATOR, FILEINFO_MIME_TYPE;
 
 
 /**
@@ -31,7 +33,9 @@ class HtmlComposer
 	/**
 	 * Enables embedding of local images referenced in HTML. The path is the base directory
 	 * for resolving relative image references in <img src>, <body background>, url(...) in
-	 * style attributes/<style> tags, and the [[file]] placeholder.
+	 * style attributes/<style> tags, and the [[file]] placeholder. A reference to a file that is
+	 * missing, is not an image or is outside of the base directory throws an exception, except
+	 * the [[file]] placeholder, which is left untouched.
 	 */
 	public function embedImages(string $basePath): static
 	{
@@ -124,9 +128,18 @@ class HtmlComposer
 		);
 		foreach (array_reverse($matches) as $m) {
 			$file = rtrim($basePath, '/\\') . '/' . (isset($m[4]) ? $m[4][0] : urldecode($m[3][0]));
-			if (!isset($cids[$file])) {
-				$contentId = $mail->addEmbeddedFile($file)->getHeader('Content-ID');
-				$cids[$file] = is_string($contentId) ? substr($contentId, 1, -1) : '';
+			if (!array_key_exists($file, $cids)) {
+				$cids[$file] = null;
+				if (self::isEmbeddableImage($file, $basePath)) {
+					$contentId = $mail->addEmbeddedFile($file)->getHeader('Content-ID');
+					$cids[$file] = is_string($contentId) ? substr($contentId, 1, -1) : '';
+				} elseif (!isset($m[4])) { // [[...]] may be just a text
+					throw new Nette\InvalidArgumentException("File '$file' referenced in HTML is missing, is not an image or is outside of the base path.");
+				}
+			}
+
+			if ($cids[$file] === null) {
+				continue;
 			}
 
 			$html = substr_replace(
@@ -137,5 +150,22 @@ class HtmlComposer
 			);
 		}
 		return $html;
+	}
+
+
+	/**
+	 * Checks that the file is an image inside the base path, so that a reference in HTML
+	 * coming from untrusted content cannot embed an arbitrary file into the email.
+	 */
+	private static function isEmbeddableImage(string $file, string $basePath): bool
+	{
+		$basePath = rtrim(FileSystem::normalizePath($basePath), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		if (!str_starts_with(FileSystem::normalizePath($file), $basePath) || !is_file($file)) {
+			return false;
+		}
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$contentType = $finfo ? finfo_file($finfo, $file) : false;
+		return is_string($contentType) && str_starts_with($contentType, 'image/');
 	}
 }

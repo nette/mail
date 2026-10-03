@@ -112,6 +112,41 @@ test('embedImages() embeds local images and rewrites src to cid:', function () {
 });
 
 
+test('embedImages() fails on references to a missing file, a non-image or a file outside the base path', function () {
+	foreach (['<img src="missing.png">', '<img src="example.zip">', '<img src="../HtmlComposer.phpt">', '<img src="%2e%2e/HtmlComposer.phpt">', '<img src="../missing.png">', '<div style="background: url(../HtmlComposer.phpt)">'] as $html) {
+		Assert::exception(
+			fn() => (new HtmlComposer($html))
+				->embedImages(__DIR__ . '/fixtures')
+				->applyTo(new Message),
+			Nette\InvalidArgumentException::class,
+			"File '%a%' referenced in HTML is missing, is not an image or is outside of the base path.",
+		);
+	}
+});
+
+
+test('embedImages() leaves [[...]] of a missing file, a non-image or a file outside the base path untouched', function () {
+	$html = '<p>[[spoiler]] [[private.key]] [[../HtmlComposer.phpt]] [[../missing.png]]</p>';
+	$mail = new Message;
+	(new HtmlComposer($html))
+		->embedImages(__DIR__ . '/fixtures')
+		->applyTo($mail);
+
+	Assert::same($html, $mail->getHtmlBody());
+	Assert::notContains('Content-ID', $mail->generateMessage());
+});
+
+
+test('embedImages() embeds a path leading back into the base path', function () {
+	$mail = new Message;
+	(new HtmlComposer('<img src="../fixtures/background.png">'))
+		->embedImages(__DIR__ . '/fixtures')
+		->applyTo($mail);
+
+	Assert::match('<img src="cid:%S%@%S%">', $mail->getHtmlBody());
+});
+
+
 test('inlineCss + embedImages combined', function () {
 	$mail = new Message;
 	(new HtmlComposer('<html><body><p>Hi</p><img src="background.png"></body></html>'))
