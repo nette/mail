@@ -4,9 +4,7 @@
  * Test: Nette\Mail\FileMailer
  */
 
-use Nette\Mail\FileMailer;
-use Nette\Mail\Message;
-use Nette\Mail\SendException;
+use Nette\Mail\{FileMailer, Message, SendException};
 use Tester\Assert;
 
 

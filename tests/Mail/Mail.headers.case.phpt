@@ -4,8 +4,7 @@
  * Test: Nette\Mail\MimePart header names are case-insensitive (RFC 5322).
  */
 
-use Nette\Mail\Message;
-use Nette\Mail\MimePart;
+use Nette\Mail\{Message, MimePart};
 use Tester\Assert;
 
 

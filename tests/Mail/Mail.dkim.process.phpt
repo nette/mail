@@ -4,8 +4,7 @@
  * Test: Nette\Mail\DkimSigner check process.
  */
 
-use Nette\Mail\DkimSigner;
-use Nette\Mail\Message;
+use Nette\Mail\{DkimSigner, Message};
 use Tester\Assert;
 
 

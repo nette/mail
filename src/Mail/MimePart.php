@@ -8,8 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use Nette\Utils\Arrays;
-use Nette\Utils\Strings;
+use Nette\Utils\{Arrays, Strings};
 use function function_exists, is_array, is_string, sprintf, strlen;
 
 

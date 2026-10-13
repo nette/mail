@@ -4,8 +4,7 @@
  * Test: Nette\Mail\DkimSigner Ed25519 signing (RFC 8463).
  */
 
-use Nette\Mail\DkimSigner;
-use Nette\Mail\Message;
+use Nette\Mail\{DkimSigner, Message};
 use Tester\Assert;
 
 

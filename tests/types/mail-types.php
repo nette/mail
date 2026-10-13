@@ -4,8 +4,7 @@
  * PHPStan type tests.
  */
 
-use Nette\Mail\Message;
-use Nette\Mail\MimePart;
+use Nette\Mail\{Message, MimePart};
 use function PHPStan\Testing\assertType;
 
 

@@ -4,9 +4,7 @@
  * Test: Nette\Mail\SendmailMailer strips To/Subject from header block after DKIM signs them.
  */
 
-use Nette\Mail\DkimSigner;
-use Nette\Mail\Message;
-use Nette\Mail\SendmailMailer;
+use Nette\Mail\{DkimSigner, Message, SendmailMailer};
 use Tester\Assert;
 
 

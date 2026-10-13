@@ -4,8 +4,7 @@
  * Test: Nette\Mail\SmtpMailer XOAUTH2 authentication.
  */
 
-use Nette\Mail\Message;
-use Nette\Mail\SmtpException;
+use Nette\Mail\{Message, SmtpException};
 use Tester\Assert;
 
 

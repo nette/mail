@@ -4,10 +4,7 @@
  * Test: Nette\Mail\Interceptor
  */
 
-use Nette\Mail\Interceptor;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
-use Nette\Mail\SendException;
+use Nette\Mail\{Interceptor, Mailer, Message, SendException};
 use Tester\Assert;
 
 

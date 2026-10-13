@@ -4,8 +4,7 @@
  * Test: Nette\Mail\SmtpMailer write failures.
  */
 
-use Nette\Mail\Message;
-use Nette\Mail\SmtpException;
+use Nette\Mail\{Message, SmtpException};
 use Tester\Assert;
 
 

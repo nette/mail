@@ -4,9 +4,7 @@
  * Test: Nette\Mail\DkimSigner invalid private key.
  */
 
-use Nette\Mail\DkimSigner;
-use Nette\Mail\Message;
-use Nette\Mail\SignException;
+use Nette\Mail\{DkimSigner, Message, SignException};
 use Tester\Assert;
 
 

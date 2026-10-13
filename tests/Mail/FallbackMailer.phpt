@@ -4,11 +4,7 @@
  * Test: Nette\Mail\FallbackMailer
  */
 
-use Nette\Mail\FallbackMailer;
-use Nette\Mail\FallbackMailerException;
-use Nette\Mail\IMailer;
-use Nette\Mail\Message;
-use Nette\Mail\SendException;
+use Nette\Mail\{FallbackMailer, FallbackMailerException, IMailer, Message, SendException};
 use Tester\Assert;
 
 

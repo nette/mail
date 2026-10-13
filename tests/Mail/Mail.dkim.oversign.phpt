@@ -4,8 +4,7 @@
  * Test: Nette\Mail\DkimSigner oversigning (RFC 6376, §8.15).
  */
 
-use Nette\Mail\DkimSigner;
-use Nette\Mail\Message;
+use Nette\Mail\{DkimSigner, Message};
 use Tester\Assert;
 
 

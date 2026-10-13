@@ -5,8 +5,7 @@
  * @phpVersion 8.4
  */
 
-use Nette\Mail\HtmlComposer;
-use Nette\Mail\Message;
+use Nette\Mail\{HtmlComposer, Message};
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';

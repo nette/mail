@@ -8,8 +8,7 @@
 namespace Nette\Bridges\MailTracy;
 
 use Nette;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
+use Nette\Mail\{Mailer, Message};
 use Tracy;
 use function count, is_array;
 

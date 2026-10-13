@@ -4,12 +4,7 @@
  * Test: Nette\Mail\FallbackMailer tells permanent failures from transient ones.
  */
 
-use Nette\Mail\FallbackMailer;
-use Nette\Mail\FallbackMailerException;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
-use Nette\Mail\SendException;
-use Nette\Mail\SmtpException;
+use Nette\Mail\{FallbackMailer, FallbackMailerException, Mailer, Message, SendException, SmtpException};
 use Tester\Assert;
 
 

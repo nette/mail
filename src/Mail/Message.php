@@ -8,8 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use Nette\Utils\Strings;
-use Nette\Utils\Validators;
+use Nette\Utils\{Strings, Validators};
 use function is_array, is_string;
 
 
