@@ -7,7 +7,6 @@
 use Nette\Mail\{FallbackMailer, FallbackMailerException, Mailer, Message, SendException, SmtpException};
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 
@@ -49,7 +48,7 @@ test('a permanently failing mailer is not retried, but the fallback still runs',
 	$rejecting = new CountingMailer(SmtpException::fromReply('rejected', '550 mailbox unavailable'));
 	$working = new CountingMailer(null);
 
-	(new FallbackMailer([$rejecting, $working], retryCount: 3, retryWaitTime: 10))->send(new Message);
+	(new FallbackMailer([$rejecting, $working], retryWaitTime: 10))->send(new Message);
 
 	Assert::same(1, $rejecting->attempts); // asked once, and it said no for good
 	Assert::same(1, $working->attempts);
@@ -59,7 +58,7 @@ test('a permanently failing mailer is not retried, but the fallback still runs',
 test('a transient failure is still retried', function () {
 	$busy = new CountingMailer(SmtpException::fromReply('busy', '421 service not available'));
 
-	$mailer = new FallbackMailer([$busy], retryCount: 3, retryWaitTime: 10);
+	$mailer = new FallbackMailer([$busy], retryWaitTime: 10);
 	Assert::exception(fn() => $mailer->send(new Message), FallbackMailerException::class);
 
 	Assert::same(3, $busy->attempts);
@@ -72,13 +71,13 @@ test('when every mailer refuses permanently, it gives up at once', function () {
 
 	$mailer = new FallbackMailer([$a, $b], retryCount: 5, retryWaitTime: 10_000); // a wait we must not sit through
 
-	$start = microtime(true);
+	$start = microtime(as_float: true);
 	$e = Assert::exception(fn() => $mailer->send(new Message), FallbackMailerException::class);
 
 	Assert::same(1, $a->attempts);
 	Assert::same(1, $b->attempts);
 	Assert::count(2, $e->failures); // both refusals are reported
-	Assert::true(microtime(true) - $start < 1); // no retry round, so no wait
+	Assert::true(microtime(as_float: true) - $start < 1); // no retry round, so no wait
 });
 
 
@@ -86,7 +85,7 @@ test('a mailer that refuses permanently drops out while the others keep being re
 	$rejecting = new CountingMailer(SmtpException::fromReply('rejected', '550 no such user'));
 	$busy = new CountingMailer(SmtpException::fromReply('busy', '451 try again later'));
 
-	$mailer = new FallbackMailer([$rejecting, $busy], retryCount: 3, retryWaitTime: 10);
+	$mailer = new FallbackMailer([$rejecting, $busy], retryWaitTime: 10);
 	Assert::exception(fn() => $mailer->send(new Message), FallbackMailerException::class);
 
 	Assert::same(1, $rejecting->attempts);

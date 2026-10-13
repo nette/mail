@@ -7,7 +7,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -21,7 +20,7 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->setHTMLBody('<b>Sample text</b>');
+$mail->setHtmlBody('<b>Sample text</b>');
 
 $mail->addAttachment(__DIR__ . '/fixtures/example.zip', null, 'application/zip');
 

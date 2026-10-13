@@ -7,7 +7,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -21,7 +20,7 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->setHTMLBody('<b>Žluťoučký kůň</b>');
+$mail->setHtmlBody('<b>Žluťoučký kůň</b>');
 
 $mailer = new TestMailer;
 $mailer->send($mail);

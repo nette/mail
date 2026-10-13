@@ -77,9 +77,13 @@ class SendmailMailer implements Mailer
 	protected function invokeMail(string $to, string $subject, string $body, string $headers, string $cmd): void
 	{
 		$info = '';
-		$res = Nette\Utils\Callback::invokeSafe('mail', [$to, $subject, $body, $headers, $cmd], function (string $message) use (&$info): void {
-			$info = ": $message";
-		});
+		$res = Nette\Utils\Callback::invokeSafe(
+			'mail',
+			[$to, $subject, $body, $headers, $cmd],
+			function (string $message) use (&$info): void {
+				$info = ": $message";
+			},
+		);
 		if ($res === false) {
 			throw new SendException("Unable to send email$info.");
 		}

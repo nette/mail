@@ -4,23 +4,19 @@
  * Test: Nette\Mail\FallbackMailer
  */
 
-use Nette\Mail\{FallbackMailer, FallbackMailerException, IMailer, Message, SendException};
+use Nette\Mail\{FallbackMailer, FallbackMailerException, Mailer, Message, SendException};
 use Tester\Assert;
-
 
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
 
 
-class FailingMailer implements IMailer
+class FailingMailer implements Mailer
 {
-	private $failedTimes;
-
-
-	public function __construct($failedTimes)
-	{
-		$this->failedTimes = $failedTimes;
+	public function __construct(
+		private $failedTimes,
+	) {
 	}
 
 
@@ -39,7 +35,7 @@ test('all mailers fail after retries, triggering onFailure events', function () 
 	$subMailerB = new FailingMailer(3);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, Mailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 
@@ -59,7 +55,7 @@ test('partial failures with eventual success after retries', function () {
 	$subMailerB = new FailingMailer(2);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, Mailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 
@@ -73,7 +69,7 @@ test('immediate success without triggering failure events', function () {
 	$subMailerB = new FailingMailer(2);
 
 	$mailer = new FallbackMailer([$subMailerA, $subMailerB], 3, 10);
-	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, IMailer $mailer, Message $mail) use (&$onFailureCalls) {
+	$mailer->onFailure[] = function (FallbackMailer $sender, SendException $e, Mailer $mailer, Message $mail) use (&$onFailureCalls) {
 		$onFailureCalls[] = $mailer;
 	};
 

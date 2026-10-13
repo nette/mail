@@ -7,7 +7,6 @@
 use Nette\Mail\{Message, MimePart};
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 

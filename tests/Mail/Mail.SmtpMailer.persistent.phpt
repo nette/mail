@@ -7,7 +7,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/SmtpMailerMock.php';
 

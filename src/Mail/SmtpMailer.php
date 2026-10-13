@@ -54,13 +54,9 @@ class SmtpMailer implements Mailer
 			? stream_context_get_default()
 			: stream_context_create($streamOptions);
 
-		if ($clientHost === null) {
-			$this->clientHost = isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+$#D', $_SERVER['HTTP_HOST'])
-				? $_SERVER['HTTP_HOST']
-				: 'localhost';
-		} else {
-			$this->clientHost = $clientHost;
-		}
+		$this->clientHost = $clientHost ?? (isset($_SERVER['HTTP_HOST']) && preg_match('#^[\w.-]+$#D', $_SERVER['HTTP_HOST'])
+			? $_SERVER['HTTP_HOST']
+			: 'localhost');
 	}
 
 
@@ -118,11 +114,11 @@ class SmtpMailer implements Mailer
 				$this->write("MAIL FROM:<$from>", 250);
 			}
 
-			foreach (array_merge(
-				(array) $mail->getHeader('To'),
-				(array) $mail->getHeader('Cc'),
-				(array) $mail->getHeader('Bcc'),
-			) as $email => $name) {
+			foreach ([
+				...(array) $mail->getHeader('To'),
+				...(array) $mail->getHeader('Cc'),
+				...(array) $mail->getHeader('Bcc'),
+			] as $email => $name) {
 				$this->write("RCPT TO:<$email>", [250, 251]);
 			}
 
@@ -310,7 +306,7 @@ class SmtpMailer implements Mailer
 	 */
 	protected function openStream(string $address)
 	{
-		$connection = @stream_socket_client(// @ is escalated to exception
+		$connection = @stream_socket_client( // @ is escalated to exception
 			$address,
 			$errno,
 			$error,

@@ -18,12 +18,12 @@ class SmtpMailerMock extends SmtpMailer
 
 	/** @var resource|null */
 	private $serverSide;
-	private string $responses;
 
 
-	public function __construct(string $responses = '', mixed ...$args)
-	{
-		$this->responses = $responses;
+	public function __construct(
+		private readonly string $responses = '',
+		mixed ...$args,
+	) {
 		parent::__construct(...($args + ['host' => 'mail.example.com', 'username' => '', 'password' => '']));
 	}
 

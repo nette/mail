@@ -7,7 +7,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -17,7 +16,10 @@ $mail = new Message;
 
 $mail->addTo('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com');
 
-$mail->addCc('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com', 'John Doe');
+$mail->addCc(
+	'veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com',
+	'John Doe',
+);
 
 $mail->addBcc('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylong name <veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail@example.com>');
 

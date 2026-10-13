@@ -8,7 +8,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -22,7 +21,7 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->setHTMLBody('
+$mail->setHtmlBody('
 	<BODY id=1 background=background.png>
 	<img src="backgroun%64.png">
 	<div title=a style="background:url(background.png)">
@@ -39,7 +38,7 @@ Assert::matchFile(__DIR__ . '/Mail.textualAndHtmlBody.embedded.expect', TestMail
 
 
 $mail = new Message;
-$mail->setHTMLBody("
+$mail->setHtmlBody("
 	<a href='test.php?src=SOME'>some link</a>
 	<script src=script.js></script>
 	<div title=\"background:url(background.png)\">

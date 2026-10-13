@@ -8,7 +8,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -22,7 +21,7 @@ $mail->setSubject('Hello Jane!');
 
 $mail->setBody('Sample text');
 
-$mail->setHTMLBody('<b>Sample text</b> <img src="background.png">', __DIR__ . '/fixtures');
+$mail->setHtmlBody('<b>Sample text</b> <img src="background.png">', __DIR__ . '/fixtures');
 // append automatically $mail->addEmbeddedFile('files/background.png');
 
 $mail->addAttachment('fixtures/example.zip');

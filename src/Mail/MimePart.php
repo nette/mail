@@ -8,7 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use Nette\Utils\{Arrays, Strings};
+use Nette\Utils\Arrays;
 use function function_exists, is_array, is_string, sprintf, strlen;
 
 
@@ -103,7 +103,7 @@ class MimePart
 			foreach ($value as $email => $recipient) {
 				if ($recipient === null) {
 					// continue
-				} elseif (!Strings::checkEncoding($recipient)) {
+				} elseif (!Nette\Utils\Validators::isUnicode($recipient)) {
 					Nette\Utils\Validators::assert($recipient, 'unicode', "header '$name'");
 				} elseif (preg_match('#[\r\n]#', $recipient)) {
 					throw new Nette\InvalidArgumentException('Name must not contain line separator.');
@@ -113,7 +113,7 @@ class MimePart
 				$tmp[self::toAsciiEmail($email)] = $recipient;
 			}
 		} else {
-			if (!Strings::checkEncoding($value)) {
+			if (!Nette\Utils\Validators::isUnicode($value)) {
 				throw new Nette\InvalidArgumentException('Header is not valid UTF-8 string.');
 			}
 
@@ -304,7 +304,10 @@ class MimePart
 	{
 		if (
 			(strlen($s) < self::LineLength - 3) && // 3 is tab + quotes
-			strspn($s, "!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t") === strlen($s)
+			strspn(
+				$s,
+				"!\"#$%&\\'()*+,-./0123456789:;<>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^`abcdefghijklmnopqrstuvwxyz{|}~=? _\r\n\t",
+			) === strlen($s)
 		) {
 			if ($type !== null && preg_match('#[^ a-zA-Z0-9!\#$%&\'*+/?^_`{|}~-]#', $s) === 1) { // RFC 2822 atext except =
 				$s = sprintf('"%s"', addcslashes($s, '"\\'));

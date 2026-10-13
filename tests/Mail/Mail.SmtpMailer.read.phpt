@@ -7,7 +7,6 @@
 use Nette\Mail\SmtpException;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/SmtpMailerMock.php';
 
@@ -74,11 +73,11 @@ test('the timeout applies even while the server keeps sending data', function ()
 	ChattyStream::$slow = true;
 	$mailer = new ChattyMailer(timeout: 1);
 
-	$start = microtime(true);
+	$start = microtime(as_float: true);
 	Assert::exception(fn() => $mailer->connect(), SmtpException::class, 'Connection timed out.');
 
 	// it gave up on the deadline, not after exhausting memory
-	Assert::true(microtime(true) - $start < 10);
+	Assert::true(microtime(as_float: true) - $start < 10);
 });
 
 

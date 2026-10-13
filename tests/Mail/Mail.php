@@ -4,10 +4,10 @@
  * Common code for Mail test cases.
  */
 
-use Nette\Mail\{IMailer, Message};
+use Nette\Mail\{Mailer, Message};
 
 
-class TestMailer implements IMailer
+class TestMailer implements Mailer
 {
 	public static $output;
 

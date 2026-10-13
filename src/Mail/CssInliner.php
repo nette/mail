@@ -45,10 +45,10 @@ class CssInliner
 
 	// CSS → [HTML attribute, type, allowed elements]. align/valign excluded: different semantics than CSS.
 	private const HtmlAttributes = [
-		'background-color' => ['bgcolor',     'string', ['table', 'td', 'th', 'body', 'tr']],
-		'width'            => ['width',       'int',    ['table', 'td', 'th', 'img']],
-		'height'           => ['height',      'int',    ['table', 'td', 'th', 'img']],
-		'border-spacing'   => ['cellspacing', 'int',    ['table']],
+		'background-color' => ['bgcolor', 'string', ['table', 'td', 'th', 'body', 'tr']],
+		'width'            => ['width', 'int', ['table', 'td', 'th', 'img']],
+		'height'           => ['height', 'int', ['table', 'td', 'th', 'img']],
+		'border-spacing'   => ['cellspacing', 'int', ['table']],
 	];
 
 	/** @var list<array{string, array<string, string>}> */
@@ -60,7 +60,7 @@ class CssInliner
 	 */
 	public function addCss(string $css): static
 	{
-		$this->rules = array_merge($this->rules, self::parseStylesheet($css));
+		$this->rules = [...$this->rules, ...self::parseStylesheet($css)];
 		return $this;
 	}
 
@@ -89,10 +89,10 @@ class CssInliner
 
 		$rules = [];
 		foreach ($doc->querySelectorAll('style') as $styleEl) {
-			$rules = array_merge($rules, self::parseStylesheet($styleEl->textContent ?? ''));
+			$rules = [...$rules, ...self::parseStylesheet($styleEl->textContent ?? '')];
 		}
 
-		$rules = array_merge($rules, $this->rules);
+		$rules = [...$rules, ...$this->rules];
 
 		/** @var array<int, Dom\Element> */
 		$elements = [];

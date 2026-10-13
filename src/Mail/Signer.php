@@ -17,5 +17,5 @@ interface Signer
 	 * Returns the signed email message as a string.
 	 * @throws SignException
 	 */
-	public function generateSignedMessage(Message $message): string;
+	function generateSignedMessage(Message $message): string;
 }

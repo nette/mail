@@ -8,7 +8,6 @@ use Nette\Bridges\MailDI\MailExtension;
 use Nette\DI;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/include.php';
 
@@ -146,7 +145,7 @@ mail:
 
 test('debugger: true but NOT in debug mode -> Interceptor exists (eager), but no panel', function () {
 	$compiler = new DI\Compiler;
-	$compiler->addExtension('mail', new MailExtension(debugMode: false));
+	$compiler->addExtension('mail', new MailExtension);
 	$container = createContainer($compiler, '
 services:
 	- Tracy\Bar

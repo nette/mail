@@ -7,7 +7,6 @@
 use Nette\Mail\{DkimSigner, Message};
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 if (!extension_loaded('openssl')) {

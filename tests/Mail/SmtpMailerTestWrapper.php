@@ -6,6 +6,7 @@
 
 use Nette\Mail\SmtpMailer;
 
+
 /**
  * A wrapper for SmtpMailer (derived class) that helps with tesing.
  * It overrides internal connection functions so we can mock TCP communication.

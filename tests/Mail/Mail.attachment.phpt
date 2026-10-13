@@ -7,7 +7,6 @@
 use Nette\Mail\Message;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/Mail.php';
@@ -75,7 +74,11 @@ Assert::match(<<<'EOD'
 
 $mail = new Message;
 $mail->addAttachment('žluťoučký.zip', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
-$mail->addAttachment('veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail.pdf', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
+$mail->addAttachment(
+	'veryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongemail.pdf',
+	file_get_contents(__DIR__ . '/fixtures/small.bin'),
+	'application/octet-stream',
+);
 $mail->addAttachment('ž', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
 $mail->addAttachment('abc', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');
 $mail->addAttachment('"\\', file_get_contents(__DIR__ . '/fixtures/small.bin'), 'application/octet-stream');

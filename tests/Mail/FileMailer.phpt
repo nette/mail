@@ -7,7 +7,6 @@
 use Nette\Mail\{FileMailer, Message, SendException};
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 

@@ -95,13 +95,13 @@ class MailExtension extends Nette\DI\CompilerExtension
 
 			$signer = $builder->addDefinition($this->prefix('signer'))
 				->setType(Nette\Mail\Signer::class)
-				->setFactory(Nette\Mail\DkimSigner::class, $dkim);
+				->setCreator(Nette\Mail\DkimSigner::class, $dkim);
 
 			$mailer->addSetup('setSigner', [$signer]);
 		}
 
 		if ($config->smtp) {
-			$mailer->setFactory(Nette\Mail\SmtpMailer::class, [
+			$mailer->setCreator(Nette\Mail\SmtpMailer::class, [
 				'host' => $config->host ?? ini_get('SMTP'),
 				'port' => isset($config->host) ? $config->port : (int) ini_get('smtp_port'),
 				'username' => $config->username,
@@ -114,13 +114,13 @@ class MailExtension extends Nette\DI\CompilerExtension
 			]);
 
 		} else {
-			$mailer->setFactory(Nette\Mail\SendmailMailer::class);
+			$mailer->setCreator(Nette\Mail\SendmailMailer::class);
 		}
 
 		if ($useInterceptor) {
 			$builder->addDefinition($this->prefix('mailer'))
 				->setType(Nette\Mail\Mailer::class)
-				->setFactory(Nette\Mail\Interceptor::class, [
+				->setCreator(Nette\Mail\Interceptor::class, [
 					'mailer' => $mailer,
 					'redirectTo' => $config->redirect['to'] ?? null,
 					'subjectPrefix' => $config->redirect['subjectPrefix'] ?? '',
@@ -147,7 +147,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 		}
 
 		$panel = $builder->addDefinition($this->prefix('panel'))
-			->setFactory(Nette\Bridges\MailTracy\MailPanel::class)
+			->setCreator(Nette\Bridges\MailTracy\MailPanel::class)
 			->addSetup('@' . Tracy\Bar::class . '::addPanel', ['@self']);
 
 		$mailer = $builder->getDefinition($this->prefix('mailer'));
