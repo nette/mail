@@ -13,7 +13,7 @@ public manual is distilled.
 
 Nette Mail is a standalone PHP library for creating and sending emails with support for SMTP, sendmail, DKIM signing, and fallback mechanisms. Part of the Nette Framework ecosystem but usable independently.
 
-- **Requirements:** PHP 8.2 - 8.5, ext-iconv required
+- **Requirements:** PHP 8.2 - 8.6, ext-iconv required
 - **Optional extensions:** ext-dom (CssInliner, PHP 8.4+), ext-fileinfo (attachment type detection), ext-openssl (DKIM signing)
 - **Main dependency:** nette/utils ^4.1
 
@@ -192,7 +192,7 @@ test('Message correctly sets recipient', function () {
 - Test files in `tests/Mail/` cover all major functionality
 - Test fixtures in `tests/Mail/fixtures/` for email samples
 - Bootstrap in `tests/bootstrap.php` provides `test()` helper function
-- Tests run on PHP 8.2-8.5 in CI
+- Tests run on PHP 8.2-8.6 in CI
 
 ## Coding Standards
 
