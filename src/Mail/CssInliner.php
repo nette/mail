@@ -9,8 +9,7 @@ namespace Nette\Mail;
 
 use Dom;
 use Nette\InvalidArgumentException;
-use function array_keys, array_merge, count, implode, in_array, preg_match_all, spl_object_id, strlen, strtolower, substr, trim;
-use const PHP_INT_MAX;
+use function count, in_array, strlen;
 
 
 /**
@@ -323,7 +322,7 @@ class CssInliner
 				if ($name === 'where') { // zero specificity, and so are its arguments
 					self::skipGroup($tokens, $i);
 
-				} elseif (in_array($name, ['not', 'is', 'has'], strict: true)) {
+				} elseif (in_array($name, ['not', 'is', 'has'], true)) {
 					// these contribute nothing themselves; their arguments are counted where they stand
 
 				} else {

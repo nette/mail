@@ -10,7 +10,7 @@ namespace Nette\Mail;
 use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use function addcslashes, array_keys, base64_encode, chunk_split, iconv_mime_encode, is_array, is_string, ltrim, preg_match, preg_replace, quoted_printable_encode, rtrim, sprintf, str_ends_with, str_repeat, str_replace, strcasecmp, stripslashes, strlen, strpbrk, strrpos, strspn, substr;
+use function function_exists, is_array, is_string, sprintf, strlen;
 
 
 /**

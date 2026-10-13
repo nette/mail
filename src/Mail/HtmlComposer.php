@@ -9,7 +9,7 @@ namespace Nette\Mail;
 
 use Nette;
 use Nette\Utils\Strings;
-use function array_map, array_reverse, explode, implode, is_string, rtrim, strlen, substr, substr_replace, trim, urldecode;
+use function is_string, strlen;
 
 
 /**

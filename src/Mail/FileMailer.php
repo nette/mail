@@ -8,7 +8,6 @@
 namespace Nette\Mail;
 
 use Nette;
-use function date;
 
 
 /**

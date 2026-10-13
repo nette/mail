@@ -10,6 +10,7 @@ namespace Nette\Bridges\MailDI;
 use Nette;
 use Nette\Schema\Expect;
 use Tracy;
+use function ini_get;
 
 
 /**
@@ -150,7 +151,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 			->addSetup('@' . Tracy\Bar::class . '::addPanel', ['@self']);
 
 		$mailer = $builder->getDefinition($this->prefix('mailer'));
-		\assert($mailer instanceof Nette\DI\Definitions\ServiceDefinition);
+		assert($mailer instanceof Nette\DI\Definitions\ServiceDefinition);
 		$mailer->addSetup('$onSent[]', [[$panel, 'recordSent']]);
 	}
 }

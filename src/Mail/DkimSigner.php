@@ -8,7 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use function array_filter, array_merge, array_search, base64_encode, explode, extension_loaded, hash, implode, in_array, ksort, openssl_pkey_get_private, openssl_sign, pack, preg_match, preg_replace, rtrim, str_contains, str_replace, strlen, strtolower, time, trim;
+use function strlen;
 
 
 /**
@@ -64,7 +64,7 @@ class DkimSigner implements Signer
 	private static function detectAlgorithm(#[\SensitiveParameter] string $privateKey): string
 	{
 		$raw = base64_decode(trim($privateKey), strict: true);
-		return $raw !== false && in_array(strlen($raw), [self::Ed25519SeedLength, self::Ed25519SecretKeyLength], strict: true)
+		return $raw !== false && in_array(strlen($raw), [self::Ed25519SeedLength, self::Ed25519SecretKeyLength], true)
 			? self::AlgorithmEd25519
 			: self::AlgorithmRsa;
 	}
@@ -213,7 +213,7 @@ class DkimSigner implements Signer
 	{
 		$names = $this->signHeaders;
 		foreach ($this->oversignHeaders as $name) {
-			if (!in_array(strtolower($name), array_map(strtolower(...), $names), strict: true)) {
+			if (!in_array(strtolower($name), array_map(strtolower(...), $names), true)) {
 				$names[] = $name;
 			}
 		}

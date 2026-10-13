@@ -8,6 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
+use function function_exists;
 
 
 /**

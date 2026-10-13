@@ -10,7 +10,7 @@ namespace Nette\Mail;
 use Nette;
 use Nette\Utils\Strings;
 use Nette\Utils\Validators;
-use function addcslashes, basename, date, finfo_buffer, finfo_open, is_array, is_numeric, is_string, ltrim, php_uname, preg_match, preg_replace, str_replace, strcasecmp, stripslashes, substr;
+use function is_array, is_string;
 
 
 /**

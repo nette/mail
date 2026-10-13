@@ -8,7 +8,8 @@
 namespace Nette\Mail;
 
 use Nette;
-use function in_array, is_resource, is_string, strlen, substr;
+use function is_resource, is_string, strlen;
+use const STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
 
 
 /**
@@ -217,17 +218,17 @@ class SmtpMailer implements Mailer
 			if ($this->username === '') {
 				throw new SmtpException('XOAUTH2 needs a username: the token alone does not say who is signing in.', permanent: true);
 
-			} elseif (!in_array('XOAUTH2', $mechanisms, strict: true)) {
+			} elseif (!in_array('XOAUTH2', $mechanisms, true)) {
 				throw new SmtpException('SMTP server does not support XOAUTH2 authentication.', permanent: true);
 			}
 
 			$this->authenticateOAuth(($this->accessToken)());
 
-		} elseif (in_array('PLAIN', $mechanisms, strict: true)) {
+		} elseif (in_array('PLAIN', $mechanisms, true)) {
 			$credentials = $this->username . "\0" . $this->username . "\0" . $this->password;
 			$this->write('AUTH PLAIN ' . base64_encode($credentials), 235, 'PLAIN credentials');
 
-		} elseif (in_array('LOGIN', $mechanisms, strict: true)) {
+		} elseif (in_array('LOGIN', $mechanisms, true)) {
 			$this->write('AUTH LOGIN', 334);
 			$this->write(base64_encode($this->username), 334, 'username');
 			// the password line is sent even when empty: the server is waiting for it and would otherwise stall
@@ -358,7 +359,7 @@ class SmtpMailer implements Mailer
 
 		if ($expectedCode) {
 			$response = $this->read();
-			if (!in_array((int) $response, (array) $expectedCode, strict: true)) {
+			if (!in_array((int) $response, (array) $expectedCode, true)) {
 				throw SmtpException::fromReply(
 					'SMTP server did not accept ' . ($message ?: $line) . ' with error: ' . trim($response),
 					$response,
