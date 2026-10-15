@@ -71,7 +71,7 @@ class DkimSigner implements Signer
 
 
 	/**
-	 * Returns the signed message as a string with the DKIM-Signature header prepended.
+	 * Returns the signed message as a string with the DKIM-Signature header appended to its headers.
 	 * @throws SignException
 	 */
 	public function generateSignedMessage(Message $message): string

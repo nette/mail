@@ -56,10 +56,23 @@ Sub-parts are serialized recursively; a `boundary=` is appended to `Content-Type
 
 ## Header encoding: base64 words, injection stripped at set time
 
+- **Header names are case-insensitive, but the stored key keeps the spelling it
+  was first set with.** `resolveName` maps every `setHeader`/`getHeader`/
+  `clearHeader`/`getEncodedHeader` call onto the existing key, so `setHeader('to')`
+  after `addTo()` replaces `To` and is emitted as `To`. Code that inspects
+  `getHeaders()` keys directly, or compares names, must not assume the canonical
+  spelling (`getEncodedMessage` finds `Content-Type` with `strcasecmp` for this
+  reason).
 - **Injection prevention happens in `setHeader`, not at encode time.** String
   header values have `\r\n` collapsed to a space and must be valid UTF-8; email
   maps validate each address (`email`) and reject names containing line
   separators. Treat `setHeader` as the security boundary.
+- **Addresses are normalized at set time too:** an internationalized domain in an
+  email map key is converted to punycode (`toAsciiEmail`, needs ext-intl, the
+  local part untouched; without ext-intl the address stays as given). This runs
+  only for email maps; string headers that carry an address (`Return-Path`,
+  `List-Unsubscribe`) are converted by their own setters (`setReturnPath`,
+  `setUnsubscribe`), not by `setHeader`.
 - `getEncodedHeader` produces RFC 2047 encoded-words via `iconv_mime_encode` with
   **scheme `B` (base64) because "Q is broken"** (per the code). Three shapes are
   handled specially: email lists (encoded display-name + `<addr>`, comma-joined),
@@ -100,45 +113,71 @@ base path (no `..` segment); anything else is left as text. The check is lexical
 on purpose: symlinks inside the base path are followed, like a shared `images/`
 directory of a deployment.
 
-## CssInliner: order-based cascade, silent selectors, re-serialized output
+## CssInliner: per-property cascade, silent selectors, re-serialized output
 
 `CssInliner::inline()` parses the document with `Dom\HTMLDocument` (PHP 8.4+) and
-applies collected rules as inline styles. Three deviations from real CSS matter:
+applies collected rules as inline styles. What matters when changing it:
 
-- **No selector specificity.** The cascade is rule order only: `<style>` tag
-  rules first, then `addCss()` rules; per element, later declarations win
-  (`array_merge` on `property => value`). The element's **existing inline
-  `style` always wins** — collected declarations are prepended before it.
-  `!important` has no special handling.
-- **Selector errors are silent, parse errors loud.** A selector that
-  `querySelectorAll` rejects (`DOMException`) is skipped — the rule simply never
-  applies, with no error. Unlexable CSS, by contrast, throws
-  `InvalidArgumentException` from the tokenizer.
+- **The cascade is resolved per property, one winner written.** `compete` ranks
+  each declaration as `[!important, inline tier, ids, classes, types, source
+  order]` and keeps the highest, so the order is `!important` > existing inline
+  `style` > specificity > source order (`<style>` tag rules first, then
+  `addCss()` rules). The rank always ends with the order, so two ranks never tie.
+  Winners are written in source order, the existing inline declarations last;
+  the `!important` suffix stays in the written value.
+- **Specificity is per comma-separated part.** `splitSelector` splits the list
+  (commas inside `[]`/`()` do not count) and each part is queried and scored on
+  its own by `computeSpecificity`. `:where()` scores zero; `:not()`/`:is()`/
+  `:has()` **sum** their arguments instead of taking the most specific one, a
+  deliberate approximation.
+- **Property names are lowercased, custom properties (`--x`) are not.** Folding
+  happens in `parseBlock`, so `COLOR` and `color` compete as one property.
+- **An existing inline style that cannot be parsed is kept verbatim.** If it
+  contains a brace (it would smuggle rules into the `x{...}` wrapper of
+  `parseDeclarations`) or fails to tokenize, it does not compete and is appended
+  unchanged after the generated declarations, where it still wins in the client.
+  An element no rule matches is not touched at all.
+- **Selector errors are silent, parse errors loud.** A selector part that
+  `querySelectorAll` rejects (`DOMException`) is skipped, without taking the other
+  parts of its list down; the rule simply never applies there, with no error.
+  Unlexable stylesheet CSS, by contrast, throws `InvalidArgumentException` from
+  the tokenizer.
 - **Output is re-serialized** via `saveHtml()`, not surgically edited: a
   fragment gets wrapped in `<html><body>`, formatting may be normalized.
   `<style>` tags are preserved (keeps `@media` intact); the parser skips
   @-rule blocks entirely and resolves CSS nesting (incl. `&`).
 
-A few properties additionally generate HTML attributes on allowed tags
+A few winning properties additionally generate HTML attributes on allowed tags
 (`bgcolor`, `width`, `height`, `cellspacing`) for Outlook; `align`/`valign` are
-deliberately excluded (different semantics than CSS).
+deliberately excluded (different semantics than CSS). The numeric ones are
+emitted only for a plain number with an optional unit (the unit dropped, `%`
+kept); `auto`, `calc()` and the like produce no attribute, since a cast would
+yield `width="0"` (`attributeValue`).
 
 ## DKIM signs the built message, in a fixed header order
 
 `DkimSigner::generateSignedMessage` signs `$message->build()` output:
 
+- The algorithm follows the key (`detectAlgorithm`): a raw base64 key of 32 or
+  64 bytes is Ed25519 (`ed25519-sha256`, RFC 8463, needs ext-sodium), anything
+  else is treated as PEM RSA (`rsa-sha256`, needs ext-openssl). The constructor
+  throws `NotSupportedException` when the needed extension is missing.
 - Canonicalization is **`relaxed/simple`**: headers relaxed (lowercased name,
-  runs of whitespace collapsed), body simple (only newline-normalized to CRLF with
-  a single trailing CRLF). `bh` is the base64 SHA-256 of that body; `l` is its
-  length.
-- The signed header set is `signHeaders` **filtered to those present**, plus the
-  `DKIM-Signature` header itself (with an empty `b=`).
-- **Signed headers are ordered by their index in `signHeaders`, not by their order
-  in the message** (`array_search` → `ksort`). Change the `signHeaders` list and
-  you change what is signed *and in what order*. Matching is **case-sensitive**
-  against the header names as emitted — a header set with different casing than
-  its `signHeaders` entry silently drops out of the signature.
-- The `DKIM-Signature` header is **prepended** to the final message.
+  every whitespace run collapsed to one space), body simple (only newline-normalized
+  to CRLF with a single trailing CRLF). `bh` is the base64 SHA-256 of that body.
+  There is deliberately **no `l=` tag**: a body length limit would let anyone
+  append content under a valid signature.
+- The hashed header set is `signHeaders` plus any `oversignHeaders` not already in
+  it, plus the `DKIM-Signature` header itself (with an empty `b=`). The `h=` tag
+  lists those present in the message, then **every `oversignHeaders` name once
+  more** (RFC 6376, §3.7): the extra mention binds a non-existent instance, so a
+  header added in transit breaks the signature. `getSignedHeaders` (what `h=`
+  says) and `getHashedHeaders` (what is canonicalized) must stay in step.
+- **Signed headers are ordered by their index in the hashed list, not by their
+  order in the message** (`array_search` → `ksort`). Change `signHeaders` and you
+  change what is signed *and in what order*. Matching is case-insensitive, so the
+  message spelling need not match the configuration.
+- The `DKIM-Signature` header is **appended at the end of the header block**.
 
 ## SMTP transport: Bcc travels in the envelope, dots are stuffed
 
@@ -152,16 +191,31 @@ deliberately excluded (different semantics than CSS).
   `MAIL FROM` is `Return-Path` if set, else the first `From` address.
 - **DATA is dot-stuffed** (`^.` → `..`) per SMTP, and terminated by a lone `.`.
 - Signing (if a `Signer` is set) replaces `generateMessage()` and happens on the
-  same stripped copy.
-- Connection details (SSL port 465 vs 25, `STARTTLS`, `EHLO`/`HELO` fallback,
-  `AUTH PLAIN` vs `AUTH LOGIN` by advertised mechanisms, `persistent` reuse) are
-  standard SMTP; `read()` treats a line whose 4th character is a space or line
-  break (`NNN ` / bare `NNN`) as the final response line.
+  same stripped copy, **before** connecting.
+- **Any throwable tears the connection down** (`catch (\Throwable)` →
+  `disconnect()` → rethrow), not just `SmtpException`: an access-token callback may
+  throw anything and the session state is then unknown. A persistent connection
+  is probed with `NOOP` before reuse (`isAlive`) and reopened if the server
+  dropped it.
+- Without an explicit port: 465 for `ssl` (implicit TLS), 587 for `tls`
+  (STARTTLS), 25 otherwise. STARTTLS negotiates **only TLS 1.2/1.3**.
+- Authentication runs when a username or an access token is set, and uses only a
+  mechanism the server advertises in `EHLO`: XOAUTH2 when `setAccessToken()` was
+  called (the callback is resolved per connection; a username is still required),
+  else `PLAIN`, else `LOGIN`. A missing mechanism throws a **permanent**
+  `SmtpException`.
+- `write()` loops over partial `fwrite()` in fixed chunks; `read()` enforces the
+  timeout as a deadline even while data keeps arriving, caps the response size,
+  and treats a line whose 4th character is a space or line break (`NNN ` / bare
+  `NNN`) as the final response line.
+- A rejected reply becomes `SmtpException::fromReply()`: 5xx is permanent, 4xx
+  transient (see FallbackMailer).
 
 ## SendmailMailer strips To/Subject *after* signing
 
 `mail()` adds `To` and `Subject` itself (they are passed as separate arguments),
-so `SendmailMailer::send` removes both lines from the generated header block —
+so `SendmailMailer::send` removes both (in any spelling, with their folded
+continuation lines) from the generated header block,
 **after** DKIM signing, so the signature still covers them. The envelope sender
 (`-f` + first `From` address) is appended to `commandArgs` automatically unless
 disabled via `setEnvelopeSender(false)`.
@@ -183,6 +237,16 @@ Tries each mailer in order, repeating the whole list `retryCount` times (default
 throws `FallbackMailerException` (carrying all `$failures`) only when every attempt
 fails. **Only `SendException` triggers the fallback** — anything else a mailer
 throws propagates immediately, aborting the whole chain with no `onFailure`.
+A failure whose `isPermanent()` is true (a 5xx reply, an unsupported auth
+mechanism) drops that mailer from the remaining rounds; the loop ends early once
+no candidate is left. Mailers that throw `SendException` should therefore set
+`permanent` only when a retry is pointless, or they lose their later attempts.
+
+## FileMailer
+
+`FileMailer::send` writes the generated (optionally signed) message as is to
+`<dir>/<Y-m-d-H-i-s>-<random>.eml`; unlike SMTP it strips nothing, so the `Bcc`
+header stays in the file. A write failure becomes `SendException`.
 
 ## Navigation map
 
@@ -191,10 +255,15 @@ throws propagates immediately, aborting the whole chain with no `onFailure`.
 | MIME tree shape/order | `Message::build` |
 | Body encoding heuristic + `7bit` strip | `Message::build`, `MimePart::getEncodedMessage` |
 | Header encoding, injection guard | `MimePart::setHeader`, `getEncodedHeader`, `encodeSequence` |
+| Header name case, IDN punycode | `MimePart::resolveName`, `toAsciiEmail` |
 | Subject/alt/cid side effects | `HtmlComposer::applyTo`, `embedImagesInHtml` |
-| CSS cascade, selector handling | `CssInliner::inline`, `parseBlock` |
-| DKIM canonicalization & header order | `DkimSigner::computeSignature`, `getSignature` |
-| Bcc envelope, dot-stuffing, auth | `SmtpMailer::send`, `connect` |
+| CSS cascade, specificity, attributes | `CssInliner::inline`, `compete`, `computeSpecificity`, `attributeValue` |
+| CSS parsing, property case | `CssInliner::parseBlock`, `parseDeclarations`, `splitSelector` |
+| DKIM algorithm, canonicalization, header order | `DkimSigner::detectAlgorithm`, `computeSignature`, `getSignedHeaders` |
+| Bcc envelope, dot-stuffing | `SmtpMailer::send` |
+| SMTP connection, TLS, auth | `SmtpMailer::connect`, `authenticate`, `isAlive` |
+| Permanent vs transient failure | `SendException::isPermanent`, `SmtpException::fromReply` |
 | To/Subject stripping, envelope sender | `SendmailMailer::send` |
 | Redirect rewrite, `$onSent` event | `Interceptor::send`, `rewrite` |
 | Retry/fallback | `FallbackMailer::send` |
+| .eml output | `FileMailer::send` |
