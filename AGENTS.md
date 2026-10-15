@@ -20,7 +20,7 @@ is extended at release time from the git history.
 Nette Mail is a standalone PHP library for creating and sending emails with support for SMTP, sendmail, DKIM signing, and fallback mechanisms. Part of the Nette Framework ecosystem but usable independently.
 
 - **Requirements:** PHP 8.2 - 8.6, ext-iconv required
-- **Optional extensions:** ext-dom (CssInliner, PHP 8.4+), ext-fileinfo (attachment type detection), ext-openssl (DKIM signing)
+- **Optional extensions:** ext-dom (CssInliner, PHP 8.4+), ext-fileinfo (attachment type detection), ext-intl (IDN domains in addresses), ext-openssl (DKIM with an RSA key), ext-sodium (DKIM with an Ed25519 key)
 - **Main dependency:** nette/utils ^4.1
 
 ## Essential Commands
@@ -64,13 +64,14 @@ The library consists of five main areas:
 2. **Email Sending** (`src/Mail/`)
    - `Mailer` interface - Contract for all mailer implementations
    - `SendmailMailer` - Uses PHP's `mail()` function
-   - `SmtpMailer` - Full SMTP protocol implementation with TLS/SSL support
-   - `FallbackMailer` - Retry mechanism across multiple mailers
+   - `SmtpMailer` - Full SMTP protocol implementation with TLS/SSL support and XOAUTH2
+   - `FileMailer` - Writes emails to `.eml` files instead of sending them (development, tests)
+   - `FallbackMailer` - Retry mechanism across multiple mailers; a mailer failing permanently is not retried
    - `Interceptor` - Wraps any Mailer with optional redirect of outgoing emails to a fixed address (debugging/safety) and an `$onSent` event fired after each send (success or failure)
 
 3. **Email Signing** (`src/Mail/`)
    - `Signer` interface - Contract for signing implementations
-   - `DkimSigner` - DKIM (DomainKeys Identified Mail) signing using RSA-SHA256
+   - `DkimSigner` - DKIM (DomainKeys Identified Mail) signing using RSA-SHA256 or Ed25519-SHA256
 
 4. **CSS Inlining** (`src/Mail/`)
    - `CssInliner` - Converts CSS rules to inline `style` attributes for email HTML (requires PHP 8.4+ for `Dom\HTMLDocument`)
@@ -98,7 +99,7 @@ mail:
 
 	# SMTP connection settings
 	host: smtp.gmail.com    # (string) SMTP server hostname
-	port: 587               # (int) defaults: 465 for ssl, otherwise 25
+	port: 587               # (int) defaults: 465 for ssl, 587 for tls, otherwise 25
 	username: user@example.com
 	password: ****
 	encryption: tls         # (ssl|tls|null) null = no encryption
@@ -118,7 +119,7 @@ mail:
 	dkim:
 		domain: example.com             # Your domain name
 		selector: dkim                  # DKIM selector from DNS
-		privateKey: %appDir%/../dkim/private.key  # Path to private key file
+		privateKey: %appDir%/../dkim/private.key  # Path to private key file (PEM RSA, or raw base64 Ed25519)
 		passPhrase: ****                # Optional passphrase for private key
 
 	# Redirect all outgoing emails to a fixed address (debugging/safety)
@@ -141,8 +142,8 @@ mail:
 ### Exception Hierarchy
 
 All exceptions in `src/Mail/exceptions.php`:
-- `SendException` - Base exception for sending failures
-- `SmtpException` - SMTP-specific errors (extends SendException)
+- `SendException` - Base exception for sending failures; `isPermanent()` tells whether a retry is pointless
+- `SmtpException` - SMTP-specific errors (extends SendException); `fromReply()` marks a 5xx reply as permanent
 - `FallbackMailerException` - All mailers failed (contains array of failures)
 - `SignException` - Signing/verification errors
 
@@ -154,6 +155,8 @@ All exceptions in `src/Mail/exceptions.php`:
 - Auto-embedding images from filesystem using `[[...]]` syntax or `<img src=...>`
 - Subject auto-extraction from `<title>` element
 - Attachment support with auto-detection of MIME types
+- One-click unsubscribe headers via `setUnsubscribe()` (RFC 2369, RFC 8058)
+- Internationalized (IDN) domains in addresses converted to punycode (ext-intl)
 
 **MIME Handling:**
 - Encoding methods: Base64, 7bit, 8bit, quoted-printable
@@ -162,16 +165,18 @@ All exceptions in `src/Mail/exceptions.php`:
 
 **SMTP Features:**
 - TLS/SSL encryption support (`encryption: 'ssl'` or `'tls'`)
-- Default ports: 465 (SSL), otherwise 25 (incl. TLS/STARTTLS; set `port: 587` explicitly for submission)
-- Persistent connections
+- Default ports: 465 (SSL), 587 (TLS/STARTTLS), otherwise 25
+- STARTTLS accepts only TLS 1.2 and 1.3
+- Persistent connections (probed with NOOP and re-established when the server dropped them)
 - Configurable timeout (default 20s)
 - Custom stream options for SSL context
 - Envelope sender support
-- AUTH PLAIN and LOGIN authentication methods
+- AUTH PLAIN, LOGIN and XOAUTH2 (`setAccessToken()`), only with mechanisms the server advertises
 
 **DKIM Signing:**
-- RSA-SHA256 signing algorithm
-- Private key passphrase support
+- RSA-SHA256 or Ed25519-SHA256 (RFC 8463) signing algorithm, chosen by the key format
+- Optional oversigning of headers (`$oversignHeaders`)
+- Private key passphrase support (RSA)
 - Automatic header canonicalization
 - Compatible with Gmail, Outlook, and other major providers
 
@@ -262,7 +267,7 @@ public function setHeader(string $name, string|array|null $value, bool $append =
 4. **Before committing:**
    - Run full test suite: `composer run tester`
    - Run static analysis: `composer run phpstan`
-   - Check code style with Nette Code Checker
+   - Check code style with DressCode (configured in `dresscode.neon`)
 
 ## Usage in Nette Application
 
@@ -323,14 +328,14 @@ All links created via `LinkGenerator` are absolute (include full domain), which 
 
 ### Encoding
 
-- All input strings must be valid UTF-8 (`setHeader` validates via `Strings::checkEncoding` and throws otherwise)
+- All input strings must be valid UTF-8 (`setHeader` validates via `Validators::isUnicode` and throws otherwise)
 - Non-ASCII header values are encoded as RFC 2047 base64 encoded-words
 - Body transfer encoding (7bit/8bit/quoted-printable) is chosen automatically by content sniffing
 
 ### Header Management
 
-- Header names are stored and looked up **case-sensitively**, exactly as passed to `setHeader()`/`getHeader()` (use the canonical `To`, `Content-Type`, ... spelling)
-- Email headers (To, Cc, Bcc, From, Reply-To) are stored as `[email => name]` arrays; each address is validated
+- Header names are looked up **case-insensitively**; the spelling used first is kept as the stored key and emitted as is
+- Email headers (To, Cc, Bcc, From, Reply-To) are stored as `[email => name]` arrays; each address is validated and an IDN domain is converted to punycode
 - `setHeader` strips `\r\n` from values - it is the injection-prevention boundary
 
 ### Image Embedding
@@ -353,11 +358,11 @@ $mailer->commandArgs = '-fmy@email.com';  // Set return path manually
 ### SMTP Connection
 
 `SmtpMailer` handles SMTP protocol details:
-- Automatic STARTTLS negotiation
-- AUTH PLAIN and LOGIN support
+- Automatic STARTTLS negotiation (TLS 1.2/1.3 only)
+- AUTH PLAIN, LOGIN and XOAUTH2 support, chosen from the mechanisms the server advertises
 - Proper QUIT handling in persistent mode
-- Full error message parsing
-- Connection reuse with persistent mode
+- Full error message parsing; 5xx replies raise a permanent `SmtpException`
+- Connection reuse with persistent mode; a dropped connection is detected by NOOP and reopened, any exception closes it
 
 ### CSS Inlining
 
@@ -375,6 +380,7 @@ $html = (new CssInliner)->addCss('p { margin: 0; }')->inline($html);
 - Single-regex tokenizer (comment, whitespace, string, url, escape, at-ident, hash, number, ident, char)
 - Token-based stylesheet parser with CSS nesting and @-rule skipping
 - Declarations parsed into `property => value` arrays (enables deduplication and HTML attribute generation)
-- Cascade: `<style>` → `addCss()` → existing inline `style=""` wins (last declaration wins)
+- Cascade per property, one winner written: `!important` > existing inline `style=""` > selector specificity (per comma-separated part) > source order (`<style>` → `addCss()`)
+- Property names lowercased except custom properties (`--x`); an existing inline style that cannot be parsed is kept verbatim
 - `<style>` tags are preserved (keeps @media queries intact)
-- Automatic HTML attribute generation for Outlook compatibility (background-color→bgcolor, width→width, height→height, border-spacing→cellspacing; align/valign intentionally excluded, their semantics differ from CSS)
+- Automatic HTML attribute generation for Outlook compatibility (background-color→bgcolor, width→width, height→height, border-spacing→cellspacing; numeric ones only for plain lengths/percentages; align/valign intentionally excluded, their semantics differ from CSS)
