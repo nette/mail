@@ -206,7 +206,10 @@ yield `width="0"` (`attributeValue`).
   mechanism the server advertises in `EHLO`: XOAUTH2 when `setAccessToken()` was
   called (the callback is resolved per connection; a username is still required),
   else `PLAIN`, else `LOGIN`. A missing mechanism throws a **permanent**
-  `SmtpException`.
+  `SmtpException`. The `HELO` fallback for a rejected `EHLO` is taken only without
+  credentials: a HELO-only server has no AUTH extension, so with credentials
+  `connect()` throws an `SmtpException` naming the rejected `EHLO`, classified by
+  the reply (a 4xx such as `421` stays retryable).
 - A timeout of 0 sets no limit of the mailer's own: no read deadline, and both
   the connect and the stream keep PHP's `default_socket_timeout`; only the NOOP
   probe narrows it for its own wait.

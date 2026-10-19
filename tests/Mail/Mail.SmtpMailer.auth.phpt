@@ -4,7 +4,7 @@
  * Test: Nette\Mail\SmtpMailer authentication.
  */
 
-use Nette\Mail\SmtpException;
+use Nette\Mail\{FallbackMailer, FallbackMailerException, Message, SmtpException};
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
@@ -81,6 +81,47 @@ test('a server without AUTH support says so plainly', function () {
 		SmtpException::class,
 		'SMTP server does not support authentication.',
 	);
+});
+
+
+test('a rejected EHLO with credentials is named as the cause', function () {
+	$mailer = new SmtpMailerMock(
+		"220 ready\r\n502 command not recognized\r\n",
+		username: 'user@example.com',
+		password: 'secret',
+	);
+
+	$e = Assert::exception(
+		fn() => $mailer->connect(),
+		SmtpException::class,
+		'SMTP server rejected EHLO (502 command not recognized), so it cannot authenticate.',
+	);
+	Assert::true($e->isPermanent());
+	Assert::same(['EHLO localhost'], $mailer->getWrittenLines());
+});
+
+
+test('a temporarily rejected EHLO with credentials is retried', function () {
+	$mailer = new SmtpMailerMock(
+		"220 ready\r\n421 service temporarily unavailable\r\n",
+		username: 'user@example.com',
+		password: 'secret',
+	);
+
+	$e = Assert::exception(
+		fn() => (new FallbackMailer([$mailer], retryCount: 2, retryWaitTime: 0))->send(new Message),
+		FallbackMailerException::class,
+	);
+	Assert::false($e->failures[0]->isPermanent());
+	Assert::count(2, $mailer->addresses); // connected again in the second round
+});
+
+
+test('a rejected EHLO without credentials falls back to HELO', function () {
+	$mailer = new SmtpMailerMock("220 ready\r\n502 command not recognized\r\n250 mail.example.com\r\n");
+	$mailer->connect();
+
+	Assert::same(['EHLO localhost', 'HELO localhost'], $mailer->getWrittenLines());
 });
 
 
