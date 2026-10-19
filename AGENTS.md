@@ -167,7 +167,7 @@ All exceptions in `src/Mail/exceptions.php`:
 - TLS/SSL encryption support (`encryption: 'ssl'` or `'tls'`)
 - Default ports: 465 (SSL), 587 (TLS/STARTTLS), otherwise 25
 - STARTTLS accepts only TLS 1.2 and 1.3
-- Persistent connections (probed with NOOP and re-established when the server dropped them)
+- Persistent connections (probed with NOOP, waiting at most 5 s, and re-established when the server dropped them)
 - Configurable timeout (default 20s)
 - Custom stream options for SSL context
 - Envelope sender support

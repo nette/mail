@@ -196,7 +196,10 @@ yield `width="0"` (`attributeValue`).
   `disconnect()` → rethrow), not just `SmtpException`: an access-token callback may
   throw anything and the session state is then unknown. A persistent connection
   is probed with `NOOP` before reuse (`isAlive`) and reopened if the server
-  dropped it.
+  dropped it. The probe waits at most `min(timeout, 5)` seconds (5 when the
+  timeout is 0), so a connection a firewall dropped silently costs a short wait,
+  not the full timeout; the stream timeout then returns to `timeout`, or to
+  `default_socket_timeout` when it is 0.
 - Without an explicit port: 465 for `ssl` (implicit TLS), 587 for `tls`
   (STARTTLS), 25 otherwise. STARTTLS negotiates **only TLS 1.2/1.3**.
 - Authentication runs when a username or an access token is set, and uses only a
@@ -204,8 +207,9 @@ yield `width="0"` (`attributeValue`).
   called (the callback is resolved per connection; a username is still required),
   else `PLAIN`, else `LOGIN`. A missing mechanism throws a **permanent**
   `SmtpException`.
-- A timeout of 0 sets no limit of the mailer's own: no read deadline, no
-  `stream_set_timeout()`, and `default_socket_timeout` for the connect.
+- A timeout of 0 sets no limit of the mailer's own: no read deadline, and both
+  the connect and the stream keep PHP's `default_socket_timeout`; only the NOOP
+  probe narrows it for its own wait.
 - `write()` loops over partial `fwrite()` in fixed chunks; `read()` enforces the
   timeout as a deadline even while data keeps arriving, caps the response size,
   and treats a line whose 4th character is a space or line break (`NNN ` / bare
