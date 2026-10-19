@@ -103,7 +103,7 @@ mail:
 	username: user@example.com
 	password: ****
 	encryption: tls         # (ssl|tls|null) null = no encryption
-	timeout: 20             # (int) connection timeout in seconds, default 20
+	timeout: 20             # (int) connection timeout in seconds, default 20; 0 leaves it to PHP's default_socket_timeout
 	persistent: false       # (bool) use persistent connection
 	clientHost: localhost   # (string) defaults to $_SERVER['HTTP_HOST'] or 'localhost'
 

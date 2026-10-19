@@ -169,7 +169,10 @@ class SmtpMailer implements Mailer
 		$connection = $this->openStream($this->getAddress());
 		$this->connection = $connection;
 
-		stream_set_timeout($connection, $this->timeout);
+		if ($this->timeout > 0) {
+			stream_set_timeout($connection, $this->timeout);
+		}
+
 		$this->read(); // greeting
 
 		if ($this->encryption === self::EncryptionTLS) {
@@ -310,7 +313,7 @@ class SmtpMailer implements Mailer
 			$address,
 			$errno,
 			$error,
-			$this->timeout,
+			$this->timeout > 0 ? $this->timeout : null, // null means default_socket_timeout
 			STREAM_CLIENT_CONNECT,
 			$this->context,
 		);
