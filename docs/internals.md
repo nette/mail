@@ -204,6 +204,8 @@ yield `width="0"` (`attributeValue`).
   called (the callback is resolved per connection; a username is still required),
   else `PLAIN`, else `LOGIN`. A missing mechanism throws a **permanent**
   `SmtpException`.
+- A timeout of 0 sets no limit of the mailer's own: no read deadline, no
+  `stream_set_timeout()`, and `default_socket_timeout` for the connect.
 - `write()` loops over partial `fwrite()` in fixed chunks; `read()` enforces the
   timeout as a deadline even while data keeps arriving, caps the response size,
   and treats a line whose 4th character is a space or line break (`NNN ` / bare
