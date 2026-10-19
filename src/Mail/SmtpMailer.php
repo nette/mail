@@ -8,7 +8,7 @@
 namespace Nette\Mail;
 
 use Nette;
-use function is_resource, is_string, strlen;
+use function ini_get, is_resource, is_string, strlen;
 use const STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT, STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
 
 
@@ -24,6 +24,8 @@ class SmtpMailer implements Mailer
 	private const MaxResponseLength = 1_000_000;
 
 	private const WriteChunkLength = 8192;
+
+	private const ProbeTimeout = 5;
 
 	/** @var ?resource */
 	private $connection;
@@ -152,11 +154,17 @@ class SmtpMailer implements Mailer
 			return false;
 		}
 
+		// a silently dropped connection never replies, so the probe does not wait the full timeout
+		$connection = $this->connection;
+		stream_set_timeout($connection, $this->timeout > 0 ? min($this->timeout, self::ProbeTimeout) : self::ProbeTimeout);
 		try {
 			$this->write('NOOP', 250);
 			return true;
 		} catch (SmtpException) {
 			return false;
+		} finally {
+			// a stream timeout cannot be unset; default_socket_timeout is what a socket starts with
+			stream_set_timeout($connection, $this->timeout > 0 ? $this->timeout : (int) ini_get('default_socket_timeout'));
 		}
 	}
 
