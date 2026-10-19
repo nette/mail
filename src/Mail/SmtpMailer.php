@@ -196,6 +196,13 @@ class SmtpMailer implements Mailer
 			$this->write("EHLO $this->clientHost");
 			$ehloResponse = $this->read();
 			if ((int) $ehloResponse !== 250) {
+				if ($this->username !== '' || $this->accessToken) {
+					throw SmtpException::fromReply(
+						'SMTP server rejected EHLO (' . trim($ehloResponse) . '), so it cannot authenticate.',
+						$ehloResponse,
+					);
+				}
+
 				$this->write("HELO $this->clientHost", 250);
 			}
 		}

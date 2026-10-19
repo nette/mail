@@ -360,6 +360,7 @@ $mailer->commandArgs = '-fmy@email.com';  // Set return path manually
 `SmtpMailer` handles SMTP protocol details:
 - Automatic STARTTLS negotiation (TLS 1.2/1.3 only)
 - AUTH PLAIN, LOGIN and XOAUTH2 support, chosen from the mechanisms the server advertises
+- HELO fallback when EHLO is rejected, only without credentials; with them an `SmtpException` names the rejected EHLO (permanent for 5xx, retryable for 4xx)
 - Proper QUIT handling in persistent mode
 - Full error message parsing; 5xx replies raise a permanent `SmtpException`
 - Connection reuse with persistent mode; a dropped connection is detected by NOOP and reopened, any exception closes it
