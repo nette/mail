@@ -24,6 +24,7 @@ use function ini_get;
  *     port: int|null,
  *     username: string,
  *     password: string,
+ *     accessToken: string|Nette\DI\Expression|null,
  *     secure: 'ssl'|'tls'|null,
  *     encryption: 'ssl'|'tls'|null,
  *     timeout: int,
@@ -52,6 +53,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 			'port' => Expect::int()->dynamic(),
 			'username' => Expect::string('')->dynamic(),
 			'password' => Expect::string('')->dynamic(),
+			'accessToken' => Expect::string()->dynamic(),
 			'secure' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(), // deprecated
 			'encryption' => Expect::anyOf(null, 'ssl', 'tls')->dynamic(),
 			'timeout' => Expect::int(20)->dynamic(),
@@ -102,6 +104,10 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->addSetup('setSigner', [$signer]);
 		}
 
+		if ($config->accessToken !== null && ($config->file !== null || !$config->smtp)) {
+			throw new Nette\DI\InvalidConfigurationException("Option '{$this->name}\u{a0}›\u{a0}accessToken' requires the SMTP transport, i.e. 'smtp: true' without 'file'.");
+		}
+
 		if ($config->file !== null) {
 			$mailer->setCreator(Nette\Mail\FileMailer::class, ['dir' => $config->file]);
 
@@ -117,6 +123,10 @@ class MailExtension extends Nette\DI\CompilerExtension
 				'clientHost' => $config->clientHost,
 				'streamOptions' => $config->context ?: null,
 			]);
+
+			if ($config->accessToken !== null) {
+				$mailer->addSetup('setAccessToken', [$config->accessToken]);
+			}
 
 		} else {
 			$mailer->setCreator(Nette\Mail\SendmailMailer::class);

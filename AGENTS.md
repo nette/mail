@@ -106,6 +106,9 @@ mail:
 	port: 587               # (int) defaults: 465 for ssl, 587 for tls, otherwise 25
 	username: user@example.com
 	password: ****
+	# OAuth 2.0 access token for XOAUTH2 (needs 'smtp: true' and no 'file', otherwise a configuration error):
+	# a string, a dynamic parameter, or a callable resolved on every connection so an expiring token can be refreshed
+	accessToken: @App\GoogleOAuth::getAccessToken(...)
 	encryption: tls         # (ssl|tls|null) null = no encryption
 	timeout: 20             # (int) connection timeout in seconds, default 20; 0 leaves it to PHP's default_socket_timeout
 	persistent: false       # (bool) use persistent connection
@@ -175,7 +178,7 @@ All exceptions in `src/Mail/exceptions.php`:
 - Configurable timeout (default 20s)
 - Custom stream options for SSL context
 - Envelope sender support
-- AUTH PLAIN, LOGIN and XOAUTH2 (`setAccessToken()`), only with mechanisms the server advertises
+- AUTH PLAIN, LOGIN and XOAUTH2 (`setAccessToken()`, or the `accessToken` config key), only with mechanisms the server advertises
 
 **DKIM Signing:**
 - RSA-SHA256 or Ed25519-SHA256 (RFC 8463) signing algorithm, chosen by the key format
