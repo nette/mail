@@ -84,7 +84,7 @@ The library consists of five main areas:
 `src/Bridges/MailDI/MailExtension.php` - Nette DI compiler extension for configuration.
 
 **DI Services registered:**
-- `mail.mailer` - autowired public Mailer; either the real transport directly (SendmailMailer/SmtpMailer) or, when `redirect` or `debugger: true` is configured, an `Interceptor` wrapping the real transport
+- `mail.mailer` - autowired public Mailer; either the real transport directly (FileMailer when `file` is set, otherwise SmtpMailer/SendmailMailer by `smtp`) or, when `redirect` or `debugger: true` is configured, an `Interceptor` wrapping the real transport
 - `mail.innerMailer` - private real transport (only present when `mail.mailer` is an `Interceptor`)
 - `mail.signer` - DKIM Signer instance (only when DKIM is configured)
 - `mail.panel` - `MailPanel` Tracy Bar panel (only in debug mode when the Interceptor is active and `Tracy\Bar` is registered)
@@ -94,6 +94,10 @@ The library consists of five main areas:
 
 ```neon
 mail:
+	# Write emails as .eml files into a directory instead of sending them (FileMailer);
+	# takes precedence over smtp/sendmail, DKIM and redirect still apply
+	file: %tempDir%/mails   # (string|null) defaults to null
+
 	# Use SmtpMailer instead of SendmailMailer
 	smtp: true              # (bool) defaults to false
 

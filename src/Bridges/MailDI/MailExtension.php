@@ -18,6 +18,7 @@ use function ini_get;
  *
  * @property object{
  *     debugger: bool|null,
+ *     file: string|null,
  *     smtp: bool,
  *     host: string|null,
  *     port: int|null,
@@ -45,6 +46,7 @@ class MailExtension extends Nette\DI\CompilerExtension
 	{
 		return Expect::structure([
 			'debugger' => Expect::bool()->nullable(),
+			'file' => Expect::string()->dynamic(),
 			'smtp' => Expect::bool(false),
 			'host' => Expect::string()->dynamic(),
 			'port' => Expect::int()->dynamic(),
@@ -100,7 +102,10 @@ class MailExtension extends Nette\DI\CompilerExtension
 			$mailer->addSetup('setSigner', [$signer]);
 		}
 
-		if ($config->smtp) {
+		if ($config->file !== null) {
+			$mailer->setCreator(Nette\Mail\FileMailer::class, ['dir' => $config->file]);
+
+		} elseif ($config->smtp) {
 			$mailer->setCreator(Nette\Mail\SmtpMailer::class, [
 				'host' => $config->host ?? ini_get('SMTP'),
 				'port' => isset($config->host) ? $config->port : (int) ini_get('smtp_port'),
