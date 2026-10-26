@@ -51,7 +51,7 @@ class CssInliner
 		'border-spacing'   => ['cellspacing', 'int', ['table']],
 	];
 
-	/** @var list<array{string, array<string, string>}> */
+	/** @var list<array{string, list<array{string, string}>}> */
 	private array $rules = [];
 
 
@@ -66,12 +66,12 @@ class CssInliner
 
 
 	/**
-	 * Returns the collected rules as [selector, declarations] pairs.
+	 * Returns the collected rules as [selector, declarations] pairs, with the last value of each property.
 	 * @return list<array{string, array<string, string>}>
 	 */
 	public function getRules(): array
 	{
-		return $this->rules;
+		return array_map(fn(array $rule) => [$rule[0], array_column($rule[1], 1, 0)], $this->rules);
 	}
 
 
@@ -81,7 +81,8 @@ class CssInliner
 	 *
 	 * Declarations compete exactly as they would in a browser: !important wins over normal, an
 	 * existing inline style wins over any selector, and among equals the more specific selector
-	 * wins, ties going to the later rule. Only the winner of each property is written out.
+	 * wins, ties going to the later declaration. All of them are written out ordered by rank, the winner
+	 * last, so a client that does not understand a value falls back to the previous one.
 	 */
 	public function inline(string $html): string
 	{
@@ -96,10 +97,11 @@ class CssInliner
 
 		/** @var array<int, Dom\Element> */
 		$elements = [];
-		/** @var array<int, array<string, array{list<int>, int, string}>>  element => property => winning declaration */
-		$winners = [];
+		/** @var array<int, array<string, list<array{list<int>, int, string}>>>  element => property => candidates */
+		$candidates = [];
+		$order = 0;
 
-		foreach ($rules as $order => [$selector, $declarations]) {
+		foreach ($rules as [$selector, $declarations]) {
 			// each comma-separated part carries its own specificity, and one part the DOM engine
 			// rejects must not take the others down with it
 			foreach (self::splitSelector($selector) as $part) {
@@ -117,42 +119,43 @@ class CssInliner
 				foreach ($matched as $element) {
 					$id = spl_object_id($element);
 					$elements[$id] = $element;
-					$winners[$id] ??= [];
-					foreach ($declarations as $property => $value) {
-						self::compete($winners[$id], $property, $value, $specificity, $order);
+					$candidates[$id] ??= [];
+					foreach ($declarations as $k => [$property, $value]) {
+						self::addCandidate($candidates[$id], $property, $value, $specificity, $order + $k);
 					}
 				}
 			}
+
+			$order += count($declarations);
 		}
 
-		foreach ($winners as $id => $declarations) {
+		foreach ($candidates as $id => $properties) {
 			$element = $elements[$id];
 
 			$raw = null;
 			$existing = $element->getAttribute('style') ?? '';
 			if (trim($existing) !== '') {
 				try {
-					foreach (self::parseDeclarations($existing) as $property => $value) {
+					foreach (self::parseDeclarations($existing) as $k => [$property, $value]) {
 						// an inline declaration outranks every selector, but still loses to !important
-						self::compete($declarations, $property, $value, [0, 0, 0], PHP_INT_MAX, inline: true);
+						self::addCandidate($properties, $property, $value, [0, 0, 0], $order + $k, inline: true);
 					}
 				} catch (InvalidArgumentException) {
-					$raw = $existing; // not parseable, so keep it verbatim at the end where it wins, as it did before
+					$raw = $existing; // not parseable, so keep it verbatim at the end where it wins
 				}
 			}
 
-			// keep the source order of the declarations that won, so the output reads naturally
-			uasort($declarations, fn(array $a, array $b) => $a[1] <=> $b[1]);
-			$final = array_map(fn(array $d) => $d[2], $declarations);
+			$declarations = self::cascade($properties);
+			$winners = array_column($declarations, 1, 0);
 
-			$css = self::buildDeclarations($final);
+			$css = self::buildDeclarations($declarations);
 			$element->setAttribute('style', $css . ($raw === null ? '' : '; ' . $raw));
 
 			// Generate HTML attributes for email client compatibility (Outlook)
 			$tag = strtolower($element->tagName);
 			foreach (self::HtmlAttributes as $cssProp => [$attr, $type, $tags]) {
-				$value = isset($final[$cssProp]) && in_array($tag, $tags, true)
-					? self::attributeValue($final[$cssProp], $type)
+				$value = isset($winners[$cssProp]) && in_array($tag, $tags, true)
+					? self::attributeValue($winners[$cssProp], $type)
 					: null;
 
 				if ($value !== null) {
@@ -166,14 +169,13 @@ class CssInliner
 
 
 	/**
-	 * Lets a declaration compete for a property on an element: the higher rank wins, and two ranks are
-	 * never equal, because the rank ends with the source order. The rank is the importance flag, then
-	 * the inline-style tier, the specificity triple, and the source order.
-	 * @param  array<string, array{list<int>, int, string}>  $declarations
+	 * Adds a declaration competing for a property on an element. Its rank is the importance flag, then
+	 * the inline-style tier, the specificity triple, and the source order, so two ranks are never equal.
+	 * @param  array<string, list<array{list<int>, int, string}>>  $candidates
 	 * @param  array{int, int, int}  $specificity
 	 */
-	private static function compete(
-		array &$declarations,
+	private static function addCandidate(
+		array &$candidates,
 		string $property,
 		string $value,
 		array $specificity,
@@ -181,10 +183,33 @@ class CssInliner
 		bool $inline = false,
 	): void
 	{
-		$rank = [self::isImportant($value), (int) $inline, ...$specificity, $order];
-		if (!isset($declarations[$property]) || $declarations[$property][0] < $rank) {
-			$declarations[$property] = [$rank, $order, $value];
+		$candidates[$property][] = [[self::isImportant($value), (int) $inline, ...$specificity, $order], $order, $value];
+	}
+
+
+	/**
+	 * Orders the candidates of each property by rank, the winner last, dropping those that a higher-ranked
+	 * candidate repeats. Properties follow the source order of their winners, so the output reads naturally.
+	 * @param  array<string, list<array{list<int>, int, string}>>  $candidates
+	 * @return list<array{string, string}>
+	 */
+	private static function cascade(array $candidates): array
+	{
+		$groups = [];
+		foreach ($candidates as $property => $list) {
+			usort($list, fn(array $a, array $b) => $b[0] <=> $a[0]);
+			$groups[$list[0][1]] = [$property, array_reverse(array_unique(array_column($list, 2)))];
 		}
+
+		ksort($groups);
+		$declarations = [];
+		foreach ($groups as [$property, $values]) {
+			foreach ($values as $value) {
+				$declarations[] = [$property, $value];
+			}
+		}
+
+		return $declarations;
 	}
 
 
@@ -221,7 +246,7 @@ class CssInliner
 
 	/**
 	 * Parses CSS stylesheet text into a list of selector + declarations pairs.
-	 * @return list<array{string, array<string, string>}>
+	 * @return list<array{string, list<array{string, string}>}>
 	 */
 	private static function parseStylesheet(string $css): array
 	{
@@ -237,7 +262,7 @@ class CssInliner
 	 * Parses a bare declaration list, as found in a style="" attribute, by wrapping it into a block.
 	 * A brace means the attribute is not a plain declaration list: it would smuggle rules of its own
 	 * into the wrapping block.
-	 * @return array<string, string>
+	 * @return list<array{string, string}>
 	 * @throws InvalidArgumentException
 	 */
 	private static function parseDeclarations(string $css): array
@@ -370,12 +395,12 @@ class CssInliner
 	/**
 	 * Parses a CSS block, collecting declarations and recursing into nested rules.
 	 * @param  list<array{int|string, string}>  $tokens
-	 * @param  list<array{string, array<string, string>}>  &$rules
+	 * @param  list<array{string, list<array{string, string}>}>  &$rules
 	 */
 	private static function parseBlock(array $tokens, int &$i, string $parentSelector, array &$rules): void
 	{
 		$count = count($tokens);
-		/** @var array<string, string> */
+		/** @var list<array{string, string}> */
 		$declarations = [];
 
 		while ($i < $count && $tokens[$i][0] !== '}') {
@@ -450,7 +475,7 @@ class CssInliner
 					}
 
 					if ($property !== '' && $value !== '') {
-						$declarations[$property] = $value;
+						$declarations[] = [$property, $value];
 					}
 				}
 
@@ -500,13 +525,13 @@ class CssInliner
 
 
 	/**
-	 * Builds a CSS declarations string from property => value pairs.
-	 * @param  array<string, string>  $declarations
+	 * Builds a CSS declarations string from [property, value] pairs.
+	 * @param  list<array{string, string}>  $declarations
 	 */
 	private static function buildDeclarations(array $declarations): string
 	{
 		$parts = [];
-		foreach ($declarations as $property => $value) {
+		foreach ($declarations as [$property, $value]) {
 			$parts[] = "$property: $value";
 		}
 		return implode('; ', $parts);

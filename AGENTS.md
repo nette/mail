@@ -387,8 +387,8 @@ $html = (new CssInliner)->addCss('p { margin: 0; }')->inline($html);
 **Architecture:**
 - Single-regex tokenizer (comment, whitespace, string, url, escape, at-ident, hash, number, ident, char)
 - Token-based stylesheet parser with CSS nesting and @-rule skipping
-- Declarations parsed into `property => value` arrays (enables deduplication and HTML attribute generation)
-- Cascade per property, one winner written: `!important` > existing inline `style=""` > selector specificity (per comma-separated part) > source order (`<style>` → `addCss()`)
+- Declarations parsed into ordered `[property, value]` lists with duplicates kept; `getRules()` exposes them as `property => value` with the last value
+- Cascade per property, ranked `!important` > existing inline `style=""` > selector specificity (per comma-separated part) > source order (`<style>` → `addCss()`); every candidate is written ordered by rank, the winner last, so client fallbacks (`display: -webkit-box; display: flex`) keep working; a value repeated by a higher-ranked candidate is dropped
 - Property names lowercased except custom properties (`--x`); an existing inline style that cannot be parsed is kept verbatim
 - `<style>` tags are preserved (keeps @media queries intact)
 - Automatic HTML attribute generation for Outlook compatibility (background-color→bgcolor, width→width, height→height, border-spacing→cellspacing; numeric ones only for plain lengths/percentages; align/valign intentionally excluded, their semantics differ from CSS)

@@ -19,7 +19,7 @@ test('a more specific selector wins over a later, less specific one', function (
 		->inline('<html><body><p class="intro">Hello</p></body></html>');
 
 	// source order would have said blue; specificity says red, as a browser would
-	Assert::contains('<p class="intro" style="color: red">Hello</p>', $result);
+	Assert::contains('<p class="intro" style="color: blue; color: red">Hello</p>', $result);
 });
 
 
@@ -28,7 +28,7 @@ test('an id beats any number of classes', function () {
 		->addCss('#main { color: red; } .a.b.c { color: blue; }')
 		->inline('<html><body><p id="main" class="a b c">Hello</p></body></html>');
 
-	Assert::contains('style="color: red"', $result);
+	Assert::contains('style="color: blue; color: red"', $result);
 });
 
 
@@ -37,7 +37,7 @@ test('a class beats a type selector', function () {
 		->addCss('.hi { color: red; } p { color: blue; }')
 		->inline('<html><body><p class="hi">Hello</p></body></html>');
 
-	Assert::contains('style="color: red"', $result);
+	Assert::contains('style="color: blue; color: red"', $result);
 });
 
 
@@ -46,7 +46,7 @@ test('a descendant selector is more specific than a bare type', function () {
 		->addCss('p { color: blue; } div p { color: red; }')
 		->inline('<html><body><div><p>Hello</p></div></body></html>');
 
-	Assert::contains('style="color: red"', $result);
+	Assert::contains('style="color: blue; color: red"', $result);
 });
 
 
@@ -55,7 +55,7 @@ test('equal specificity falls back to source order', function () {
 		->addCss('.a { color: red; } .b { color: blue; }')
 		->inline('<html><body><p class="a b">Hello</p></body></html>');
 
-	Assert::contains('style="color: blue"', $result);
+	Assert::contains('style="color: red; color: blue"', $result);
 });
 
 
@@ -65,7 +65,7 @@ test('each selector in a list carries its own specificity', function () {
 		->inline('<html><body><p class="intro">Hello</p></body></html>');
 
 	// p.intro (0,1,1) beats the later p (0,0,1)
-	Assert::contains('style="color: red"', $result);
+	Assert::contains('style="color: blue; color: red"', $result);
 });
 
 
@@ -74,7 +74,7 @@ test('an attribute selector counts as a class', function () {
 		->addCss('p { color: blue; } [data-x] { color: red; }')
 		->inline('<html><body><p data-x="1">Hello</p></body></html>');
 
-	Assert::contains('style="color: red"', $result);
+	Assert::contains('style="color: blue; color: red"', $result);
 });
 
 
@@ -83,7 +83,7 @@ test('the universal selector adds no specificity', function () {
 		->addCss('p { color: red; } * { color: blue; }')
 		->inline('<html><body><p>Hello</p></body></html>');
 
-	Assert::contains('<p style="color: red">Hello</p>', $result);
+	Assert::contains('<p style="color: blue; color: red">Hello</p>', $result);
 });
 
 
@@ -94,7 +94,7 @@ test('!important beats a more specific normal declaration', function () {
 		->addCss('p { color: red !important; } p#main.intro { color: blue; }')
 		->inline('<html><body><p id="main" class="intro">Hello</p></body></html>');
 
-	Assert::contains('style="color: red !important"', $result);
+	Assert::contains('style="color: blue; color: red !important"', $result);
 });
 
 
@@ -103,7 +103,7 @@ test('!important beats an existing inline style', function () {
 		->addCss('p { color: red !important; }')
 		->inline('<html><body><p style="color: blue">Hello</p></body></html>');
 
-	Assert::contains('style="color: red !important"', $result);
+	Assert::contains('style="color: blue; color: red !important"', $result);
 });
 
 
@@ -112,7 +112,7 @@ test('a normal declaration never beats an inline style', function () {
 		->addCss('p#main { color: red; }')
 		->inline('<html><body><p id="main" style="color: blue">Hello</p></body></html>');
 
-	Assert::contains('style="color: blue"', $result);
+	Assert::contains('style="color: red; color: blue"', $result);
 });
 
 
@@ -121,7 +121,7 @@ test('an important inline style beats an important rule', function () {
 		->addCss('p { color: red !important; }')
 		->inline('<html><body><p style="color: blue !important">Hello</p></body></html>');
 
-	Assert::contains('style="color: blue !important"', $result);
+	Assert::contains('style="color: red !important; color: blue !important"', $result);
 });
 
 
@@ -130,22 +130,76 @@ test('between two important declarations, specificity still decides', function (
 		->addCss('p { color: red !important; } p.intro { color: green !important; }')
 		->inline('<html><body><p class="intro">Hello</p></body></html>');
 
-	Assert::contains('style="color: green !important"', $result);
+	Assert::contains('style="color: red !important; color: green !important"', $result);
 });
 
 
-// Output
+// Fallbacks
 
-test('a property is written out once, no matter how many rules set it', function () {
+test('every rule setting a property is written out, the winner last', function () {
 	$result = (new CssInliner)
 		->addCss('p { color: red; } p { color: green; } p { color: blue; }')
 		->inline('<html><body><p>Hello</p></body></html>');
 
-	Assert::contains('<p style="color: blue">Hello</p>', $result);
-	Assert::notContains('red', $result);
-	Assert::notContains('green', $result);
+	Assert::contains('<p style="color: red; color: green; color: blue">Hello</p>', $result);
 });
 
+
+test('a fallback within one rule survives', function () {
+	$result = (new CssInliner)
+		->addCss('div { display: -webkit-box; display: flex; }')
+		->inline('<html><body><div>Hello</div></body></html>');
+
+	Assert::contains('<div style="display: -webkit-box; display: flex">Hello</div>', $result);
+});
+
+
+test('a fallback across rules is ordered by rank, not by source', function () {
+	$result = (new CssInliner)
+		->addCss('.box { display: flex; } div { display: -webkit-box; }')
+		->inline('<html><body><div class="box">Hello</div></body></html>');
+
+	Assert::contains('<div class="box" style="display: -webkit-box; display: flex">Hello</div>', $result);
+});
+
+
+test('a candidate repeated by a higher-ranked one is dropped', function () {
+	$result = (new CssInliner)
+		->addCss('p { color: red; } .x { color: blue; } #y { color: red; }')
+		->inline('<html><body><p id="y" class="x">Hello</p><p class="x">World</p></body></html>');
+
+	Assert::contains('<p id="y" class="x" style="color: blue; color: red">Hello</p>', $result);
+	Assert::contains('<p class="x" style="color: red; color: blue">World</p>', $result);
+});
+
+
+test('identical values collapse into one declaration', function () {
+	$result = (new CssInliner)
+		->addCss('p { color: red; } .x { color: red; }')
+		->inline('<html><body><p class="x" style="color: red">Hello</p></body></html>');
+
+	Assert::contains('<p class="x" style="color: red">Hello</p>', $result);
+});
+
+
+test('an !important rule ends up last even against an inline style', function () {
+	$result = (new CssInliner)
+		->addCss('p { display: block !important; } .x { display: flex; }')
+		->inline('<html><body><p class="x" style="display: -webkit-box; display: grid">Hello</p></body></html>');
+
+	Assert::contains('style="display: flex; display: -webkit-box; display: grid; display: block !important"', $result);
+});
+
+
+test('getRules() returns the last value of each property', function () {
+	Assert::same(
+		[['div', ['display' => 'flex', 'color' => 'red']]],
+		(new CssInliner)->addCss('div { display: -webkit-box; color: red; display: flex; }')->getRules(),
+	);
+});
+
+
+// Output
 
 test('non-conflicting properties from every source are kept, in source order', function () {
 	$result = (new CssInliner)
@@ -193,8 +247,8 @@ test('property names are matched case-insensitively', function () {
 		->addCss('p { COLOR: red; } p { color: blue; }')
 		->inline('<html><body><p>Hello</p></body></html>');
 
-	// one property, one winner: the later rule. Emitting both would let the loser win in the client
-	Assert::contains('<p style="color: blue">Hello</p>', $result);
+	// one property, so the later rule ends up last; two separate names would let the loser win in the client
+	Assert::contains('<p style="color: red; color: blue">Hello</p>', $result);
 });
 
 
