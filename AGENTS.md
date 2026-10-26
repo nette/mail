@@ -77,7 +77,7 @@ The library consists of five main areas:
    - `CssInliner` - Converts CSS rules to inline `style` attributes for email HTML (requires PHP 8.4+ for `Dom\HTMLDocument`)
 
 5. **Tracy Bar Panel** (`src/Bridges/MailTracy/`)
-   - `MailPanel` - IBarPanel showing sent emails in the Tracy Bar; subscribes to `Interceptor::$onSent`
+   - `MailPanel` - IBarPanel showing sent emails in the Tracy Bar; subscribes to `Interceptor::$onSent`. Each message has a collapsed preview: the HTML body in a sandboxed iframe (`cid:` images inlined as `data:` URIs), the text body and the attachment list
 
 ### Dependency Injection Integration
 
@@ -161,7 +161,7 @@ All exceptions in `src/Mail/exceptions.php`:
 - Automatic text alternative generation from HTML
 - Auto-embedding images from filesystem using `[[...]]` syntax or `<img src=...>`
 - Subject auto-extraction from `<title>` element
-- Attachment support with auto-detection of MIME types
+- Attachment support with auto-detection of MIME types; parts are readable via `getAttachments()` and `getEmbeddedFiles()`
 - One-click unsubscribe headers via `setUnsubscribe()` (RFC 2369, RFC 8058)
 - Internationalized (IDN) domains in addresses converted to punycode (ext-intl)
 

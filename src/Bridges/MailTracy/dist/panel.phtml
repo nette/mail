@@ -1,14 +1,16 @@
 <?php declare(strict_types=1);
 
-/** @var list<array{from:?string,to:?string,cc:?string,bcc:?string,subject:?string,error:?Throwable}> $messages */
+/** @var list<array{from:?string,to:?string,cc:?string,bcc:?string,subject:?string,html:?string,text:string,attachments:list<array{name:?string,type:?string,size:int}>,error:?Throwable}> $messages */
 /** @var int $count */
 echo '<style class="tracy-debug">
 	#tracy-debug .nette-MailPanel-error { background: #FFE7E7 !important; }
 	#tracy-debug .nette-MailPanel-recipients { color: #555; font-size: 85%; }
+	#tracy-debug .nette-MailPanel-preview iframe { width: 600px; height: 400px; border: 1px solid #ccc; background: white; }
+	#tracy-debug .nette-MailPanel-preview pre { max-height: 300px; overflow: auto; white-space: pre-wrap; }
 </style>
 
 <h1>Emails sent: ';
-echo Tracy\Helpers::escapeHtml($count) /* pos 8:18 */;
+echo Tracy\Helpers::escapeHtml($count) /* pos 10:18 */;
 echo '</h1>
 
 <div class="tracy-inner" style="min-width: 600px">
@@ -21,35 +23,75 @@ echo '</h1>
 		</tr>
 
 ';
-foreach ($messages as $msg) /* pos 19:3 */ {
+foreach ($messages as $msg) /* pos 21:3 */ {
 	echo '		<tr';
-	echo ($ʟ_tmp = ($msg['error'] ? 'nette-MailPanel-error' : null)) === null ? '' : ' class="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 20:16 */;
+	echo ($ʟ_tmp = ($msg['error'] ? 'nette-MailPanel-error' : null)) === null ? '' : ' class="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 22:16 */;
 	echo '>
 			<td>';
-	echo Tracy\Helpers::escapeHtml($msg['from']) /* pos 21:9 */;
+	echo Tracy\Helpers::escapeHtml($msg['from']) /* pos 23:9 */;
 	echo '</td>
 			<td>
 				';
-	echo Tracy\Helpers::escapeHtml($msg['to']) /* pos 23:6 */;
+	echo Tracy\Helpers::escapeHtml($msg['to']) /* pos 25:6 */;
 	echo "\n";
-	if ($msg['cc']) /* pos 24:6 */ {
+	if ($msg['cc']) /* pos 26:6 */ {
 		echo '				<div class="nette-MailPanel-recipients">Cc: ';
-		echo Tracy\Helpers::escapeHtml($msg['cc']) /* pos 24:65 */;
+		echo Tracy\Helpers::escapeHtml($msg['cc']) /* pos 26:65 */;
 		echo '</div>';
 	}
 	echo "\n";
-	if ($msg['bcc']) /* pos 25:6 */ {
+	if ($msg['bcc']) /* pos 27:6 */ {
 		echo '				<div class="nette-MailPanel-recipients">Bcc: ';
-		echo Tracy\Helpers::escapeHtml($msg['bcc']) /* pos 25:67 */;
+		echo Tracy\Helpers::escapeHtml($msg['bcc']) /* pos 27:67 */;
 		echo '</div>';
 	}
 	echo '
 			</td>
+			<td>
+				';
+	echo Tracy\Helpers::escapeHtml($msg['subject']) /* pos 30:6 */;
+	echo '
+				<div><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^+">content</a></div>
+				<div class="tracy-collapsed nette-MailPanel-preview">
+';
+	if ($msg['html'] !== null) /* pos 33:15 */ {
+		echo '					<iframe sandbox';
+		echo ($ʟ_tmp = ($msg['html'])) === null ? '' : ' srcdoc="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 33:60 */;
+		echo '></iframe>
+';
+	}
+	if ($msg['text'] !== '') /* pos 34:12 */ {
+		echo '					<pre>';
+		echo Tracy\Helpers::escapeHtml($msg['text']) /* pos 34:39 */;
+		echo '</pre>
+';
+	}
+	if ($msg['attachments']) /* pos 35:14 */ {
+		echo '					<table>
+';
+		foreach ($msg['attachments'] as $attachment) /* pos 36:8 */ {
+			echo '						<tr>
+							<td>';
+			echo Tracy\Helpers::escapeHtml($attachment['name']) /* pos 38:14 */;
+			echo '</td>
+							<td>';
+			echo Tracy\Helpers::escapeHtml($attachment['type']) /* pos 39:14 */;
+			echo '</td>
+							<td>';
+			echo Tracy\Helpers::escapeHtml($attachment['size']) /* pos 40:14 */;
+			echo ' B</td>
+						</tr>
+';
+
+		}
+
+		echo '					</table>
+';
+	}
+	echo '				</div>
+			</td>
 			<td>';
-	echo Tracy\Helpers::escapeHtml($msg['subject']) /* pos 27:9 */;
-	echo '</td>
-			<td>';
-	echo Tracy\Helpers::escapeHtml($msg['error'] ? ("Error: " . ($msg['error']->getMessage()) . "") : 'OK') /* pos 28:9 */;
+	echo Tracy\Helpers::escapeHtml($msg['error'] ? ("Error: " . ($msg['error']->getMessage()) . "") : 'OK') /* pos 46:9 */;
 	echo '</td>
 		</tr>
 ';
@@ -59,9 +101,9 @@ foreach ($messages as $msg) /* pos 19:3 */ {
 echo '	</table>
 
 ';
-if (count($messages) < $count) /* pos 33:5 */ {
+if (count($messages) < $count) /* pos 51:5 */ {
 	echo '	<p>...and ';
-	echo Tracy\Helpers::escapeHtml($count - count($messages)) /* pos 33:45 */;
+	echo Tracy\Helpers::escapeHtml($count - count($messages)) /* pos 51:45 */;
 	echo ' more</p>
 ';
 }
