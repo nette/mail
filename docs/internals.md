@@ -246,6 +246,13 @@ event always receives the **original** message (with real recipients — this is
 what `MailPanel` displays), and fires on failure too (the exception is
 rethrown).
 
+`MailPanel::recordSent` takes everything it renders out of the message at send
+time (envelope, HTML body with `cid:` references replaced by `data:` URIs of the
+embedded parts, text body, attachment name/type/size) and keeps no reference to
+the `Message`. Beyond `maxMessages` it only counts. The template is
+`panel.latte`, compiled into `dist/panel.phtml` by `compile.bat`; edit the
+`.latte` and recompile, never the compiled file.
+
 ## FallbackMailer
 
 Tries each mailer in order, repeating the whole list `retryCount` times (default

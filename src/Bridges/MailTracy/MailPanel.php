@@ -8,9 +8,9 @@
 namespace Nette\Bridges\MailTracy;
 
 use Nette;
-use Nette\Mail\{Mailer, Message};
+use Nette\Mail\{Mailer, Message, MimePart};
 use Tracy;
-use function count, is_array;
+use function count, is_array, is_string, strlen;
 
 
 /**
@@ -21,7 +21,7 @@ class MailPanel implements Tracy\IBarPanel
 {
 	public int $maxMessages = 20;
 
-	/** @var list<array{from: ?string, to: ?string, cc: ?string, bcc: ?string, subject: ?string, error: ?\Throwable}> */
+	/** @var list<array{from: ?string, to: ?string, cc: ?string, bcc: ?string, subject: ?string, html: ?string, text: string, attachments: list<array{name: ?string, type: ?string, size: int}>, error: ?\Throwable}> */
 	private array $messages = [];
 	private int $count = 0;
 
@@ -36,6 +36,9 @@ class MailPanel implements Tracy\IBarPanel
 				'cc' => self::formatAddresses($mail->getHeader('Cc')),
 				'bcc' => self::formatAddresses($mail->getHeader('Bcc')),
 				'subject' => $mail->getSubject(),
+				'html' => self::inlineEmbeddedFiles($mail),
+				'text' => $mail->getBody(),
+				'attachments' => array_map(self::describeAttachment(...), $mail->getAttachments()),
 				'error' => $error,
 			];
 		}
@@ -55,6 +58,43 @@ class MailPanel implements Tracy\IBarPanel
 		}
 
 		return $parts ? implode(', ', $parts) : null;
+	}
+
+
+	/**
+	 * Returns the HTML body with cid: references replaced by data: URIs of the embedded files.
+	 */
+	private static function inlineEmbeddedFiles(Message $mail): ?string
+	{
+		$html = $mail->getHtmlBody();
+		if ($html === '') {
+			return null;
+		}
+
+		$uris = [];
+		foreach ($mail->getEmbeddedFiles() as $part) {
+			$id = $part->getHeader('Content-ID');
+			$type = $part->getHeader('Content-Type');
+			if (is_string($id)) {
+				$uris['cid:' . trim($id, '<>')] = 'data:' . (is_string($type) ? explode(';', $type)[0] : 'application/octet-stream')
+					. ';base64,' . base64_encode($part->getBody());
+			}
+		}
+
+		return strtr($html, $uris);
+	}
+
+
+	/** @return array{name: ?string, type: ?string, size: int} */
+	private static function describeAttachment(MimePart $part): array
+	{
+		$disposition = $part->getHeader('Content-Disposition');
+		$type = $part->getHeader('Content-Type');
+		return [
+			'name' => is_string($disposition) && preg_match('#; ?filename="(.*)"$#D', $disposition, $m) ? stripslashes($m[1]) : null,
+			'type' => is_string($type) ? $type : null,
+			'size' => strlen($part->getBody()),
+		];
 	}
 
 

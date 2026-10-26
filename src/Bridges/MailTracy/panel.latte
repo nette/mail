@@ -1,8 +1,10 @@
-{varType list<array{from: ?string, to: ?string, cc: ?string, bcc: ?string, subject: ?string, error: ?Throwable}> $messages}
+{varType list<array{from: ?string, to: ?string, cc: ?string, bcc: ?string, subject: ?string, html: ?string, text: string, attachments: list<array{name: ?string, type: ?string, size: int}>, error: ?Throwable}> $messages}
 {varType int $count}
 <style class="tracy-debug">
 	#tracy-debug .nette-MailPanel-error { background: #FFE7E7 !important; }
 	#tracy-debug .nette-MailPanel-recipients { color: #555; font-size: 85%; }
+	#tracy-debug .nette-MailPanel-preview iframe { width: 600px; height: 400px; border: 1px solid #ccc; background: white; }
+	#tracy-debug .nette-MailPanel-preview pre { max-height: 300px; overflow: auto; white-space: pre-wrap; }
 </style>
 
 <h1>Emails sent: {$count}</h1>
@@ -24,7 +26,23 @@
 					{if $msg['cc']}<div class="nette-MailPanel-recipients">Cc: {$msg['cc']}</div>{/if}
 					{if $msg['bcc']}<div class="nette-MailPanel-recipients">Bcc: {$msg['bcc']}</div>{/if}
 				</td>
-				<td>{$msg['subject']}</td>
+				<td>
+					{$msg['subject']}
+					<div><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^+">content</a></div>
+					<div class="tracy-collapsed nette-MailPanel-preview">
+						<iframe n:if="$msg['html'] !== null" sandbox srcdoc={$msg['html']}></iframe>
+						<pre n:if="$msg['text'] !== ''">{$msg['text']}</pre>
+						<table n:if="$msg['attachments']">
+							{foreach $msg['attachments'] as $attachment}
+								<tr>
+									<td>{$attachment['name']}</td>
+									<td>{$attachment['type']}</td>
+									<td>{$attachment['size']} B</td>
+								</tr>
+							{/foreach}
+						</table>
+					</div>
+				</td>
 				<td>{$msg['error'] ? "Error: {$msg['error']->getMessage()}" : 'OK'}</td>
 			</tr>
 		{/foreach}

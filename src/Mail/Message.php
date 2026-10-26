@@ -281,6 +281,15 @@ class Message extends MimePart
 
 
 	/**
+	 * @return list<MimePart>
+	 */
+	public function getEmbeddedFiles(): array
+	{
+		return array_values($this->inlines);
+	}
+
+
+	/**
 	 * Creates file MIME part.
 	 */
 	private function createAttachment(
