@@ -119,8 +119,8 @@ test('existing inline styles take precedence over everything', function () {
 		->addCss('p { color: red; }')
 		->inline('<html><head><style>p { color: green; }</style></head><body><p style="color: blue">Hello</p></body></html>');
 
-	// only the winner of the property is written out, so the losers leave no trace
-	Assert::contains('<p style="color: blue">Hello</p>', $result);
+	// the winner goes last, the losers before it remain as fallbacks
+	Assert::contains('<p style="color: green; color: red; color: blue">Hello</p>', $result);
 });
 
 
@@ -129,7 +129,7 @@ test('addCss() overrides <style> tag for same property', function () {
 		->addCss('p { color: red; }')
 		->inline('<html><head><style>p { color: green; }</style></head><body><p>Hello</p></body></html>');
 
-	Assert::contains('<p style="color: red">Hello</p>', $result);
+	Assert::contains('<p style="color: green; color: red">Hello</p>', $result);
 });
 
 
@@ -139,7 +139,7 @@ test('later rules override earlier rules', function () {
 		->addCss('p { color: blue; }')
 		->inline('<html><body><p>Hello</p></body></html>');
 
-	Assert::contains('<p style="color: blue">Hello</p>', $result);
+	Assert::contains('<p style="color: red; color: blue">Hello</p>', $result);
 });
 
 

@@ -118,13 +118,20 @@ directory of a deployment.
 `CssInliner::inline()` parses the document with `Dom\HTMLDocument` (PHP 8.4+) and
 applies collected rules as inline styles. What matters when changing it:
 
-- **The cascade is resolved per property, one winner written.** `compete` ranks
-  each declaration as `[!important, inline tier, ids, classes, types, source
-  order]` and keeps the highest, so the order is `!important` > existing inline
-  `style` > specificity > source order (`<style>` tag rules first, then
-  `addCss()` rules). The rank always ends with the order, so two ranks never tie.
-  Winners are written in source order, the existing inline declarations last;
-  the `!important` suffix stays in the written value.
+- **Every candidate of a property is written, ordered by rank, the winner last.**
+  `addCandidate` ranks each declaration as `[!important, inline tier, ids,
+  classes, types, source order]`, so the order is `!important` > existing inline
+  `style` > specificity > source order (`<style>` tag rules first, then `addCss()`
+  rules). The order counts declarations, not rules, so two ranks never tie.
+  `cascade` writes the candidates of a property from the lowest rank to the
+  winner, dropping one whose value a higher-ranked candidate repeats. The client
+  takes the last value it understands, which is what keeps fallbacks such as
+  `display: -webkit-box; display: flex` working, across rules too; writing only
+  the winner would break them. Property groups follow the source order of their
+  winners; the `!important` suffix stays in the written value.
+- **Duplicate properties within one block are kept.** `parseBlock` collects
+  ordered `[property, value]` pairs; only the public `getRules()` collapses them to
+  a `property => value` map holding the last value.
 - **Specificity is per comma-separated part.** `splitSelector` splits the list
   (commas inside `[]`/`()` do not count) and each part is queried and scored on
   its own by `computeSpecificity`. `:where()` scores zero; `:not()`/`:is()`/
@@ -147,7 +154,7 @@ applies collected rules as inline styles. What matters when changing it:
   `<style>` tags are preserved (keeps `@media` intact); the parser skips
   @-rule blocks entirely and resolves CSS nesting (incl. `&`).
 
-A few winning properties additionally generate HTML attributes on allowed tags
+The winner of a few properties additionally generates HTML attributes on allowed tags
 (`bgcolor`, `width`, `height`, `cellspacing`) for Outlook; `align`/`valign` are
 deliberately excluded (different semantics than CSS). The numeric ones are
 emitted only for a plain number with an optional unit (the unit dropped, `%`
@@ -266,7 +273,7 @@ header stays in the file. A write failure becomes `SendException`.
 | Header encoding, injection guard | `MimePart::setHeader`, `getEncodedHeader`, `encodeSequence` |
 | Header name case, IDN punycode | `MimePart::resolveName`, `toAsciiEmail` |
 | Subject/alt/cid side effects | `HtmlComposer::applyTo`, `embedImagesInHtml` |
-| CSS cascade, specificity, attributes | `CssInliner::inline`, `compete`, `computeSpecificity`, `attributeValue` |
+| CSS cascade, specificity, attributes | `CssInliner::inline`, `addCandidate`, `cascade`, `computeSpecificity`, `attributeValue` |
 | CSS parsing, property case | `CssInliner::parseBlock`, `parseDeclarations`, `splitSelector` |
 | DKIM algorithm, canonicalization, header order | `DkimSigner::detectAlgorithm`, `computeSignature`, `getSignedHeaders` |
 | Bcc envelope, dot-stuffing | `SmtpMailer::send` |
