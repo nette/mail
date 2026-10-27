@@ -111,6 +111,18 @@ test('embedImages() embeds local images and rewrites src to cid:', function () {
 });
 
 
+test('embedImages() leaves [[...]] of a missing file, a non-image or a file outside the base path untouched', function () {
+	$html = '<p>[[spoiler]] [[private.key]] [[../HtmlComposer.phpt]] [[../fixtures/background.png]]</p>';
+	$mail = new Message;
+	(new HtmlComposer($html))
+		->embedImages(__DIR__ . '/fixtures')
+		->applyTo($mail);
+
+	Assert::same($html, $mail->getHtmlBody());
+	Assert::notContains('Content-ID', $mail->generateMessage());
+});
+
+
 test('inlineCss + embedImages combined', function () {
 	$mail = new Message;
 	(new HtmlComposer('<html><body><p>Hi</p><img src="background.png"></body></html>'))

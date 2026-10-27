@@ -95,6 +95,10 @@ loose `== null`, body via `=== ''`), so **call order matters**:
 `<body background>`, `url(...)`, and `[[file]]` placeholders that are **relative**
 (no scheme, not `/`- or `#`-anchored) into `cid:` references, adding an embedded
 file per unique path (matches are replaced in reverse to keep byte offsets valid).
+`[[file]]` can come from escaped user text, so it embeds only an image inside the
+base path (no `..` segment); anything else is left as text. The check is lexical
+on purpose: symlinks inside the base path are followed, like a shared `images/`
+directory of a deployment.
 
 ## CssInliner: order-based cascade, silent selectors, re-serialized output
 
