@@ -52,6 +52,10 @@ class SmtpMailer implements Mailer
 		?string $clientHost = null,
 		?array $streamOptions = null,
 	) {
+		if (!in_array($encryption, [null, self::EncryptionSSL, self::EncryptionTLS], true)) {
+			throw new Nette\InvalidArgumentException("Encryption must be 'ssl', 'tls' or null, '$encryption' given.");
+		}
+
 		$this->context = $streamOptions === null
 			? stream_context_get_default()
 			: stream_context_create($streamOptions);

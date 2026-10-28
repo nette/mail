@@ -164,7 +164,7 @@ All exceptions in `src/Mail/exceptions.php`:
 - Full UTF-8 support throughout
 
 **SMTP Features:**
-- TLS/SSL encryption support (`encryption: 'ssl'` or `'tls'`)
+- TLS/SSL encryption support (`encryption: 'ssl'` or `'tls'`); any other value throws, it never falls back to a plain connection
 - Default ports: 465 (SSL), 587 (TLS/STARTTLS), otherwise 25
 - STARTTLS accepts only TLS 1.2 and 1.3
 - Persistent connections (probed with NOOP, waiting at most 5 s, and re-established when the server dropped them)
