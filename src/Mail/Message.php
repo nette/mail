@@ -343,7 +343,7 @@ class Message extends MimePart
 	public function build(): static
 	{
 		$mail = clone $this;
-		$mail->setHeader('Message-ID', $mail->getHeader('Message-ID') ?? $this->getRandomId());
+		$mail->setHeader('Message-ID', $mail->getHeader('Message-ID') ?? $this->getRandomId($this->getSenderDomain()));
 
 		$cursor = $mail;
 		if ($mail->attachments) {
@@ -385,10 +385,18 @@ class Message extends MimePart
 	}
 
 
-	private function getRandomId(): string
+	private function getSenderDomain(): ?string
+	{
+		$sender = $this->getHeader('Sender');
+		$email = array_key_first(is_array($sender) ? $sender : $this->getFrom() ?? []) ?? '';
+		return preg_match('#@([\w.-]+)$#D', $email, $m) ? $m[1] : null;
+	}
+
+
+	private function getRandomId(?string $domain = null): string
 	{
 		return '<' . Nette\Utils\Random::generate() . '@'
-			. preg_replace('#[^\w.-]+#', '', $_SERVER['HTTP_HOST'] ?? php_uname('n'))
+			. preg_replace('#[^\w.-]+#', '', $domain ?? $_SERVER['HTTP_HOST'] ?? php_uname('n'))
 			. '>';
 	}
 }
