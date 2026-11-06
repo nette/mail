@@ -1,5 +1,11 @@
 # Upgrading nette/mail
 
+## 4.2.3
+
+- **Changed** `$encryption` of `Nette\Mail\SmtpMailer::__construct()` now throws `Nette\InvalidArgumentException` for any value other than `'ssl'`, `'tls'` or `null`, which also applies to a dynamic `mail.encryption` the schema cannot check; previously such a value, including `'TLS'`, `'starttls'` or an empty string, silently meant an unencrypted connection; pass `null` for an unencrypted connection (08be82b4)
+- **Changed** `Nette\Mail\Message::build()` now takes the domain of a generated `Message-ID` header from the `Sender` or `From` address; previously from `$_SERVER['HTTP_HOST']` or the machine name, which remain the fallback for a message with neither; set the `Message-ID` header yourself to keep another domain (35cebe3c)
+- **Changed** `Nette\Mail\CssInliner::inline()` now writes every competing declaration of a property into the `style` attribute, ordered by rank with the winner last, and keeps a property repeated within one rule, so fallbacks such as `display: -webkit-box; display: flex` survive; previously only the winning value of each property was written; affects code comparing the generated markup (ff0d79d5)
+
 ## 4.2.2
 
 - **Changed** `Nette\Mail\HtmlComposer::embedImages()` now replaces the `[[file]]` placeholder only with an existing image inside the base path, which also applies to `Nette\Mail\Message::setHtmlBody()` with `$basePath`; previously it embedded any file, including one reached through `..`, and threw `Nette\IOException` when the file did not exist; any other `[[...]]` is now left as text, so embed a non-image or a file outside the base path with `Nette\Mail\Message::addEmbeddedFile()` (839ee99d)
